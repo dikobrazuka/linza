@@ -21,7 +21,7 @@ Official Arkema TDS:
 https://www.arkema.com/files/live/sites/shared_arkema/files/downloads/sartomer/N3XTDIMENSION%20TECH%20DATA%20SHEETS/TDS_N3D-DIELEC731.pdf
 
 Arkema product family:
-https://www.arkema.com/usa/en/webzine/post/sartomer/expertise-articles/n3xtdimension-formulations/
+https://www.arkema.com/global/en/products/product-finder/product-range/sartomer/n3xt-dimension-3d-printing/
 
 ### Printing data from Arkema
 
@@ -92,6 +92,51 @@ This supports that the material family remains genuinely low-loss at high RF/mmW
 Reference:
 P. Escobari Vargas et al., 2022 European Microwave Conference, DOI `10.23919/EuMC54642.2022.9924501`.
 
+## Procurement status — 2026-10-29
+
+### Route 1 — Carl ROTH / Europe
+
+In March 2026 Carl ROTH announced that Arkema selected it as the **first European distribution partner for N3xtDimension 3D-printing resins**.
+
+This is currently the most promising procurement route for a European purchase.
+
+Public material:
+https://www.pressebox.de/inaktiv/carl-roth-gmbh-co/3D-Printing-in-N3xtDimension/boxid/1288395
+
+Carl ROTH:
+https://www.carlroth.com
+
+Current limitation: an indexed public product page / public price specifically for `N3D-DIELEC731` was not found. Treat this as a quote / availability inquiry rather than a confirmed stock item.
+
+Ask specifically for:
+
+- `N3xtDimension N3D-DIELEC731`;
+- smallest available pack / sample size;
+- 1 kg price if available;
+- stock and lead time;
+- shipping restrictions for liquid photopolymer;
+- whether they can provide the latest TDS/SDS and recommended exposure parameters.
+
+### Route 2 — Arkema direct / Sartomer EMEA
+
+Arkema lists N3D-DIELEC731 as currently available in its N3xtDimension family and provides direct expert-contact / product-finder routes for Europe.
+
+Product family:
+https://www.arkema.com/global/en/products/product-finder/product-range/sartomer/n3xt-dimension-3d-printing/
+
+EMEA product finder / samples:
+https://emea.sartomer.arkema.com/cms/render/live/en/sites/sartomer_emea_arkema/home/product-finders.html
+
+Use this route in parallel with Carl ROTH and ask for a **development/sample quantity**, because the project only needs enough resin for coupons and a first lens prototype.
+
+### Route 3 — Arkema Boulder / US
+
+Arkema's former Colorado Photopolymer Solutions site still lists N3D-DIELEC731 in the N3xtDimension catalog and states that the site supports online ordering, small-scale manufacture and packaging.
+
+https://cpspolymers.com/
+
+Use only if European supply fails because international shipping of photopolymer can complicate logistics.
+
 ## Second choice — Rogers Radix 2.8Dk Printable Dielectric
 
 Status: **backup / comparison material**.
@@ -110,11 +155,45 @@ Official values:
 Official product page:
 https://www.rogerscorp.com/advanced-electronics-solutions/radix-printable-dielectric
 
+Procurement advantage:
+
+- Rogers explicitly exposes a **“Need a Sample?”** request path on the product page;
+- use this immediately as a parallel backup request while searching for Arkema stock.
+
 Why it is not first choice:
 
 - loss is higher than N3D-DIELEC731;
 - ceramic-filled system adds sedimentation / rheology / cleaning concerns for our open-cell lattice;
 - our target maximum effective permittivity is only ~2, so we do not need the higher solid Dk badly enough to justify the filler unless manufacturing results prove otherwise.
+
+## Third lead — EATA FSS Selective Resin / ELFM-0085
+
+Vendor claims:
+
+- fluorinated acrylate;
+- `epsilon_r = 2.4 @20 GHz`;
+- `tan(delta) = 0.0008`;
+- 385–405 nm;
+- viscosity ~400 cP.
+
+Vendor page:
+https://www.eataray.com/3dprint/fss-selective-resin-item-660.html
+
+Status: **interesting but unverified**.
+
+Reason not to use as MVP material yet:
+
+- currently only vendor-page evidence found;
+- no independent RF paper / recognized TDS / established distribution channel found in the search;
+- the claimed `tan(delta)=0.0008` is excellent enough that it must be independently verified before trusting it.
+
+Only consider after obtaining:
+
+- formal TDS;
+- SDS;
+- measurement method and frequency details;
+- sample;
+- independent dielectric measurement.
 
 ## Rejected as primary candidate
 
@@ -127,6 +206,16 @@ Use only as cheap geometry/process prototypes, not as the reference RF material.
 ### Promerus PDM-5061
 
 Interesting dielectric data (`Dk ~2.28`, `Df ~0.0004 @50 GHz`) but it is described primarily as a low-viscosity thermally cured dispense/inkjet material, not a validated vat-photopolymer printing resin for our geometry. Keep as a materials-research lead, not current build material.
+
+## Procurement priority
+
+Run in parallel:
+
+1. **Carl ROTH** — quote/stock request for N3D-DIELEC731.
+2. **Arkema Sartomer EMEA** — sample/development quantity request for N3D-DIELEC731.
+3. **Rogers** — sample request for Radix 2.8Dk as backup.
+
+Do not wait for one route to fail before starting the next.
 
 ## Project-specific implication at 5 GHz
 
