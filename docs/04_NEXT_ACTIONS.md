@@ -1,223 +1,216 @@
-# Ближайшие действия — TEST_LENS_5G_V1
+# Ближайшие действия — TEST_LENS_5G_V1 -> FINAL_LENS_24G
 
-## Приоритет №1 — закрыть расчётную лестницу M0-M6
+## Каноническая схема
 
-Главный маршрут: `docs/07_CALCULATION_WORKFLOW.md`.
+Физическая верификация:
+
+- `5.0 GHz`;
+- `D=240 mm`;
+- `R=120 mm`;
+- nominal `a=7.5 mm`;
+- доступный измерительный тракт до ~6 GHz.
+
+Финальный расчёт для защиты:
+
+- `24.0 GHz`;
+- scale `5/24=0.2083333`;
+- `D=50.0 mm`;
+- `R=25.0 mm`;
+- `a=1.5625 mm`.
+
+Подробно: `docs/10_SCALING_5_TO_24.md`.
+
+## Приоритет №1 — M0-M6 на 5 GHz
 
 - [ ] M0 — empty/background.
-- [ ] M1 — numerical scattering reference + near-to-far validation.
+- [ ] M1 — numerical reference + near-to-far validation.
 - [ ] M2 — homogeneous sphere control.
-- [ ] M3 — ideal continuous Luneburg Ø240 мм @5.0 ГГц, lossless.
+- [ ] M3 — ideal continuous Luneburg Ø240 mm @5 GHz, lossless.
 - [ ] M4 — loss sensitivity.
-- [ ] M5 — 11-zone benchmark; один раз сравнить 6/8-zone.
+- [ ] M5 — 11-zone benchmark + один раз 6/8-zone comparison.
 - [ ] M6 — homogenized manufacturable continuous GRIN.
 - [ ] Закрыть resolution convergence.
-- [ ] Для каждого run использовать копию `simulation/INPUTS_TEMPLATE.yaml`.
+- [ ] Каждый run хранить через config на основе `simulation/INPUTS_TEMPLATE.yaml`.
 
-## Приоритет №2 — HARZ DE-10 как текущий MVP material candidate
+## Приоритет №2 — HARZ DE-10 / T1
 
-Получены данные производителя на 10 ГГц по 11 образцам:
+Manufacturer @10 GHz, 11 samples:
 
-- mean `epsilon_r≈2.30318`;
-- sample SD `≈0.06218`;
+- mean `epsilon_r=2.30318`;
 - range `2.187...2.384`;
-- mean `tan(delta)≈0.0024227`;
-- sample SD `≈0.0003436`;
+- mean `tan(delta)=0.0024227`;
 - range `0.00184...0.00310`;
 - 405 nm compatible.
 
-Текущий статус закупки:
+Статус закупки:
 
-- пользователь готов приобрести `1.0 kg` DE-10 из имеющегося остатка;
-- поставщик сообщил фасовку `0.5 kg`, цену `7000 RUB / 0.5 kg`, доступность до `1.5 kg`, срок годности текущей партии до `12.01.2027`;
-- ожидается подтверждение оформления/оплаты/отправки.
+- available current stock up to `1.5 kg`;
+- packing `0.5 kg`;
+- `7000 RUB / 0.5 kg`;
+- expiry `12.01.2027`;
+- planned purchase `1.0 kg`.
 
-### T1 — solid DE-10 @≈5 GHz
-
-Исполняемый протокол:
+T1 protocol:
 
 `docs/08_DE10_SPDR_T1_PROTOCOL.md`
 
-Зафиксировано:
-
-- 4 пластины: `DE10-S01...S04`;
-- размер каждой: `80.00 × 80.00 × 1.50 mm`;
-- S01–S03 — основные, S04 — запасной;
-- одна партия смолы, один принтер, один профиль, одинаковые wash/post-cure;
-- после post-cure выдержка не менее 24 h;
-- контроль толщины в 9 точках микрометром 0.001 mm;
-- pre-screen: `1.40 < t_mean < 1.60 mm`, `delta_t <= 0.03 mm`, без трещин/пузырей/выраженного коробления;
-- SPDR 5/5.1 GHz;
-- 3 независимых физических образца × 3 установки = минимум 9 измерений;
-- сохранить `epsilon_r`, `tan_delta`, resonance frequency, Q, temperature, actual thickness;
-- raw и processed данные хранить в `data/materials/de10/`;
-- `epsilon_r <= 2.00` → NO-GO для текущей resin+air Luneburg;
-- `2.00 < epsilon_r < 2.15` → плохой технологический запас;
-- `epsilon_r >= 2.15` → GO к gyroid calibration;
-- `tan(delta)` оценивать через M4 loss-sensitivity, без произвольного hard threshold.
-
-Действия:
-
-- [ ] Получить DE-10 / оформить покупку 1 kg.
-- [ ] Найти доступ к SPDR 5/5.1 GHz и подтвердить совместимость образца 80×80×1.50 mm с конкретным fixture.
 - [ ] Зафиксировать `PROFILE_DE10_V1`.
-- [ ] Напечатать S01–S04 по `docs/08_DE10_SPDR_T1_PROTOCOL.md`.
-- [ ] Выполнить wash/post-cure по одному зафиксированному процессу.
-- [ ] Выдержать образцы минимум 24 h.
-- [ ] Измерить толщину/плоскостность/массу.
-- [ ] Выполнить минимум 9 SPDR measurements.
-- [ ] Получить собственные `epsilon_r` и `tan(delta)` около 5 GHz.
-- [ ] Не переносить 10-GHz значения производителя в финальную модель без проверки.
-- [ ] Сохранить raw measurement и обработанную таблицу в `data/materials/de10/`.
+- [ ] Напечатать `DE10-S01...S04`, `80×80×1.50 mm`.
+- [ ] Одинаковые wash/post-cure.
+- [ ] 24 h conditioning.
+- [ ] 9-point thickness measurement.
+- [ ] Минимум 3 physical samples ×3 independent placements.
+- [ ] Получить own `epsilon_r/tan(delta)` около 5 GHz.
+- [ ] Сохранить raw + processed в `data/materials/de10/`.
 
-## Приоритет №3 — T2/T3: density, shrinkage и технологический диапазон gyroid
+GO logic:
 
-Исполняемый протокол:
+- `epsilon_r<=2.00` -> NO-GO current resin+air classic Luneburg;
+- `2.00<epsilon_r<2.15` -> poor margin;
+- `epsilon_r>=2.15` -> GO to gyroid calibration.
+
+`tan(delta)` оценивать через M4, без произвольного hard threshold.
+
+## Приоритет №3 — T2/T3
+
+Protocol:
 
 `docs/09_DE10_GYROID_T2_T3_PROTOCOL.md`
 
-Генератор uniform coupons:
+### T2
 
-`tools/uniform_sheet_gyroid_coupon.py`
+- [ ] 5 solid coupons `20×20×10 mm`.
+- [ ] Measure washed/cured X/Y/Z + mass.
+- [ ] Get cured density.
+- [ ] Get shrinkage X/Y/Z.
+- [ ] Require `CV(rho_solid)<=1.5%` before mass-based T3 calibration.
 
-### T2 — solid density / shrinkage
+### T3
 
-- [ ] Напечатать 5 solid coupons `20.00 × 20.00 × 10.00 mm`.
-- [ ] После wash измерить X/Y/Z и массу.
-- [ ] После post-cure + 24 h повторно измерить X/Y/Z и массу.
-- [ ] Рассчитать `rho_solid_geom` по фактическому cured volume.
-- [ ] Рассчитать shrinkage X/Y/Z.
-- [ ] Требовать `CV(rho_solid_geom) <= 1.5%`; иначе повторить T2 до использования density в mass-based gyroid calibration.
-- [ ] Если доступна лабораторная гидростатика, дополнительно получить ISO 1183-1 Method A / ASTM D792 reference density.
+Nominal period:
 
-### T3 — uniform sheet-gyroid printability
+`a=7.5 mm`.
 
-Текущий nominal period:
+Coupon:
 
-`a = 7.5 mm`.
+`30×30×15 mm = 4×4×2 periods`.
 
-Базовый coupon:
+Series:
 
-`30.00 × 30.00 × 15.00 mm = 4 × 4 × 2 gyroid periods`.
+`rho=0.10/0.15/0.20/0.30/0.40/0.50/0.65/0.81/0.90`.
 
-Базовая серия:
+- [ ] Generate 9 STL through `tools/uniform_sheet_gyroid_coupon.py`.
+- [ ] Before print require `watertight=True`, `|rho_mesh_error|<=2%`.
+- [ ] Print one process/orientation.
+- [ ] Record washability/trapped resin/sheet fusion.
+- [ ] Calculate `rho_actual_mass` after cure.
+- [ ] PASS: printable + washable + intact + `|rho_actual-rho_mesh|/rho_mesh<=5%`.
+- [ ] Determine experimental `rho_min_print/rho_max_print`.
+- [ ] Refine boundaries by midpoint if needed.
 
-- `rho=0.10`, `h≈0.155137`;
-- `rho=0.15`, `h≈0.233275`;
-- `rho=0.20`, `h≈0.310328`;
-- `rho=0.30`, `h≈0.462674`;
-- `rho=0.40`, `h≈0.619249`;
-- `rho=0.50`, `h≈0.766812`;
-- `rho=0.65`, `h≈0.987636`;
-- `rho=0.81`, `h≈1.211042`;
-- `rho=0.90`, `h≈1.329630`.
+## Приоритет №4 — T4: measured RF law of gyroid
 
-Действия:
+Цель:
 
-- [ ] Сгенерировать 9 STL через `tools/uniform_sheet_gyroid_coupon.py`.
-- [ ] До печати требовать `watertight=True` и `|rho_mesh_error| <= 2%`.
-- [ ] Для low-density `rho=0.10/0.15` при необходимости уменьшить voxel до `0.05 mm`.
-- [ ] Напечатать все 9 coupons одним профилем/ориентацией/process.
-- [ ] Выполнить один wash protocol и фиксировать `mass_after_wash_0h` / `mass_after_wash_24h`.
-- [ ] После post-cure + 24 h измерить массу и bounding X/Y/Z.
-- [ ] Рассчитать `rho_actual_mass = mass / (rho_solid * V_env)` с `V_env=13.5 cm³`.
-- [ ] Сравнивать прежде всего с `rho_mesh`, а не только с аналитическим `rho_target`.
-- [ ] PASS calibration point: complete print + washable + mechanically intact + no massive sheet fusion + `|rho_actual-rho_mesh|/rho_mesh <= 5%`.
-- [ ] Определить экспериментальные `rho_min_print` и `rho_max_print` только по PASS samples.
-- [ ] Если граница PASS/FAIL между двумя точками — делать midpoint/bisection до `Δrho <= 0.025` либо до отсутствия практического смысла дальнейшего уточнения.
-- [ ] Сохранить `h -> rho_mesh -> rho_actual` в `data/materials/de10/T3_GYROID_RESULT.csv`.
+`rho -> epsilon_eff(rho,f), tan_delta_eff(rho,f)` около 5 GHz.
 
-### RF calibration после T3
+Правила:
 
-- [ ] Не печатать RF-waveguide coupons заранее.
-- [ ] Сначала зафиксировать конкретный fixture/waveguide и его фактический internal aperture.
-- [ ] После этого сделать отдельный T4 protocol для `epsilon_eff(rho,f)` по complex S-parameters.
-- [ ] Выполнить M7 periodic unit-cell simulations.
-- [ ] Проверить anisotropy X/Y/Z на выбранных density points.
-- [ ] Заменить Bruggeman в continuous generator на measured interpolation.
+- [ ] Использовать тот же DE-10 process, что T1-T3.
+- [ ] Выбрать calibration densities после T3, обязательно включая low/mid/high и central-region point около `rho≈0.81`.
+- [ ] Для каждого RF-coupon сохранить actual mass, actual dimensions, `rho_actual`, orientation.
+- [ ] Сохранять complex S-parameters/raw instrument files там, где это позволяет метод.
+- [ ] Минимум 3 independent placements для каждого ключевого sample.
+- [ ] Проверить repeatability.
+- [ ] Проверить anisotropy минимум на representative mid/high densities.
+- [ ] Fit/interpolate measured `epsilon_eff(rho)`.
+- [ ] Заменить Bruggeman в `continuous_luneburg_gyroid.py` measured CSV.
+- [ ] Bruggeman оставить только как comparison.
 
-Comparison period `5 / 7.5 / 10 mm` оставить как отдельный M7/RF sensitivity sweep после подтверждения технологической работоспособности nominal `a=7.5 mm`; не размножать physical coupons по трём периодам до необходимости.
+Важно: размеры T4 RF-coupons задаются под реальную измерительную оснастку/метод и не должны придумыватьcя заранее.
 
-## Приоритет №4 — reflector и whole-lens
+## Приоритет №5 — M7-M9
 
-После M6/M7:
+- [ ] M7 explicit periodic gyroid unit-cell/coupon.
+- [ ] Сравнить M7 с measured T4.
+- [ ] Проверить `a=5/7.5/10 mm` только как sensitivity, nominal остаётся 7.5 mm.
+- [ ] M8 reduced explicit validation.
+- [ ] M9 whole lens + reflector.
+- [ ] PEC cap sweep `15/30/45/60/90°`.
+- [ ] Compare full sphere + cap vs hemisphere + ground plane.
+- [ ] Seam sensitivity.
+- [ ] Material-loss sensitivity.
+- [ ] До full print требовать расчётный запас относительно +10 dB.
 
-- [ ] M9: full sphere + PEC cap.
-- [ ] Cap sweep `15/30/45/60/90°`.
-- [ ] Выбрать минимальный cap после насыщения прироста.
-- [ ] Сравнить с hemisphere + ground plane.
-- [ ] Снять `RCS(theta)` минимум до ±60°.
-- [ ] Проверить seam sensitivity для двух полусфер.
-- [ ] Проверить material-loss sensitivity.
-- [ ] Требовать запас относительно +10 dB до печати полного V1.
+## Приоритет №6 — изготовление TEST_LENS_5G_V1
 
-## Приоритет №5 — изготовление V1
+- [ ] Generate geometry from measured `epsilon_eff(rho)`.
+- [ ] Split into two open hemispheres.
+- [ ] Add minimal alignment features.
+- [ ] Print technological segment first.
+- [ ] Verify washing/post-cure/shrinkage/mass/min wall.
+- [ ] Print full Ø240-mm demonstrator.
+- [ ] Manufacture selected reflector.
 
-Основной manufacturing route уже выбран:
+## Приоритет №7 — физический 5-GHz experiment
 
-**photopolymer continuous radial sheet-gyroid / TPMS**.
-
-- [ ] Сгенерировать финальную geometry с measured `epsilon_eff(rho)`.
-- [ ] Разделить на две открытые полусферы.
-- [ ] Добавить alignment features без существенного RF-возмущения.
-- [ ] Напечатать технологический сегмент.
-- [ ] Проверить washing/post-cure.
-- [ ] Проверить размеры, массу, shrinkage, wall thickness.
-- [ ] Напечатать полный TEST_LENS_5G_V1.
-- [ ] Сделать выбранный металлический reflector.
-
-## NanoVNA-стенд
-
-- [ ] Подтвердить устойчивую работу NanoVNA-F V3 около 5 ГГц.
-- [ ] Найти 2 одинаковые направленные антенны.
-- [ ] Найти 2 одинаковых RF-кабеля.
-- [ ] Жёсткая база TX/RX.
-- [ ] Диэлектрическая стойка мишени.
-- [ ] Поворотная платформа минимум ±60°.
-- [ ] Дистанция: начать 2.5–3.0 м.
+- [ ] Confirm stable VNA/setup operation around 5 GHz.
+- [ ] 2 identical directional antennas.
+- [ ] Fixed TX/RX base.
+- [ ] Low-scatter target support.
+- [ ] Start distance `2.5–3.0 m`.
 - [ ] 2-port calibration.
 - [ ] BACKGROUND.
 - [ ] HOLDER.
-- [ ] REFERENCE target.
+- [ ] REFERENCE.
 - [ ] BASELINE.
-- [ ] LENS без reflector.
-- [ ] LENS + reflector.
-- [ ] Сохранять complex S21/.s2p.
-- [ ] Повтор ключевых измерений минимум 3 раза.
+- [ ] LENS_NO_REFLECTOR.
+- [ ] LENS+REFLECTOR.
+- [ ] Save complex `S21/.s2p`.
+- [ ] Repeat key measurements >=3 times with target re-installation.
+- [ ] Angle sweep minimum `-30...+30°` step `5°`; preferred final sweep to ±60°.
 
-## Масштабирование после валидации
+## Приоритет №8 — validate model vs experiment
 
-- [ ] Сопоставить Meep Ø240 @5 GHz с физическим experiment.
-- [ ] Масштабировать geometry 1:3.
-- [ ] Рассчитать Ø80 @15 GHz.
-- [ ] Отдельно рассчитать Ø80 @24 GHz.
-- [ ] Учесть dispersion `epsilon/tan(delta)`.
-- [ ] Не утверждать физическую проверку 15/24 GHz, если измерялся только 5-GHz prototype.
+- [ ] Compare 5-GHz Meep and measured frequency trend.
+- [ ] Compare angular trend.
+- [ ] Compare relative gain `K_sigma`.
+- [ ] Record mismatch and update model assumptions.
+- [ ] Freeze validated 5-GHz geometry/config before scaling.
 
-## R&D ветки, которые НЕ должны тормозить MVP
+## Приоритет №9 — M10 / 24-GHz defense calculation
 
-### PLA Aero / LW-PLA
+После 5-GHz validation:
 
-- [ ] Сохранить как R&D branch.
-- [ ] Позже: `T/flow/speed -> foam density -> epsilon`.
-- [ ] Custom G-code только после первого photopolymer MVP.
+- [ ] Scale every linear dimension by `5/24`.
+- [ ] `D: 240 -> 50 mm`.
+- [ ] `R: 120 -> 25 mm`.
+- [ ] `a: 7.5 -> 1.5625 mm`.
+- [ ] Scale reflector and seam assumptions geometrically.
+- [ ] Run Meep @24 GHz.
+- [ ] Run material-dispersion sensitivity.
+- [ ] Run tan(delta) sensitivity.
+- [ ] Check manufacturability of scaled minimum features separately.
+- [ ] Estimate final mass and verify `<300 g`.
+- [ ] Do not claim physical 24-GHz validation.
 
-### TiO2 / SrTiO3 filled resin
+## R&D not on critical path
 
-- [ ] Сохранять как material-development branch.
-- [ ] Не легировать текущий HARZ DE-10, если neat material уже даёт `epsilon>2` и низкий loss, пока не появится конкретная причина.
-- [ ] Возвращаться к filler branch, если нужно больше `epsilon_solid`, ниже loss, лучшая printability или контролируемая custom formulation.
+- PLA Aero / LW-PLA;
+- Orca continuous FDM;
+- TiO2/SrTiO3 filled resin;
+- non-planar/multi-axis FDM;
+- volumetric photopolymerization.
 
 ## Минимальный результат текущей итерации
 
-1. M0-M5 закрыты и воспроизводимы.
-2. HARZ DE-10 получен или есть точный срок.
-3. T1 закрыт: есть собственные 5-GHz solid-coupon data минимум по 3 физическим образцам.
-4. T2 закрыт: есть measured cured-solid density и shrinkage.
-5. T3 закрыт: определены `rho_min_print`, `rho_max_print`, `h -> rho_mesh -> rho_actual`.
-6. Есть measured `epsilon_eff(rho)` минимум для выбранных RF calibration points.
-7. M6/M7 согласуются достаточно для homogenized whole-lens workflow.
-8. Reflector выбран по M9 sweep.
-9. Напечатан TEST_LENS_5G_V1.
-10. Получен экспериментальный `K_sigma(theta)` и Meep воспроизводит физический тренд.
-11. Есть prediction Ø80 @15 GHz и отдельный расчёт @24 GHz.
+1. DE-10 obtained.
+2. T1 closed.
+3. T2/T3 closed.
+4. T4 measured `epsilon_eff(rho)` obtained.
+5. M0-M9 closed and reproducible.
+6. TEST_LENS_5G_V1 printed and measured.
+7. Meep reproduces the 5-GHz physical trend.
+8. Experimental `K_sigma` quantified.
+9. FINAL_LENS_24G scaled to Ø50 mm and calculated.
+10. Protection package clearly separates measured 5-GHz evidence from 24-GHz prediction.
