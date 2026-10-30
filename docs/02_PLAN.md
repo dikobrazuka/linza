@@ -1,106 +1,143 @@
 # План разработки — TEST_LENS_5G_V1
 
-## Этап 1. Зафиксировать масштабную экспериментальную модель
+## Этап 1. Масштабная модель
 
-1. Физическая частота: **5.0 ГГц**.
-2. Физический диаметр: **240 мм**.
-3. Радиус: **120 мм**.
-4. Масштаб: **3:1** относительно конечной Ø80-мм конструкции.
-5. Электромагнитно подобная конечная частота: **15 ГГц**.
-6. Рабочий диапазон проекта 8–24 ГГц сохраняется; 5 ГГц используется только для масштабной экспериментальной верификации из-за доступного NanoVNA до 6 ГГц.
+- `f = 5.0 GHz`;
+- `D = 240 mm`;
+- `R = 120 mm`;
+- масштаб `3:1` относительно Ø80 мм;
+- подобная конечная точка: `Ø80 mm @15 GHz`;
+- `Ø80 mm @24 GHz` — отдельный расчёт.
 
-## Этап 2. Meep — до печати
+## Этап 2. Meep по фиксированной лестнице
 
-На 5 ГГц сравнить:
+Не выбирать модель вручную. Использовать `docs/07_CALCULATION_WORKFLOW.md`.
 
-1. homogeneous sphere;
-2. ideal continuous Luneburg;
-3. 6-zone;
-4. 8-zone;
-5. 11-zone;
-6. printable lattice/TPMS geometry.
+Порядок:
 
-Для лучших вариантов:
+1. M0 background;
+2. M1 numerical reference;
+3. M2 homogeneous sphere;
+4. M3 ideal continuous Luneburg;
+5. M4 loss sensitivity;
+6. M5 11-zone benchmark + один раз 6/8-zone comparison;
+7. M6 homogenized manufacturable continuous GRIN;
+8. M7 explicit periodic gyroid unit cell;
+9. M8 reduced explicit gyroid validation;
+10. M9 final lens + reflector;
+11. M10 Ø80 @15 GHz и отдельно @24 GHz.
 
-7. full sphere + metal cap;
-8. hemisphere + metal ground plane;
-9. параметрический sweep размера cap/ground plane;
-10. `RCS(theta)` минимум 0, 10, 20, 30, 45, 60°;
-11. обе поляризации, если вычислительные ресурсы позволяют;
-12. добавить реальный `tan(delta)` материала;
-13. сделать tolerance sweep по epsilon, зазору между половинами и геометрии lattice.
+Для каждого run использовать config на основе `simulation/INPUTS_TEMPLATE.yaml`.
 
-После выбора победителя масштабировать геометрию 1:3 и проверить:
+## Этап 3. Материал — HARZ DE-10
 
-- Ø80 мм @ **15 ГГц** — основная конечная подобная конструкция;
-- Ø80 мм @ **24 ГГц** — отдельная верхняя расчётная точка.
+Текущий primary local material candidate:
 
-## Этап 3. Материал и FDM
+- mean `epsilon_r≈2.30318 @10 GHz`;
+- mean `tan(delta)≈0.0024227 @10 GHz`;
+- 11 измеренных образцов;
+- 405 nm compatible.
 
-1. Выбрать пластик.
-2. Получить/оценить `epsilon_solid(f)` и `tan(delta)`.
-3. Не назначать infill процентами без модели `epsilon_eff(infill)`.
-4. Для TEST_LENS_5G_V1 стартовый characteristic cell ориентировать примерно на **8–12 мм**, номинально ~10 мм.
-5. Построить CAD 11-зонной версии.
-6. Изготовить технологический сегмент внешних зон.
-7. Проверить, что outer zone не портится сплошными периметрами.
-8. Напечатать выбранную геометрию частями, если полный Ø240 не помещается/нецелесообразен.
-9. Зафиксировать фактические размеры, массу, зазоры и параметры печати.
+Действия:
 
-## Этап 4. NanoVNA-стенд на 5 ГГц
+1. получить материал;
+2. зафиксировать printer/wash/post-cure process;
+3. напечатать solid coupons;
+4. измерить `epsilon_r/tan(delta)` около 5 GHz;
+5. напечатать gyroid coupons;
+6. получить measured `epsilon_eff(rho)`;
+7. заменить provisional Bruggeman measured interpolation.
 
-1. NanoVNA-F V3 использовать в рабочем диапазоне около 5 ГГц.
-2. Найти 2 одинаковые антенны, уверенно работающие около 5 ГГц.
-3. Закрепить TX/RX рядом на общей базе.
-4. Сделать диэлектрическую стойку и поворотную платформу.
-5. Для D=240 мм на 5 ГГц граница дальней зоны по `2D^2/lambda` около **1.92 м**; стартовая дистанция — **2.5–3 м**.
-6. Выполнить 2-port calibration на концах кабелей.
-7. Снять BACKGROUND.
-8. Проверить reference target.
-9. Сохранять комплексный S21/.s2p.
-10. При достаточной полосе выполнять IFFT/time gate; при узкой полосе честно зафиксировать ограничение дальностного разрешения.
+## Этап 4. Photopolymer continuous gyroid
 
-## Этап 5. Физический эксперимент
+Основной manufacturing route MVP:
+
+**continuous radial sheet-gyroid / TPMS**.
+
+Стартовый period:
+
+`a=7.5 mm`.
+
+Comparison:
+
+`5 / 7.5 / 10 mm`.
+
+Сделать две открытые полусферы для washing/post-cure.
+
+До full lens закрыть:
+
+- min wall;
+- rho_min/rho_max;
+- shrinkage;
+- mass-based volume fraction;
+- anisotropy;
+- seam influence.
+
+## Этап 5. Reflector
+
+Сначала:
+
+`full sphere + PEC cap`.
+
+Sweep:
+
+`15/30/45/60/90°`.
+
+После выбора сравнить с:
+
+`hemisphere + PEC ground plane`.
+
+## Этап 6. NanoVNA-стенд
+
+- NanoVNA-F V3;
+- две одинаковые направленные антенны около 5 ГГц;
+- общая жёсткая база TX/RX;
+- диэлектрическая стойка;
+- поворотная платформа;
+- distance 2.5–3 m;
+- 2-port calibration;
+- complex S21;
+- background subtraction;
+- reference target;
+- baseline;
+- angle sweep.
+
+## Этап 7. Физический эксперимент
 
 Минимальный набор:
 
 1. BACKGROUND;
 2. HOLDER;
-3. RCS reference target;
-4. LENS без отражателя;
-5. LENS + reflector;
-6. выбранная baseline-конфигурация проекта.
+3. REFERENCE target;
+4. BASELINE;
+5. LENS without reflector;
+6. LENS + reflector.
 
-Обработка:
+Основная метрика:
 
-- комплексное background subtraction;
-- сравнение `|H|^2`;
-- относительный `K_sigma` и `Delta_sigma_dB`;
-- угловая характеристика минимум `-30...+30°`, лучше до ±60°;
-- минимум 3 повторных измерения ключевых точек.
+`K_sigma = sigma_test/sigma_baseline`.
 
-## Этап 6. Проверка масштабного подобия
+`Delta_sigma_dB = 10*log10(K_sigma)`.
 
-1. Сравнить Meep Ø240 @ 5 ГГц с физическим экспериментом.
-2. Повторить в Meep ту же нормированную геометрию как Ø80 @ 15 ГГц.
-3. Сравнить нормированные `RCS(theta)` и относительный gain.
-4. Отдельно рассчитать Ø80 @ 24 ГГц.
-5. В отчёте не утверждать, что 24 ГГц измерены физически: физическая верификация выполнена на масштабной модели 5 ГГц.
+Цель:
 
-## Этап 7. Итог
+`Delta_sigma_dB >= +10 dB`.
 
-Должны быть:
+## Этап 8. Масштабирование
 
-- обоснование масштабирования 5 -> 15 ГГц;
-- таблица 11 зон;
-- Meep 6/8/11/continuous;
-- выбор sphere vs hemisphere;
-- CAD TEST_LENS_5G_V1;
-- физическая Ø240-мм модель;
-- NanoVNA S21;
-- background/reference measurements;
-- `K_sigma(theta)`;
-- сопоставление experiment 5 GHz vs Meep 5 GHz;
-- Meep prediction Ø80 @ 15 GHz и @24 GHz;
-- вывод по критерию ×10;
-- фотофиксация и смета.
+После согласования 5-GHz experiment и Meep:
+
+1. геометрия `1:3`;
+2. Ø80 @15 GHz;
+3. отдельно Ø80 @24 GHz;
+4. учесть material dispersion.
+
+## R&D после/параллельно MVP, если не мешает срокам
+
+- PLA Aero / LW-PLA thermal-gradient;
+- Orca continuous FDM;
+- TiO2/SrTiO3 filled photopolymer;
+- non-planar / multi-axis FDM;
+- volumetric photopolymerization.
+
+Эти ветки не должны задерживать первый photopolymer MVP.
