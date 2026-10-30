@@ -1,161 +1,88 @@
-# План разработки — TEST_LENS_5G_V1 -> FINAL_LENS_24G
+# План проекта
 
-## Этап 1. Физический масштабный демонстратор
+## Phase A — material/process characterization
 
-Зафиксировано:
+1. Lock DE-10 print/wash/post-cure process.
+2. T1 solid epsilon/tan(delta) @~5 GHz.
+3. T2 cured density/shrinkage.
+4. T3 gyroid printability + rho_actual.
+5. T4 gyroid epsilon_eff(rho,f) + repeatability/anisotropy.
 
-- `f_test = 5.0 GHz`;
-- `D_test = 240 mm`;
-- `R_test = 120 mm`;
-- `a_test = 7.5 mm` nominal;
-- доступный измерительный тракт до ~6 GHz.
+## Phase B — numerical ladder
 
-Цель этого образца — физически проверить GRIN/reflector концепцию, material law и Meep около 5 GHz.
+1. M0 background.
+2. M1 numerical reference.
+3. M2 homogeneous sphere control.
+4. M3 ideal continuous Luneburg.
+5. M4 loss sensitivity.
+6. M5 zoned benchmark.
+7. M6 manufacturable homogenized GRIN.
+8. M7 explicit unit-cell/coupon gyroid.
+9. M8 reduced explicit validation.
 
-## Этап 2. Meep ladder на 5 GHz
+## Phase C — diameter gate
 
-Порядок:
+Current physical candidate:
 
-1. M0 background;
-2. M1 numerical reference;
-3. M2 homogeneous sphere;
-4. M3 ideal continuous Luneburg;
-5. M4 loss sensitivity;
-6. M5 11-zone benchmark + один раз 6/8-zone comparison;
-7. M6 homogenized manufacturable continuous GRIN;
-8. M7 explicit periodic gyroid unit cell/coupon;
-9. M8 reduced explicit gyroid validation;
-10. M9 final 5-GHz lens + reflector;
-11. M10 scaled `Ø50 mm @24 GHz`.
+- `D=120 mm`;
+- `R=60 mm`;
+- `f=5 GHz`.
 
-Использовать `docs/07_CALCULATION_WORKFLOW.md` и config на основе `simulation/INPUTS_TEMPLATE.yaml`.
+Before full print compare:
 
-## Этап 3. Материал — HARZ DE-10
+`D=120 / 150 / 180 / 240 mm`.
 
-Primary MVP material.
+Select smallest passing diameter based on K_sigma/focus/angular response/material mass.
 
-Manufacturer @10 GHz:
+## Phase D — final 5-GHz physical design
 
-- mean `epsilon_r=2.30318`;
-- mean `tan(delta)=0.0024227`;
-- 11 samples;
-- 405 nm compatible.
+For selected passing diameter:
 
-До full lens закрыть:
+1. M9 reflector optimization.
+2. Recompute material mass from T2/T3/T4.
+3. Print technological segment.
+4. Validate wash/cure/shrinkage/min-wall.
+5. Print full physical lens.
+6. Add selected reflector.
 
-1. T1 — solid `epsilon_r/tan(delta)` около 5 GHz;
-2. T2 — cured density/shrinkage;
-3. T3 — `rho_min_print/rho_max_print`, `h -> rho_actual`;
-4. T4 — measured `epsilon_eff(rho,f)` около 5 GHz;
-5. replace provisional Bruggeman by measured interpolation.
+## Phase E — physical RF experiment
 
-## Этап 4. Continuous sheet-gyroid
+Current Ø120 case:
 
-Основной manufacturing route:
+- far-field estimate `R_ff≈0.48 m`;
+- start distance `1.0–1.5 m`.
 
-**photopolymer continuous radial sheet-gyroid / TPMS**.
+Measure BACKGROUND/HOLDER/REFERENCE/BASELINE/LENS_NO_REFLECTOR/LENS+REFLECTOR with complex `.s2p`, repeatability and angular sweep.
 
-Nominal:
+## Phase F — model validation
 
-`a=7.5 mm` @5 GHz.
+Compare experiment vs Meep:
 
-Research sweep:
+- frequency trend;
+- angular trend;
+- K_sigma;
+- reflector effect;
+- repeatability vs numerical uncertainty.
 
-`5 / 7.5 / 10 mm`.
+## Phase G — 24-GHz defense calculation
 
-Две открытые полусферы — основной manufacturing concept для washing/post-cure.
+Strict scale factor:
 
-До full lens проверить:
+`5/24`.
 
-- min wall;
-- rho range;
-- washability;
-- shrinkage;
-- mass-based volume fraction;
-- anisotropy;
-- seam influence.
+If Ø120 remains physical V1:
 
-## Этап 5. Reflector
+- `D_24=25 mm`;
+- `R_24=12.5 mm`;
+- `a_24=1.5625 mm`.
 
-M9:
+Run M10 with material-dispersion/loss/min-feature/seam sensitivity.
 
-- сначала `full sphere + PEC cap`;
-- cap sweep `15/30/45/60/90°`;
-- затем comparison с `hemisphere + PEC ground plane`.
+## Phase H — defense package
 
-## Этап 6. Физический стенд 5 GHz
+Separate explicitly:
 
-- VNA/measurement setup до ~6 GHz;
-- 2 одинаковые направленные антенны около 5 GHz;
-- общая жёсткая база TX/RX;
-- диэлектрическая стойка;
-- distance `2.5–3.0 m`;
-- 2-port calibration;
-- complex `S21/.s2p`;
-- BACKGROUND;
-- HOLDER;
-- REFERENCE;
-- BASELINE;
-- LENS_NO_REFLECTOR;
-- LENS+REFLECTOR;
-- минимум 3 repeat ключевых measurements.
-
-## Этап 7. Сопоставление experiment vs Meep
-
-Сравнить:
-
-- focus;
-- relative RCS/backscatter gain;
-- angular response;
-- frequency response around 5 GHz;
-- repeatability;
-- discrepancy model vs experiment.
-
-M9 считается подтверждённым только после сравнения с физикой.
-
-## Этап 8. Масштабирование на 24 GHz
-
-После 5-GHz validation:
-
-`k = 5/24 = 0.2083333`.
-
-Все линейные размеры:
-
-`L_24 = L_5 * 5/24`.
-
-Итого:
-
-- `D_24 = 50.0 mm`;
-- `R_24 = 25.0 mm`;
-- `a_24 = 1.5625 mm`.
-
-В M10 выполнить 24-GHz Meep prediction с:
-
-- scaled geometry;
-- material-dispersion sensitivity;
-- tan(delta) sensitivity;
-- technological-resolution sensitivity.
-
-Не заявлять, что 24-GHz конструкция физически измерена.
-
-## Этап 9. Пакет для защиты
-
-Должно быть:
-
-1. theory + ideal Luneburg;
-2. material characterization;
-3. measured gyroid calibration;
-4. 5-GHz physical experiment;
-5. Meep reproduction of 5-GHz trend;
-6. scaling proof `5 ->24 GHz`;
-7. Ø50-mm 24-GHz calculation;
-8. explicit limitations: dispersion, printability, scaled feature size;
-9. фотофиксация и raw data.
-
-## R&D, не тормозящий MVP
-
-- PLA Aero / LW-PLA;
-- Orca continuous FDM;
-- TiO2/SrTiO3 filled resin;
-- non-planar/multi-axis FDM;
-- volumetric photopolymerization.
+- what was physically measured @5 GHz;
+- what was validated numerically;
+- what is predicted @24 GHz;
+- what remains uncertain because of dispersion/manufacturing resolution.
