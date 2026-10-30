@@ -35,10 +35,11 @@ def test_input_template_contains_current_canonical_sizes():
 
 def test_scaling_document_contains_current_pair():
     text = read("docs/10_SCALING_5_TO_24.md")
-    assert "D_5=120 mm" in text
-    assert "D_24=25.0 mm" in text
-    assert "R_5=60 mm" in text
-    assert "R_24=12.5 mm" in text
+    assert "D_test=120 mm" in text
+    assert "R_test=60 mm" in text
+    assert "| D | 120 mm | 25.0 mm |" in text
+    assert "| R | 60 mm | 12.5 mm |" in text
+    assert "5/24" in text
 
 
 def test_next_actions_links_required_gates():
