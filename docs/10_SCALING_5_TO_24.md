@@ -1,112 +1,105 @@
 # Каноническое масштабирование: 5 ГГц эксперимент -> 24 ГГц расчёт
 
-Дата: 2026-10-30
+Дата: 2026-10-31
 
-Этот файл фиксирует единственную актуальную масштабную схему проекта.
+## 1. Physical V1
 
-## 1. Что физически измеряется
+Current physical candidate:
 
-Лабораторный демонстратор:
+- `f_test=5.0 GHz`;
+- `D_test=120 mm`;
+- `R_test=60 mm`;
+- `a_test=7.5 mm`;
+- `lambda0≈59.96 mm`;
+- `D/lambda0≈2.00`.
 
-- `f_test = 5.0 GHz`;
-- `D_test = 240 mm`;
-- `R_test = 120 mm`;
-- nominal gyroid period `a_test = 7.5 mm`;
-- измерительный тракт работает до ~6 ГГц;
-- физическая верификация выполняется около 5 ГГц.
+Ø120 должен пройти diameter gate в Meep до full print.
 
-Это НЕ конечная конструкция по габариту. Это масштабный лабораторный образец для проверки физики, модели Meep и методики измерения.
+## 2. Strict frequency scaling
 
-## 2. Что показывается эксперту на 24 ГГц
+`k=f_test/f_final=5/24=0.2083333333`.
 
-Расчётная конечная версия получается строгим геометрическим масштабированием 5-ГГц конструкции:
+Все линейные размеры:
 
-`scale = f_test / f_final = 5 / 24 = 0.2083333333`.
+`L_24=L_5*(5/24)`.
 
-Все линейные размеры умножаются на `5/24`, то есть уменьшаются в `4.8 раза`.
+Для current V1:
 
-Базовые размеры:
-
-| параметр | 5 ГГц физический образец | 24 ГГц расчётный образец |
+| parameter | 5 GHz physical | 24 GHz strict-scaled |
 |---|---:|---:|
-| частота | 5.0 GHz | 24.0 GHz |
-| диаметр D | 240 mm | 50.0 mm |
-| радиус R | 120 mm | 25.0 mm |
-| gyroid period a | 7.5 mm | 1.5625 mm |
-| любой линейный размер L | `L_5` | `L_5 * 5/24` |
+| f | 5.0 GHz | 24.0 GHz |
+| D | 120 mm | 25.0 mm |
+| R | 60 mm | 12.5 mm |
+| gyroid a | 7.5 mm | 1.5625 mm |
 
-Таким образом конечная расчётная конструкция автоматически удовлетворяет ограничению эксперта `D <= 80 mm`.
-
-## 3. Что сохраняется при идеальном электромагнитном подобии
-
-При одинаковых относительных свойствах материала и одинаковой нормированной геометрии сохраняются:
+## 3. Что сохраняется при ideal similarity
 
 - `D/lambda`;
 - `a/lambda`;
 - `r/R`;
-- профиль `epsilon(r/R)`;
-- нормированная геометрия reflector;
-- угловая форма диаграммы в идеальном случае;
-- относительный коэффициент `K_sigma` для геометрически подобных baseline/test конфигураций.
-
-Идеальный профиль остаётся:
-
-`epsilon_target(r) = 2 - (r/R)^2`.
+- ideal `epsilon(r/R)`;
+- normalized reflector geometry;
+- normalized angular behavior в идеальном случае.
 
 ## 4. Что НЕ переносится автоматически
 
-Нельзя без проверки переносить с 5 ГГц на 24 ГГц:
-
-- `epsilon_r` материала;
-- `tan(delta)`;
-- абсолютную ЭПР в `m^2`;
-- влияние шероховатости;
-- минимальную толщину печатаемой стенки;
+- `epsilon_r(f)`;
+- `tan_delta(f)`;
+- roughness;
+- minimum printable wall;
 - cure blur;
-- швы и технологические зазоры.
+- seam/gap;
+- actual manufactured geometry.
 
-Для 24 ГГц требуется отдельный Meep-run с 24-ГГц material assumptions/sensitivity.
+Поэтому M10 @24 GHz = prediction/sensitivity, не physical validation.
 
-Если собственных данных DE-10 на 24 ГГц нет, результат маркировать как **prediction/sensitivity**, а не как физически измеренный факт.
+## 5. RCS and mass scaling
 
-## 5. Масштабирование ЭПР и массы
+`k=5/24`.
 
-Линейный масштаб:
+Approximate absolute RCS scaling under strict similarity:
 
-`k = 5/24 = 0.2083333`.
+`sigma_24/sigma_5≈k²≈1/23.04`.
 
-При строгом подобии абсолютная ЭПР масштабируется приблизительно как площадь:
+Volume/mass geometric scaling:
 
-`sigma_24 / sigma_5 ~= k^2 = 1/23.04`.
+`m_24/m_5≈k³≈1/110.592`.
 
-Масса при той же плотности и той же относительной volume fraction масштабируется как объём:
+Relative metric `K_sigma` may approximately preserve for geometrically similar baseline/test cases if material similarity holds.
 
-`m_24 / m_5 ~= k^3 = 1/110.592`.
+## 6. Current material balance @5 GHz
 
-Главная проектная метрика остаётся относительной:
+For Ø120 sphere:
 
-`K_sigma = sigma_test / sigma_baseline`.
+- envelope volume `≈904.78 cm³`;
+- provisional Bruggeman volume-average rho `≈0.358`;
+- cured resin estimate `≈356 g` at `rho_solid=1.1 g/cm³` without clamp;
+- `≈366 g` with provisional `rho_min=0.12`.
 
-Цель:
+Exact value must be recalculated after T2/T3/T4.
 
-`K_sigma >= 10`, то есть `Delta_sigma_dB >= +10 dB`.
+## 7. Diameter gate
 
-## 6. Важное технологическое следствие
+Because `D≈2 lambda0`, full Ø120 print is allowed only after comparison against larger references:
 
-Геометрическое масштабирование `a=7.5 -> 1.5625 mm` также уменьшает толщины sheet-gyroid в 4.8 раза.
+`D=120 / 150 / 180 / 240 mm`.
 
-Поэтому 24-ГГц расчётная модель может быть электромагнитно подобной, но её физическая печатаемость НЕ считается автоматически доказанной 5-ГГц экспериментом.
+Compare:
 
-Для защиты формулировка должна быть такой:
+- peak `K_sigma`;
+- `Delta_sigma_dB`;
+- focus position;
+- spot width;
+- angular response.
 
-> Физическая верификация выполнена на геометрически подобном демонстраторе Ø240 мм при 5 ГГц. После сопоставления эксперимента с Meep все линейные размеры масштабированы в 4.8 раза, и рассчитана электромагнитно подобная конструкция Ø50 мм при 24 ГГц. Влияние дисперсии материала и технологической разрешающей способности для 24 ГГц учитывается отдельно как ограничение/чувствительность.
+If Ø120 does not meet the RF objective with margin, use the smallest passing diameter instead.
 
-## 7. Что больше НЕ является актуальным маршрутом
+## 8. Defense wording
 
-Старая цепочка
+> Физическая верификация выполняется на 5-GHz demonstrator. Current V1 diameter is 120 mm, selected for material and experimental feasibility. After experiment-vs-Meep validation the geometry is scaled by 5/24; the strict-scaled 24-GHz reference has D=25 mm. Material dispersion and manufacturability at 24 GHz are treated separately.
 
-`Ø240 @5 GHz -> Ø80 @15 GHz -> отдельный Ø80 @24 GHz`
+## 9. Superseded sizes
 
-снята с основного маршрута.
-
-15 ГГц можно оставить только как необязательную промежуточную исследовательскую точку, но не как главную конечную масштабную пару и не как результат для защиты.
+- `Ø240 @5 -> Ø50 @24` is historical/reference after D-025;
+- `Ø240 @5 -> Ø80 @15` is superseded;
+- current working pair is `Ø120 @5 -> Ø25 @24`, subject to diameter GO before full print.
