@@ -6,7 +6,7 @@ Geometry:
     G = sin(kx)cos(ky) + sin(ky)cos(kz) + sin(kz)cos(kx)
 
 The threshold h is obtained from the same numerical H(h)=rho calibration
-used by continuous_luneburg_gyroid.py.  The coupon box should preferably
+used by continuous_luneburg_gyroid.py. The coupon box should preferably
 contain an integer number of gyroid periods in X/Y/Z.
 
 Default T3 coupon:
@@ -62,12 +62,22 @@ def gyroid_value(x, y, z, cell_mm: float):
     )
 
 
-def axis_for_length(length_mm: float, voxel_mm: float) -> np.ndarray:
+def padded_axis_for_length(length_mm: float, voxel_mm: float) -> np.ndarray:
+    """Return an axis with one sample outside each clipping-box face.
+
+    The interior box is sampled with n cells and exact endpoints +/-L/2.
+    The outside samples let marching cubes close the clipped surface instead
+    of terminating at the array boundary.
+    """
+    if length_mm <= 0 or voxel_mm <= 0:
+        raise ValueError("length and voxel must be positive")
     n = int(round(length_mm / voxel_mm))
     if n < 2:
         raise ValueError("voxel too large for coupon size")
-    # n cells -> n+1 samples; exact box limits are preserved.
-    return np.linspace(-length_mm / 2.0, length_mm / 2.0, n + 1, dtype=np.float32)
+    spacing = length_mm / n
+    start = -length_mm / 2.0 - spacing
+    stop = length_mm / 2.0 + spacing
+    return np.linspace(start, stop, n + 3, dtype=np.float32)
 
 
 def build_field(
@@ -78,9 +88,9 @@ def build_field(
     h: float,
     voxel_mm: float,
 ):
-    ax = axis_for_length(size_x, voxel_mm)
-    ay = axis_for_length(size_y, voxel_mm)
-    az = axis_for_length(size_z, voxel_mm)
+    ax = padded_axis_for_length(size_x, voxel_mm)
+    ay = padded_axis_for_length(size_y, voxel_mm)
+    az = padded_axis_for_length(size_z, voxel_mm)
 
     x = ax[:, None, None]
     y = ay[None, :, None]
@@ -89,13 +99,18 @@ def build_field(
     G = gyroid_value(x, y, z, cell_mm).astype(np.float32, copy=False)
     gyroid_field = h - np.abs(G)
 
-    # Clip the implicit solid to the exact rectangular coupon envelope.
-    box_field = np.minimum.reduce([
+    # Pairwise np.minimum broadcasts these differently-shaped arrays.
+    # np.minimum.reduce([...]) does not and raises ValueError.
+    box_field = np.minimum(
         size_x / 2.0 - np.abs(x),
         size_y / 2.0 - np.abs(y),
+    )
+    box_field = np.minimum(
+        box_field,
         size_z / 2.0 - np.abs(z),
-    ])
-    field = np.minimum(gyroid_field, box_field.astype(np.float32, copy=False))
+    ).astype(np.float32, copy=False)
+
+    field = np.minimum(gyroid_field, box_field)
 
     origin = np.array([ax[0], ay[0], az[0]], dtype=np.float64)
     spacing = (
@@ -165,7 +180,10 @@ def generate_one(
         "size_x_mm": size_x,
         "size_y_mm": size_y,
         "size_z_mm": size_z,
-        "voxel_mm": voxel_mm,
+        "voxel_requested_mm": voxel_mm,
+        "spacing_x_mm": spacing[0],
+        "spacing_y_mm": spacing[1],
+        "spacing_z_mm": spacing[2],
         "envelope_mm3": envelope_mm3,
         "mesh_volume_mm3": mesh_volume_mm3,
         "rho_mesh": rho_mesh,
@@ -201,7 +219,7 @@ def main():
         "--voxel",
         type=float,
         default=0.075,
-        help="marching-cubes grid spacing in mm; use 0.05 for rho<=0.15 if RAM permits",
+        help="requested marching-cubes spacing in mm; use 0.05 for low rho if RAM permits",
     )
     p.add_argument("--gyroid-samples", type=int, default=96)
     p.add_argument("--solid-density", type=float, default=None, help="g/cm^3")
@@ -211,6 +229,10 @@ def main():
     rhos = parse_rhos(args.rho)
     if not rhos:
         raise ValueError("no rho values supplied")
+
+    for rho in rhos:
+        if not (0.0 < rho < 1.0):
+            raise ValueError(f"rho={rho} must be between 0 and 1")
 
     for length, label in [
         (args.size_x, "size-x"),
