@@ -1,42 +1,63 @@
-# Расчёты TEST_LENS_5G_V1
+# Расчёты TEST_LENS_5G_V1 -> FINAL_LENS_24G
 
-## 1. Масштабная модель
-
-Физический прототип:
+## 1. Физический demonstrator @5 GHz
 
 - `f = 5.0 GHz`;
 - `D = 240 mm`;
 - `R = 120 mm`;
-- `lambda0 ≈ 60 mm`;
-- `D/lambda ≈ 4.0`.
+- `lambda0 = c/f ≈ 59.96 mm`;
+- `D/lambda0 ≈ 4.00`;
+- nominal gyroid period `a = 7.5 mm`.
 
-Конечная подобная конструкция при масштабе 1:3:
+В центре ideal Luneburg:
 
-- `D = 80 mm`;
-- `f = 15 GHz`;
-- `lambda0 ≈ 20 mm`;
-- `D/lambda ≈ 4.0`.
+`epsilon=2`;
 
-Это основной экспериментальный scaling-pair.
+`lambda_center = lambda0/sqrt(2) ≈ 42.40 mm`.
 
-Дополнительно конечная Ø80-мм конструкция рассчитывается на 24 ГГц как отдельная точка диапазона проекта, но прямой масштабной парой 5 ГГц она не является.
+Для nominal cell:
 
-## 2. Идеальный профиль
+- `a/lambda0 ≈ 0.1251`;
+- `a/lambda_center ≈ 0.1769`.
 
-`epsilon_r(r) = 2 - (r/R)^2`
+## 2. Строго подобная 24-GHz версия
 
-Для `R = 120 mm`:
+Scale:
 
-- центр: `epsilon_r = 2`;
-- поверхность: `epsilon_r = 1`.
+`k = f_5/f_24 = 5/24 = 0.2083333333`.
 
-## 3. 11 равных радиальных зон
+Все линейные размеры:
 
-`dr = 120 / 11 = 10.909 mm`.
+`L_24 = L_5 * k`.
 
-Значение каждой зоны берётся в её среднем радиусе.
+Получаем:
 
-| zone | r_start, мм | r_end, мм | r_mid, мм | epsilon_r target |
+- `f_24 = 24.0 GHz`;
+- `lambda0_24 ≈ 12.491 mm`;
+- `D_24 = 50.000 mm`;
+- `R_24 = 25.000 mm`;
+- `a_24 = 1.5625 mm`;
+- `D/lambda0 ≈ 4.00`;
+- `a/lambda0 ≈ 0.1251`.
+
+Это текущая финальная расчётная версия для защиты.
+
+## 3. Идеальный профиль
+
+`epsilon_r(r)=2-(r/R)^2`.
+
+Профиль зависит от `r/R`, поэтому одинаков для 5- и 24-GHz геометрически подобных версий при одинаковой material law.
+
+Для 5-GHz `R=120 mm`:
+
+- center: `epsilon_r=2`;
+- surface: `epsilon_r=1`.
+
+## 4. 11-zone benchmark @5 GHz
+
+`dr = 120/11 = 10.90909 mm`.
+
+| zone | r_start mm | r_end mm | r_mid mm | epsilon_target |
 |---:|---:|---:|---:|---:|
 | 1 | 0.00 | 10.91 | 5.45 | 1.998 |
 | 2 | 10.91 | 21.82 | 16.36 | 1.981 |
@@ -50,100 +71,115 @@
 | 10 | 98.18 | 109.09 | 103.64 | 1.254 |
 | 11 | 109.09 | 120.00 | 114.55 | 1.089 |
 
-Эти значения — целевые `epsilon_eff`, а не проценты infill.
+11-zone — benchmark, не финальная geometry.
 
-## 4. Предварительная оценка fill fraction
+## 5. Provisional DE-10 / Bruggeman
 
-Только как стартовая оценка при условном `epsilon_solid = 2.5`:
+Manufacturer mean @10 GHz:
 
-`f_fill ≈ (epsilon_target - 1)/(epsilon_solid - 1)`.
+`epsilon_solid = 2.30318`.
 
-Ориентировочно:
+До T4 используем symmetric Bruggeman только как preliminary law.
 
-| zone | epsilon target | fill fraction |
-|---:|---:|---:|
-| 1 | 1.998 | 66.5% |
-| 2 | 1.981 | 65.4% |
-| 3 | 1.948 | 63.2% |
-| 4 | 1.899 | 59.9% |
-| 5 | 1.833 | 55.5% |
-| 6 | 1.750 | 50.0% |
-| 7 | 1.651 | 43.4% |
-| 8 | 1.535 | 35.7% |
-| 9 | 1.403 | 26.9% |
-| 10 | 1.254 | 16.9% |
-| 11 | 1.089 | 5.9% |
+Для center target `epsilon_eff=2`:
 
-Не использовать эти проценты как финальный slicer profile без проверки реального `epsilon_eff` и влияния периметров/lattice geometry.
+`rho_center ≈ 0.806`.
 
-## 5. Сравнение числа зон
+После T4 этот mapping заменить measured `rho -> epsilon_eff`.
 
-До печати сравнить в Meep:
+Не использовать старую линейную формулу `fill=(epsilon-1)/(epsilon_solid-1)` как primary design law.
 
-- continuous ideal;
-- 6-zone;
-- 8-zone;
-- 11-zone;
-- printable lattice geometry.
+## 6. Nominal gyroid period
 
-Главные выходы:
+Current nominal @5 GHz:
 
-- focus position;
-- focal spot size;
-- monostatic/backscatter response;
-- angular response;
-- sensitivity to material loss.
+`a=7.5 mm`.
 
-## 6. Отражатель
+Research sensitivity:
 
-Для full-sphere варианта выполнить sweep металлического cap по полууглу, например:
+`a=5 / 7.5 / 10 mm`.
+
+При ideal scaling на 24 GHz:
+
+| a @5 GHz | a @24 GHz |
+|---:|---:|
+| 5.0 mm | 1.04167 mm |
+| 7.5 mm | 1.56250 mm |
+| 10.0 mm | 2.08333 mm |
+
+Технологичность этих scaled feature sizes должна оцениваться отдельно.
+
+## 7. Reflector sweep
+
+Для full sphere:
 
 `alpha = 15°, 30°, 45°, 60°, 90°`.
 
-Не фиксировать отражатель только по геометрическому положению фокуса.
+После выбора лучшего cap сравнить с hemisphere + PEC ground plane.
 
-Для hemisphere-варианта выполнить sweep размера ground plane относительно диаметра полусферы.
+Reflector dimensions для M10 масштабируются `×5/24` как ideal baseline.
 
-## 7. Размер lattice
+## 8. Far field @5 GHz
 
-Для 5 ГГц `lambda0 ≈ 60 mm`.
+`D=0.24 m`;
 
-Стартовый characteristic cell:
+`lambda≈0.05996 m`.
 
-`a ≈ 8–12 mm`, номинально `~10 mm`.
+`R_ff ≈ 2D²/lambda ≈ 1.92 m`.
 
-При геометрическом масштабировании 1:3 это соответствует примерно `2.7–4.0 mm`, номинально `~3.3 mm`, для Ø80-мм модели на 15 ГГц.
+Стартовая measurement distance:
 
-## 8. Дальняя зона физического стенда
+`2.5–3.0 m`.
 
-Для `D = 0.24 m` и `lambda = 0.06 m`:
+## 9. Критерий проекта
 
-`R_ff ≈ 2D^2/lambda ≈ 1.92 m`.
+`K_sigma = sigma_test/sigma_baseline`.
 
-Поэтому рабочую дистанцию физического стенда брать не менее ~2 м; практический старт — **2.5–3 m**.
+Target:
 
-## 9. Критерий ×10
+`K_sigma>=10`.
 
-`K_sigma = sigma_test / sigma_baseline`.
+`Delta_sigma_dB=10*log10(K_sigma)>=+10 dB`.
 
-Цель:
+## 10. Scaling абсолютной ЭПР
 
-`K_sigma >= 10`.
+При строгом electromagnetic similarity:
 
-В dB:
+`k=5/24`.
 
-`Delta_sigma_dB >= +10 dB`.
+Абсолютная RCS approximately scales as area:
 
-Baseline должен быть отдельно определён и не подменяться калибровочной металлической мишенью.
+`sigma_24/sigma_5 ≈ k²`.
 
-## 10. Масштабирование ЭПР
+`k² = 25/576 ≈0.0434028`.
 
-При строгом электромагнитном подобии нормированные характеристики сохраняются, но абсолютная ЭПР в квадратных метрах масштабируется с квадратом линейного размера.
+То есть:
 
-Для масштаба 3:1:
+`sigma_24 ≈ sigma_5 / 23.04`.
 
-`sigma_80mm ≈ sigma_240mm / 9`,
+Это относится к абсолютной ЭПР геометрически подобных объектов при идеальных material assumptions. `K_sigma` как относительная метрика может приблизительно сохраняться для подобных baseline/test configurations.
 
-если материал и все нормированные параметры действительно подобны.
+## 11. Scaling массы
 
-При этом относительный коэффициент `K_sigma` для геометрически подобных baseline/test конфигураций должен сохраняться приблизительно одинаковым.
+При одинаковой material density и относительной volume fraction:
+
+`m_24/m_5 ≈ k³`.
+
+`k³ = 125/13824 ≈0.00904225`.
+
+`m_24 ≈ m_5 /110.592`.
+
+Это геометрическая оценка, не гарантия реальной массы после изменения minimum feature/process.
+
+## 12. Что нельзя переносить автоматически 5 ->24 GHz
+
+- `epsilon_r(f)`;
+- `tan_delta(f)`;
+- surface roughness;
+- cure blur;
+- minimum wall;
+- seam;
+- process errors;
+- absolute RCS without scaling law and material similarity.
+
+Поэтому M10 должен содержать material-dispersion/loss/manufacturability sensitivity.
