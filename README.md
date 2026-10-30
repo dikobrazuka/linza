@@ -82,7 +82,9 @@ Preliminary Bruggeman при `epsilon_solid=2.30318`:
 
 После T2/T3/T4 пересчитывать через:
 
-`python tools/material_budget.py`.
+```bash
+python tools/material_budget.py
+```
 
 ## Текущий маршрут
 
@@ -133,6 +135,39 @@ Preliminary Bruggeman при `epsilon_solid=2.30318`:
 - `tools/uniform_sheet_gyroid_coupon.py` — T3 uniform coupons;
 - `tools/material_budget.py` — resin mass/material gate.
 
+## Meep / diameter gate
+
+Meep ставится отдельно в его рабочее окружение. Обычный CI его не устанавливает.
+
+Один ideal continuous run:
+
+```bash
+python simulation/run_ideal_luneburg_rcs.py \
+  --diameter-mm 120 \
+  --frequency-ghz 5 \
+  --pixels-per-lambda 16
+```
+
+Полный DG-A sweep:
+
+```bash
+python simulation/run_diameter_gate.py \
+  --diameters 120 150 180 240 \
+  --ppl 12 16 20
+```
+
+Сначала посмотреть команды без запуска:
+
+```bash
+python simulation/run_diameter_gate.py --dry-run
+```
+
+Runner использует официальный Meep scattered-field workflow:
+
+`empty normalization -> incident near2far -> load_minus_near2far_data -> far field -> RCS`.
+
+DG-A — только **ideal lossless Luneburg**. Он не заменяет M9 и не доказывает проектный `+10 dB` относительно formal baseline.
+
 ## Quality gates
 
 Regression tests:
@@ -151,7 +186,8 @@ Tests cover:
 - full Luneburg epsilon range mapping;
 - gyroid coupon box clipping/watertight mesh;
 - material budget reference values;
-- canonical project dimensions across code/docs.
+- canonical project dimensions across code/docs;
+- ideal Luneburg profile math.
 
 ## Главное правило
 
