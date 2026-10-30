@@ -1,0 +1,69 @@
+project: TEST_LENS_5G_DIAMETER_GATE
+frequency_ghz: 5.0
+lambda0_mm: 59.9584916
+nominal_gyroid_cell_mm: 7.5
+material_model: HARZ_DE10_PROVISIONAL_BRUGGEMAN
+material:
+  epsilon_solid: 2.30318
+  tan_delta: 0.0024227
+  measured_at_ghz: 10.0
+  solid_density_g_cm3_provisional: 1.10
+  rho_min_provisional: 0.0
+  rho_max_provisional: 1.0
+  replace_after_t1_t2_t3_t4: true
+material_budget:
+  purchased_resin_g: 1000.0
+  reserve_for_T1_T4_and_process_losses_g: 250.0
+  usable_for_full_lens_g: 750.0
+candidates:
+  - diameter_mm: 120.0
+    radius_mm: 60.0
+    D_over_lambda: 2.001
+    strict_scaled_D_24GHz_mm: 25.0
+    provisional_cured_mass_g: 356.5
+  - diameter_mm: 150.0
+    radius_mm: 75.0
+    D_over_lambda: 2.502
+    strict_scaled_D_24GHz_mm: 31.25
+    provisional_cured_mass_g: 696.3
+  - diameter_mm: 180.0
+    radius_mm: 90.0
+    D_over_lambda: 3.002
+    strict_scaled_D_24GHz_mm: 37.5
+    provisional_cured_mass_g: 1203.1
+  - diameter_mm: 240.0
+    radius_mm: 120.0
+    D_over_lambda: 4.003
+    strict_scaled_D_24GHz_mm: 50.0
+    provisional_cured_mass_g: 2851.9
+simulation:
+  common_profile: luneburg_continuous
+  epsilon_target: "2-(r/R)^2"
+  compare_same:
+    - material_law
+    - loss
+    - normalized_reflector_geometry
+    - polarization
+    - incidence_angle
+    - numerical_resolution_per_wavelength
+  outputs:
+    - focus_position_over_R
+    - spot_size_over_lambda
+    - K_sigma_peak
+    - delta_sigma_dB_peak
+    - angular_width_above_target_deg
+    - frequency_response
+    - convergence_error_db
+gates:
+  numerical_convergence:
+    max_delta_sigma_change_db: 0.5
+    max_focus_position_change_fraction_R: 0.01
+  project_effect:
+    target_delta_sigma_dB: 10.0
+  material:
+    estimated_cured_mass_must_be_le_usable_resin: true
+selection_rule: >-
+  Choose the smallest diameter that passes numerical convergence, preserves the
+  required RF effect with adequate margin, and fits the updated measured material
+  budget. Current preferred candidate is 120 mm, but it is not locked until this
+  gate is run.
