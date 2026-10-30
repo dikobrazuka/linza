@@ -2,95 +2,85 @@
 
 ## Задача
 
-Команда разрабатывает компактную пассивную GRIN/Luneburg-структуру для увеличения обратного радиолокационного рассеяния/ЭПР БПЛА.
+Компактная пассивная GRIN/Luneburg-структура для увеличения обратного радиолокационного рассеяния/ЭПР.
 
-## Ограничения эксперта
+## Ограничения конечной конструкции
 
-Для **конечной конструкции**:
+- final design `<=80 mm`;
+- final mass `<=300 g`;
+- target calculation frequency `24 GHz`;
+- project objective `K_sigma>=10`;
+- physical experiment + reproducible methodology;
+- Meep as primary full-wave solver.
 
-- габарит `<=80 mm`;
-- масса `<=300 g`;
-- требуется увеличение обратного рассеяния/ЭПР ориентировочно `>=10x`;
-- основное моделирование вести в **Meep**;
-- нужен физический эксперимент, фотофиксация и воспроизводимая методика.
+## Physical validation
 
-Важно: ограничение `<=80 mm` не относится к лабораторному масштабному 5-GHz демонстратору.
+Available measurement setup works to about 6 GHz, therefore physical validation is at 5 GHz.
 
-## Каноническая экспериментальная схема
+Current physical V1:
 
-Доступный измерительный тракт работает примерно до `6 GHz`, поэтому физическая проверка выполняется на:
-
+- `D=120 mm`;
+- `R=60 mm`;
 - `f=5.0 GHz`;
-- `D=240 mm`;
-- `R=120 mm`.
+- `a=7.5 mm`;
+- `D/lambda0≈2.0`.
 
-Это `TEST_LENS_5G_V1` — масштабный лабораторный демонстратор.
+Ø240 is no longer current V1; it is retained only as an electrical-size comparison/reference.
 
-После сопоставления Meep и эксперимента все линейные размеры масштабируются:
+## 24-GHz strict scaling
 
-`k = 5/24 = 0.2083333`.
+`k=5/24`.
 
-Расчётная версия для защиты:
+Current strict-scaled reference:
 
-- `f=24 GHz`;
-- `D=50 mm`;
-- `R=25 mm`;
-- nominal gyroid period `a=1.5625 mm` при `a=7.5 mm` в 5-GHz модели.
+- `D=25 mm`;
+- `R=12.5 mm`;
+- `a=1.5625 mm`.
 
-Старая пара `Ø240 @5 GHz -> Ø80 @15 GHz` больше не является основной.
+24-GHz result is prediction, not direct measurement.
 
-## Основная физика
+## Manufacturing route
 
-Идеальный профиль классической Luneburg lens:
+Primary:
 
-`epsilon_r(r)=2-(r/R)^2`.
+`HARZ DE-10 -> continuous radial sheet-gyroid -> MSLA/DLP`.
 
-Рабочая метрика:
+Pipeline:
 
-`K_sigma = sigma_test/sigma_baseline`.
+`epsilon_target(r) -> rho(r) -> h(r) -> geometry`.
 
-Цель:
+FDM/LW-PLA/fillers are R&D branches.
 
-`K_sigma>=10`, то есть `Delta_sigma_dB>=+10 dB`.
+## Material feasibility
 
-## Основной manufacturing route
+For Ø120 provisional Bruggeman:
 
-Текущий MVP:
+- sphere envelope ≈904.78 cm³;
+- average rho≈0.358;
+- cured resin ≈356 g unclamped or ≈366 g with provisional rho_min=0.12 at density 1.1 g/cm³.
 
-**photopolymer + continuous radial sheet-gyroid / TPMS**.
+Exact mass is recalculated after T2/T3/T4.
 
-Основная цепочка:
+## RF feasibility gate
 
-`epsilon_target(r) -> rho(r) -> h(r) -> sheet-gyroid geometry`.
+Because Ø120 is only about 2 wavelengths across, full print is allowed only after Meep comparison against larger diameters. Current comparison set:
 
-6/8/11-zone конструкции остаются benchmark/fallback, а не финальным target.
+`120 / 150 / 180 / 240 mm`.
 
-FDM / PLA Aero / LW-PLA — R&D branches.
+Choose the smallest diameter that still passes the RF objective with margin.
 
-## Материал
+## Workflow
 
-Primary candidate: **HARZ Labs DE-10**.
-
-Manufacturer data @10 GHz:
-
-- mean `epsilon_r=2.30318`;
-- mean `tan(delta)=0.0024227`;
-- 405 nm compatible.
-
-Собственные 5-GHz measurements обязательны до финальной физической модели.
-
-## Замкнутый цикл проекта
-
-1. измерить solid DE-10 около 5 GHz;
-2. измерить cured density/shrinkage;
-3. определить печатаемый диапазон gyroid;
-4. получить measured `epsilon_eff(rho,f)`;
-5. закрыть Meep ladder M0-M9 на 5 GHz;
-6. напечатать и измерить Ø240 @5 GHz;
-7. сопоставить model vs experiment;
-8. масштабировать geometry `×5/24`;
-9. рассчитать Ø50 @24 GHz;
-10. отдельно оценить dispersion и manufacturability 24-GHz версии;
-11. оформить measured 5-GHz evidence + validated model + 24-GHz prediction для защиты.
-
-Подробное scaling rule: `docs/10_SCALING_5_TO_24.md`.
+1. T1 solid DE-10.
+2. T2 density/shrinkage.
+3. T3 gyroid printability/rho_actual.
+4. T4 epsilon_eff(rho,f).
+5. M0-M8.
+6. Diameter gate.
+7. M9 current passing physical diameter.
+8. Material-budget gate.
+9. Tech segment.
+10. Full physical print.
+11. 5-GHz experiment.
+12. Meep validation.
+13. M10 strict 5/24 scaling.
