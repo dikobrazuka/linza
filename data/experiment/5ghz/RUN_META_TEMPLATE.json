@@ -1,0 +1,87 @@
+{
+  "run_id": "YYYYMMDD_RUNXX",
+  "project": "TEST_LENS_5G_V1",
+  "operator": "",
+  "date_local": "",
+  "location": "",
+  "environment": {
+    "temperature_c": null,
+    "humidity_percent": null,
+    "notes": ""
+  },
+  "vna": {
+    "model": "",
+    "serial": "",
+    "firmware": "",
+    "calibration_type": "",
+    "calibration_reference_plane": "",
+    "frequency_start_hz": null,
+    "frequency_stop_hz": null,
+    "points": null,
+    "if_bandwidth_hz": null,
+    "source_power_dbm": null,
+    "averaging_count": null
+  },
+  "antennas": {
+    "tx_model": "",
+    "tx_serial": "",
+    "rx_model": "",
+    "rx_serial": "",
+    "polarization": "HH",
+    "tx_rx_separation_mm": null,
+    "antenna_height_mm": null
+  },
+  "geometry": {
+    "target_distance_tx_mm": null,
+    "target_distance_rx_mm": null,
+    "target_height_mm": null,
+    "target_rotation_axis": "",
+    "angle_deg": 0.0,
+    "holder_id": "",
+    "reference_target_id": "",
+    "baseline_definition": "REFLECTOR_ONLY",
+    "test_definition": "LENS_PLUS_REFLECTOR"
+  },
+  "lens": {
+    "lens_id": "",
+    "diameter_mm": 120.0,
+    "radius_mm": 60.0,
+    "material": "HARZ_DE10",
+    "gyroid_cell_mm": 7.5,
+    "reflector_id": "",
+    "reflector_cap_half_angle_deg": null,
+    "orientation_notes": ""
+  },
+  "files": {
+    "background": "BACKGROUND.s2p",
+    "background_repeat": "BACKGROUND_REPEAT.s2p",
+    "holder": "HOLDER.s2p",
+    "reference": "REFERENCE.s2p",
+    "reference_repeat": "REFERENCE_REPEAT.s2p",
+    "baseline": "BASELINE.s2p",
+    "lens_no_reflector": "LENS_NO_REFLECTOR.s2p",
+    "lens_reflector": "LENS_REFLECTOR.s2p",
+    "reference_rcs_csv": "REFERENCE_RCS.csv"
+  },
+  "processing": {
+    "background_subtraction": "COMPLEX",
+    "time_gate_enabled": false,
+    "gate_center_ns": null,
+    "gate_width_ns": null,
+    "gate_edge_fraction": 0.2,
+    "target_frequency_ghz": 5.0
+  },
+  "repeats": {
+    "placement_id": "P1",
+    "repeat_index": 1,
+    "notes": ""
+  },
+  "acceptance": {
+    "frequency_grid_match": null,
+    "reference_drift_checked": null,
+    "background_drift_checked": null,
+    "gate_sensitivity_checked": null,
+    "valid_for_relative_rcs": null,
+    "valid_for_absolute_rcs": null
+  }
+}
