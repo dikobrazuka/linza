@@ -8,6 +8,8 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    env:
+      PYTHONPATH: ${{ github.workspace }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -23,4 +25,4 @@ jobs:
           pip install numpy scikit-image trimesh pytest
 
       - name: Run tests
-        run: pytest -q
+        run: python -m pytest -q
