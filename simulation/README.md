@@ -1,150 +1,156 @@
 # Расчёты и моделирование — Meep
 
-Основной полно-волновой инструмент проекта — **Meep**.
+Основной full-wave инструмент проекта — **Meep**.
 
-Главный документ расчётной логики:
+Главный workflow:
 
-- `docs/07_CALCULATION_WORKFLOW.md` — фиксированный порядок моделей, входы, формулы, критерии PASS/FAIL.
+`docs/07_CALCULATION_WORKFLOW.md`.
 
-Главный файл входов:
+Canonical run template:
 
-- `simulation/INPUTS_TEMPLATE.yaml` — копировать для каждого расчёта в `simulation/configs/`.
+`simulation/INPUTS_TEMPLATE.yaml`.
 
-## Актуальный объект расчёта
+## 1. Физически валидируемый объект
 
 `TEST_LENS_5G_V1`:
 
-- `f = 5.0 GHz`;
-- `D = 240 mm`;
-- `R = 120 mm`;
-- `lambda0 ≈ 60 mm`;
-- physical scaling pair: `Ø80 mm @15 GHz`;
-- `Ø80 mm @24 GHz` — отдельная расчётная точка.
+- `f=5.0 GHz`;
+- `D=240 mm`;
+- `R=120 mm`;
+- `lambda0≈59.96 mm`;
+- nominal `a=7.5 mm`.
 
-Идеальный профиль:
+Физический setup работает примерно до 6 GHz.
 
-`epsilon_r(r)=2-(r/R)^2`.
+## 2. Финальный расчёт для защиты
 
-Основной manufacturing route MVP:
+После validation M9 vs physical experiment:
 
-**photopolymer + continuous radial sheet-gyroid / TPMS**.
+`k=5/24=0.2083333`.
 
-## Текущий материал-сценарий
+`FINAL_LENS_24G`:
 
-HARZ DE-10, предварительно по данным производителя @10 GHz:
+- `f=24.0 GHz`;
+- `D=50.0 mm`;
+- `R=25.0 mm`;
+- nominal `a=1.5625 mm`.
 
-- 11 измеренных образцов;
-- mean `epsilon_r ≈2.30318`;
-- sample SD `≈0.06218`;
+Это M10 prediction, не physical 24-GHz measurement.
+
+Старая main pair `Ø80 @15 GHz` отменена.
+
+## 3. Material scenario
+
+Primary material: HARZ DE-10.
+
+Manufacturer @10 GHz, 11 samples:
+
+- mean `epsilon_r=2.30318`;
 - range `2.187...2.384`;
-- mean `tan(delta)≈0.0024227`;
-- sample SD `≈0.0003436`;
-- range `0.00184...0.00310`;
-- 405 nm compatible по ответу производителя.
+- mean `tan(delta)=0.0024227`;
+- range `0.00184...0.00310`.
 
-Это **provisional material scenario** для sensitivity/calculation. До финальной 5-GHz модели нужна собственная characterization около 5 GHz.
+Until T1/T4 these are provisional sensitivity inputs only.
 
-## Не выбирать модель вручную
+Final 5-GHz M6-M9 must use own measured data.
 
-Считать строго по лестнице:
+M10 @24 GHz must include material-dispersion/loss sensitivity if direct 24-GHz DE-10 data are unavailable.
 
-1. `M0` — empty/background;
+## 4. Fixed model ladder
+
+1. `M0` — background;
 2. `M1` — numerical scattering reference;
 3. `M2` — homogeneous sphere control;
 4. `M3` — ideal continuous Luneburg, lossless;
-5. `M4` — ideal continuous + loss sensitivity;
-6. `M5` — 11-zone benchmark, плюс один раз 6/8-zone comparison;
+5. `M4` — loss sensitivity;
+6. `M5` — 11-zone benchmark + one 6/8-zone comparison;
 7. `M6` — homogenized manufacturable continuous GRIN;
-8. `M7` — explicit periodic gyroid unit cell/coupon;
-9. `M8` — reduced explicit gyroid validation;
-10. `M9` — whole lens + reflector;
-11. `M10` — Ø80 mm @15 GHz и затем отдельный Ø80 mm @24 GHz.
+8. `M7` — explicit periodic gyroid/coupon;
+9. `M8` — reduced explicit validation;
+10. `M9` — validated 5-GHz whole lens + reflector;
+11. `M10` — scaled Ø50-mm @24-GHz prediction.
 
-Подробности: `docs/07_CALCULATION_WORKFLOW.md`.
+## 5. Multi-scale rule
 
-## Multi-scale правило
+Do not start with full explicit Ø240-mm gyroid.
 
-Не начинать с полного explicit Ø240-mm gyroid.
+- **micro:** explicit unit-cell/coupon -> `epsilon_eff(rho)`, anisotropy, lattice scattering, loss;
+- **macro:** whole lens -> homogenized measured `epsilon_realized(r)`.
 
-Разделить расчёт:
+Full explicit whole lens is optional validation only if compute resources permit.
 
-- **micro scale:** explicit unit cell / coupon -> `epsilon_eff(rho)`, anisotropy, loss;
-- **macro scale:** whole lens -> homogenized measured `epsilon_realized(r)`.
+## 6. Gyroid
 
-Полный explicit gyroid нужен только как дополнительная валидация при достаточных ресурсах.
-
-## Gyroid
-
-Основная implicit geometry:
-
-`G = sin(kx)cos(ky)+sin(ky)cos(kz)+sin(kz)cos(kx)`
+`G=sin(kx)cos(ky)+sin(ky)cos(kz)+sin(kz)cos(kx)`.
 
 `k=2*pi/a`.
 
-Sheet solid:
+Sheet material:
 
 `|G|<=h(r)`.
 
-Цепочка:
+Pipeline:
 
 `epsilon_target(r) -> rho(r) -> h(r) -> geometry`.
 
-Текущий cell sweep:
+Nominal 5-GHz period:
 
-- `a=5 mm` — EM reference;
-- `a=7.5 mm` — current first prototype candidate;
-- `a=10 mm` — manufacturing-friendly upper comparison.
+`a=7.5 mm`.
 
-## Reflector
+Sensitivity only:
 
-Первый whole-lens sweep:
+`5 / 7.5 / 10 mm`.
+
+## 7. Reflector
+
+M9 first architecture:
 
 `full sphere + PEC cap`.
 
-Cap half-angle:
+Cap half-angle sweep:
 
-`15 / 30 / 45 / 60 / 90 deg`.
+`15/30/45/60/90 deg`.
 
-После выбора cap сравнить с:
+Then compare with:
 
 `hemisphere + PEC ground plane`.
 
-## Основные выходы
+## 8. Outputs per run
 
-Для каждой модели сохранять:
+Save:
 
-- focus position;
-- -3 dB / -6 dB spot size;
-- complex scattered response;
-- `K_sigma(theta)`;
-- `Delta_sigma_dB(theta)`;
-- material-loss sensitivity;
-- resolution convergence;
 - config YAML;
-- raw data;
-- `RESULT.md` с PASS/FAIL.
+- focus position;
+- -3/-6 dB spot size where relevant;
+- complex scattered response;
+- `K_sigma(f,theta)`;
+- `Delta_sigma_dB(f,theta)`;
+- loss sensitivity;
+- resolution convergence;
+- raw fields/data;
+- `RESULT.md`.
 
-Главная проектная метрика:
+Main metric:
 
-`K_sigma = sigma_test/sigma_baseline`.
+`K_sigma>=10` <=> `Delta_sigma_dB>=+10 dB`.
 
-Цель:
+## 9. Numerical convergence
 
-`K_sigma>=10`, то есть `Delta_sigma_dB>=+10 dB`.
+Current gate:
 
-## Численная сходимость
+- `Delta_sigma_dB` changes `<0.5 dB` after resolution increase;
+- focus position changes `<1% R`.
 
-Расчёт не считать закрытым без resolution sweep.
+## 10. M10 requirements
 
-Текущий проектный gate:
+M10 cannot be just a geometry scale command.
 
-- изменение `Delta_sigma_dB <0.5 dB` при дальнейшем повышении resolution;
-- изменение focus position `<1% R`.
+Run at least:
 
-## Файлы
+1. ideal scaled material assumption;
+2. epsilon dispersion sensitivity;
+3. tan(delta) sensitivity;
+4. min-feature/manufacturability sensitivity;
+5. seam sensitivity.
 
-- `CALCULATIONS.md` — базовые числа TEST_LENS_5G_V1 и зональные benchmark;
-- `CONTINUOUS_GYROID.md` — математика continuous sheet-gyroid;
-- `GYROID_CELL_SWEEP.md` — 5/7.5/10-mm comparison;
-- `INPUTS_TEMPLATE.yaml` — canonical run inputs;
-- `../docs/07_CALCULATION_WORKFLOW.md` — основной алгоритм расчёта.
+Every M10 result must be marked `CALCULATED_PREDICTION` unless physically tested at 24 GHz later.
