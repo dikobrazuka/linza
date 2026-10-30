@@ -1,0 +1,58 @@
+project: TEST_LENS_5G_V1
+run_id: CHANGE_ME
+
+frequency:
+  f_ghz: 5.0
+  sweep_ghz: [4.8, 5.0, 5.2]
+
+geometry:
+  diameter_mm: 240.0
+  radius_mm: 120.0
+  architecture: full_sphere_cap   # full_sphere_cap | hemisphere_ground_plane
+  gyroid_cell_mm: 7.5
+  rho_min: 0.12
+  rho_max: 0.90
+  hemisphere_split: true
+  seam_mm: null
+
+material:
+  name: HARZ_DE10_PROVISIONAL
+  epsilon_solid: 2.30318
+  tan_delta: 0.0024227
+  measured_at_ghz: 10.0
+  density_g_cm3: null
+  post_cure: UNKNOWN
+  source_note: "11 HARZ DE-10 samples, measured at 10 GHz; replace with our 5 GHz coupon data before final MVP"
+
+reflector:
+  type: PEC_cap
+  cap_half_angle_deg: 45.0
+  cap_sweep_deg: [15, 30, 45, 60, 90]
+  ground_plane_diameter_mm: null
+
+meep:
+  length_unit_mm: 1.0
+  resolution_px_per_mm: null
+  pml_mm: null
+  air_padding_mm: null
+  polarization: E_y
+  incidence_theta_deg: 0.0
+  angle_sweep_deg: [-60, -45, -30, -20, -10, 0, 10, 20, 30, 45, 60]
+  loss_model: dielectric_loss
+  convergence_delta_gain_db: 0.5
+  convergence_focus_fraction_R: 0.01
+
+experiment:
+  baseline_definition: TODO
+  distance_m: 2.5
+  vna: NanoVNA-F_V3
+  tx_antenna: TODO
+  rx_antenna: TODO
+  reference_target: TODO
+  holder: TODO
+
+outputs:
+  save_field_map: true
+  save_near_to_far: true
+  save_csv: true
+  save_result_md: true
