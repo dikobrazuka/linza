@@ -2,7 +2,7 @@
 
 Актуальное состояние проекта. Обновлять после каждого существенного изменения направления, даже если решение ещё не финальное.
 
-**Срез:** 2026-10-29
+**Срез:** 2026-10-30
 
 ## 1. Что мы делаем
 
@@ -36,144 +36,137 @@
 
 ## 3. Главный производственный приоритет на MVP
 
-**Основной путь сейчас: photopolymer + continuous radial sheet-gyroid / TPMS.**
+**Основной путь: photopolymer + continuous radial sheet-gyroid / TPMS.**
 
-Причина — не утверждение, что это окончательно лучший физический вариант, а минимизация времени до первого измеряемого MVP.
+PLA Aero / LW-PLA остаётся более сложной R&D-веткой и не должна задерживать первый измеряемый прототип.
 
-Для photopolymer route основные неопределённости сосредоточены в трёх шагах:
-
-1. достать низкопотерную RF-смолу;
-2. измерить/подтвердить её `epsilon_r` и `tan(delta)` на наших частотах;
-3. напечатать заранее рассчитанную continuous 3D-геометрию и испытать её.
-
-После этого можно быстро сравнить эксперимент с Meep и понять, работает ли сама концепция линзы/reflector.
-
-Текущий основной кандидат смолы: **Arkema N3D-DIELEC731**. Резервный: **Rogers Radix 2.8Dk**.
-
-Основная геометрия photopolymer-ветки:
+Основная геометрия:
 
 `epsilon_target(r) -> rho(r) -> h(r) -> sheet-gyroid implicit geometry`.
 
-Стартовый кандидат периода TPMS: `a = 7.5 mm`, при обязательном сравнении `5 / 7.5 / 10 mm`.
+Стартовый период TPMS:
 
-## 4. Ветки изготовления
+`a = 7.5 mm`, с обязательным сравнением `5 / 7.5 / 10 mm`.
+
+## 4. Текущий материал-кандидат MVP
+
+Новый сильный локальный кандидат — **HARZ Labs DE-10 / отдельный dielectric material**.
+
+Получены реальные данные производителя по 11 образцам на `10 GHz`:
+
+- mean `epsilon_r = 2.30318`;
+- sample SD `≈0.06218`;
+- range `2.187...2.384`;
+- mean `tan(delta)=0.0024227`;
+- sample SD `≈0.0003436`;
+- range `0.00184...0.00310`.
+
+Производитель подтвердил работу на `405 nm`.
+
+Статус отгрузки уточняется.
+
+Это очень хороший кандидат для MVP, потому что:
+
+- `epsilon_solid >2`, поэтому классический центр Luneburg достижим одной смолой + воздухом;
+- потери @10 GHz низкие;
+- материал локально доступнее Arkema/Rogers;
+- для `epsilon_solid≈2.303` Bruggeman даёт preliminary `rho_center≈0.806` для `epsilon_eff=2`, то есть центр может оставаться open-cell.
+
+Ограничение: значения измерены на `10 GHz`. Для финальной физической модели на 5 GHz требуется собственная characterization около 5 GHz.
+
+Arkema N3D-DIELEC731 остаётся сильным reference/backup. Rogers Radix 2.8Dk — второй импортный backup.
+
+## 5. Ветки изготовления
 
 ### A. Photopolymer continuous sheet-gyroid / TPMS
 
 Статус: **PRIMARY / MVP critical path**.
 
-Почему сейчас основной:
-
-- градиент задаётся заранее математической геометрией;
-- не нужно динамически управлять материалом во время печати;
-- обычный MSLA/DLP слайсер может печатать готовую 3D radial geometry;
-- уже есть литературный аналог GRIN gyroid на N3D-DIELEC731;
-- быстрый путь к циклу `print -> measure -> compare with Meep`.
-
 Главные задачи:
 
-- получить смолу;
-- сделать dielectric coupon;
-- определить реальный `epsilon_solid` и `tan(delta)`;
-- построить calibration `rho -> epsilon_eff`;
-- напечатать две открытые полусферы continuous gyroid;
+- получить HARZ DE-10;
+- напечатать solid dielectric coupons;
+- измерить `epsilon_solid` и `tan(delta)` около 5 GHz;
+- напечатать gyroid coupons на нескольких `rho`;
+- получить measured `epsilon_eff(rho)`;
+- обновить generator;
+- напечатать две открытые полусферы;
 - собрать и испытать.
 
 ### B. PLA Aero / LW-PLA thermal-gradient GRIN
 
-Статус: **R&D branch / SECOND PRIORITY**.
+Статус: **R&D / second priority**.
 
-Физически очень интересный путь и потенциально может дать более тонкий continuous material gradient, чем TPMS.
+Физически интересен, но требует process-development:
 
-Но для него перед полноценной линзой требуется больше process-development:
+- `T/flow/speed -> foam density`;
+- `foam density -> epsilon/tan(delta)`;
+- hotend dynamics;
+- custom Python G-code;
+- возможно hybrid microfoaming + macro-porosity.
 
-- calibration `T / flow / speed -> foam density`;
-- calibration `foam density -> epsilon_eff / tan(delta)`;
-- учёт тепловой инерции хотэнда;
-- управление transitions в реальном времени;
-- custom Python G-code generator;
-- возможно hybrid `microfoaming + macro-porosity` для внешней части, где требуется `epsilon -> 1`.
+### C. Continuous FDM / OrcaSlicer
 
-Поэтому эта ветка **не отменяется**, но не должна задерживать photopolymer MVP.
+Статус: experimental reserve.
 
-Вернуться к ней после первого рабочего RF-прототипа либо параллельно только если есть свободное время на material/process calibration.
+### D. Zoned 6/8/11
 
-### C. Непрерывная плотность в обычном FDM / OrcaSlicer
+Статус: benchmark / fallback.
 
-Статус: **experimental / reserve**.
+### E. Non-planar spherical FDM
 
-Python slicing pipeline доказал, что `rho(r)` можно переносить в geometry на этапе slicing. Первый square-hole pattern — proof of concept, не финальная RF-структура.
+Статус: deferred research.
 
-### D. Дискретные радиальные зоны
+### F. Volumetric photopolymerization
 
-Статус: **benchmark / fallback**.
+Статус: future research.
 
-6/8/11-zone нужны для сравнения с continuous ideal и как простой запасной manufacturing route.
+## 6. Расчётный workflow теперь зафиксирован
 
-### E. Непланарный spherical FDM
+Главный файл:
 
-Статус: **deferred research**.
+`docs/07_CALCULATION_WORKFLOW.md`.
 
-Физически соответствует radial isosurfaces, но 3-axis FDM имеет overhang/collision ограничения у экватора.
+Правило: не выбирать модель вручную. Считать следующую незакрытую модель по лестнице:
 
-### F. Volumetric / tomographic photopolymerization
+`M0 background -> M1 numerical reference -> M2 homogeneous control -> M3 ideal continuous -> M4 loss sensitivity -> M5 zoned benchmark -> M6 homogenized manufacturable continuous -> M7 explicit unit cell -> M8 reduced explicit validation -> M9 final lens + reflector -> M10 scaled final geometry`.
 
-Статус: **future research**.
+Главный input template:
 
-Не нужен для MVP.
+`simulation/INPUTS_TEMPLATE.yaml`.
 
-## 5. Текущая иерархия моделей
+Multi-scale принцип:
 
-Сравнивать:
+- explicit microgeometry считать на unit-cell/coupon уровне;
+- whole-lens reflector/RCS считать на homogenized measured `epsilon_realized(r)`;
+- полный explicit Ø240-mm gyroid не является первым обязательным расчётом.
 
-1. homogeneous sphere — контроль;
-2. ideal continuous Luneburg — эталон;
-3. 6-zone;
-4. 8-zone;
-5. 11-zone;
-6. homogenized continuous photopolymer GRIN;
-7. explicit continuous sheet-gyroid geometry;
-8. выбранная конструкция + reflector;
-9. позже — LW-PLA / PLA Aero thermal-gradient branch.
+## 7. Что пока НЕ доказано
 
-## 6. Что пока НЕ доказано
+- что HARZ DE-10 сохраняет те же `epsilon/tan(delta)` около 5 GHz;
+- что Bruggeman достаточно точен для gyroid;
+- что `a=7.5 mm` оптимален;
+- что TPMS достаточно изотропен;
+- что технологический `rho_min/rho_max` совпадает с текущими provisional значениями;
+- что +10 dB достигается после учёта реальных потерь, шва и reflector;
+- что scaling 5 ->15/24 GHz не ломается дисперсией материала.
 
-Не считать установленным без моделирования/измерения:
+## 8. Ближайший MVP-цикл
 
-- что 11 зон оптимальны;
-- что photopolymer будет окончательно лучше PLA Aero;
-- что datasheet `epsilon_r` совпадёт с нашей напечатанной/post-cured смолой;
-- что Bruggeman достаточно точно описывает `rho -> epsilon_eff`;
-- что 7.5-mm gyroid оптимален;
-- что выбранная TPMS геометрия достаточно изотропна;
-- что `+10 dB` достигаются без оптимизации reflector;
-- что scaling 5 -> 15/24 GHz сохраняется при реальных дисперсионных свойствах материала.
+1. Получить HARZ DE-10.
+2. Напечатать solid coupons с фиксированным post-cure.
+3. Измерить `epsilon_r/tan(delta)` около 5 GHz.
+4. Параллельно закрыть M0-M5 в Meep.
+5. Напечатать gyroid calibration coupons `rho≈0.2/0.4/0.6/rho_center`.
+6. Получить measured `epsilon_eff(rho)`.
+7. Закрыть M6-M8.
+8. Сделать reflector sweep M9.
+9. Напечатать TEST_LENS_5G_V1.
+10. NanoVNA experiment.
+11. Сопоставить experiment vs Meep.
+12. Масштабировать Ø80 @15 GHz.
+13. Отдельно рассчитать Ø80 @24 GHz.
 
-## 7. Ближайший MVP-цикл
+## 9. Правило фиксации хода мысли
 
-1. Получить **N3D-DIELEC731** или ближайший доступный low-loss RF photopolymer.
-2. Напечатать solid dielectric coupons с фиксированным post-cure.
-3. Измерить `epsilon_r` и `tan(delta)` около 5 GHz.
-4. Напечатать TPMS calibration coupons на нескольких `rho`.
-5. Получить экспериментальную `epsilon_eff(rho)`.
-6. Обновить continuous gyroid generator этой калибровкой.
-7. Прогнать Meep: ideal vs homogenized vs explicit gyroid.
-8. Напечатать TEST_LENS_5G continuous photopolymer prototype.
-9. Провести NanoVNA/RCS experiment.
-10. Только после рабочего MVP решать, стоит ли вкладывать время в более сложный PLA Aero process-control route.
-
-## 8. Правило фиксации хода мысли
-
-В репозитории хранить не только финальные решения.
-
-При каждой существенной развилке фиксировать:
-
-- идея;
-- зачем её рассматривали;
-- физические преимущества;
-- технологические ограничения;
-- почему ветка принята / отложена / отвергнута;
-- что должно измениться, чтобы к ней вернуться;
-- какие расчёты или эксперименты могут опровергнуть текущее решение.
-
-См. `docs/06_DESIGN_SPACE_AND_REASONING.md` и `decisions/README.md`.
+Сохранять не только финальные решения, но и альтернативы, причины отказа, условия возврата и данные, которые могут изменить решение.
