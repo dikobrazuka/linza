@@ -1,123 +1,112 @@
-# Initial gyroid cell-size sweep — TEST_LENS_5G
+# Gyroid cell-size sensitivity — TEST_LENS_5G_V1
 
-Date: 2026-10-29
+Date: 2026-10-30
 
-Purpose: compare candidate sheet-gyroid periods `a = 5 / 7.5 / 10 mm` before spending time on full explicit Meep models.
+Purpose: compare sheet-gyroid periods `a = 5 / 7.5 / 10 mm` around the current nominal `a=7.5 mm`.
 
-Assumptions for this preliminary sweep:
+This is a sensitivity study, not three equal manufacturing routes.
 
-- `f = 5 GHz`, so `lambda0 ~= 60 mm`;
-- ideal Luneburg target `epsilon(r)=2-(r/R)^2`;
-- preliminary printed-resin value `epsilon_solid=2.19`;
-- temporary Bruggeman mixing law;
-- current manufacturability clamp `rho_min=0.12`, `rho_max=0.90`;
-- sheet gyroid `|G| <= h(r)`;
-- feature-thickness values below are first-order local estimates near the gyroid midsurface, useful for comparing cell sizes, not final dimensional guarantees.
+## Current assumptions before T4
 
-## Common dielectric result
+- `f=5.0 GHz`;
+- `lambda0≈59.96 mm`;
+- ideal Luneburg `epsilon(r)=2-(r/R)^2`;
+- provisional HARZ DE-10 manufacturer mean `epsilon_solid=2.30318 @10 GHz`;
+- temporary Bruggeman only until measured T4;
+- actual `rho_min_print/rho_max_print` must come from T3;
+- sheet gyroid `|G|<=h(r)`.
 
-Cell size does not change the required `rho(r)` in the homogenized model.
+For provisional `epsilon_solid=2.30318`:
 
-For `epsilon_solid=2.19`:
+- center target `epsilon=2` requires `rho_center≈0.806`.
 
-- center target `epsilon=2.0` requires `rho ~= 0.867`;
-- `rho=0.12` corresponds to `epsilon_eff ~= 1.108`;
-- with `rho_min=0.12`, the outermost approximately `5.5%` of radius is clamped away from the ideal `epsilon -> 1` law.
+Do not use old `rho_center≈0.867` from Arkema `epsilon_solid=2.19` as the current DE-10 estimate.
 
-This clamp is a manufacturing limitation, not a property of Luneburg physics.
+## RF scale
 
-## Cell-size comparison
+At center:
 
-| cell a | a/lambda at eps=2 | a/lambda at edge | estimated wall at rho=0.12 | estimated wall at rho=0.20 | preliminary assessment |
-|---:|---:|---:|---:|---:|---|
-| 5.0 mm | 0.118 | 0.083 | ~0.20 mm | ~0.33 mm | strongest homogenization, hardest low-density printing/washing |
-| 7.5 mm | 0.177 | 0.125 | ~0.29 mm | ~0.49 mm | current best compromise |
-| 10.0 mm | 0.236 | 0.167 | ~0.39 mm | ~0.65 mm | easiest low-density geometry, but near lambda/4 at high-epsilon center |
+`lambda_center≈59.96/sqrt(2)=42.40 mm`.
 
-Here `lambda` at the Luneburg center is approximated as `lambda0/sqrt(2) ~= 42.4 mm`.
+| a | a/lambda0 | a/lambda_center | status |
+|---:|---:|---:|---|
+| 5.0 mm | 0.0834 | 0.1179 | strongest homogenization; smallest features |
+| 7.5 mm | 0.1251 | 0.1769 | **current nominal** |
+| 10.0 mm | 0.1668 | 0.2358 | easiest features; greatest lattice-scattering risk |
 
-## Interpretation
+Feature-thickness estimates must be recomputed from actual `h/rho` and printer process; old wall estimates tied to provisional `rho_min=0.12` are not acceptance criteria.
+
+## T3 manufacturing series
+
+Before spending DE-10 on three cell periods, characterize nominal `a=7.5 mm` using the fixed T3 series:
+
+`rho = 0.10 / 0.15 / 0.20 / 0.30 / 0.40 / 0.50 / 0.65 / 0.81 / 0.90`.
+
+Coupon:
+
+`30×30×15 mm = 4×4×2 periods` for `a=7.5 mm`.
+
+T3 determines:
+
+- `rho_min_print`;
+- `rho_max_print`;
+- washability;
+- sheet fusion;
+- actual volume fraction;
+- shrinkage/geometry survival.
+
+Do not automatically print the full 9-point series for `a=5` and `a=10` unless M7/T4 show that cell-size comparison is necessary.
+
+## M7 sensitivity matrix
+
+For selected representative densities after T3/T4, compare:
+
+- low usable density;
+- mid density around `rho≈0.4–0.5`;
+- high/center density around `rho≈0.81`.
+
+For each `a=5/7.5/10 mm` evaluate:
+
+1. explicit unit-cell/coupon response;
+2. retrieved/effective `epsilon_eff`;
+3. anisotropy;
+4. lattice scattering;
+5. comparison with homogenized measured law;
+6. loss sensitivity.
+
+## Decision logic
 
 ### 5 mm
 
-Advantages:
+Use as EM-quality reference if 7.5-mm structure shows noticeable lattice effects.
 
-- best subwavelength separation;
-- most likely to behave as a smooth effective medium;
-- closest to published GRIN gyroid work using 5-mm cells.
-
-Problem:
-
-- at very low volume fraction the sheet becomes extremely thin;
-- the current `rho=0.12` outer region implies a characteristic wall around 0.2 mm by the local estimate;
-- process blur, overcure, washing and mechanical damage become dominant.
-
-Status: **EM reference / printability-risk candidate**.
+Risk: lower absolute wall/feature size and harder photopolymer washing.
 
 ### 7.5 mm
 
-Advantages:
+**Nominal candidate for TEST_LENS_5G_V1.**
 
-- still comfortably subwavelength at 5 GHz;
-- low-density sheet thickness increases by 50% versus the 5-mm cell;
-- should be easier to wash and post-cure while maintaining a useful effective-medium scale separation.
-
-Status: **current first prototype candidate**.
+Chosen as current compromise between RF homogenization and manufacturability. It remains provisional until T3/T4/M7.
 
 ### 10 mm
 
-Advantages:
+Use as manufacturing-friendly comparison if T3 shows low-density walls are too fragile at 7.5 mm.
 
-- much better minimum feature size;
-- easier to reach low resin fraction without making walls ultrathin.
+Risk: `a/lambda_center≈0.236`, so explicit effects may be stronger.
 
-Risk:
+## 24-GHz scaling
 
-- at the center `a/lambda ~=0.236`, already close to the commonly used `lambda/4` caution region;
-- explicit-lattice scattering / spatial dispersion may become visible;
-- must be checked directly in Meep rather than trusted as a homogenized material.
+If final 5-GHz geometry uses nominal `a=7.5 mm`, strict geometric scaling gives:
 
-Status: **manufacturing-friendly comparison candidate**, not preferred until explicit EM simulation.
+`a_24 = 7.5*(5/24) = 1.5625 mm`.
 
-## Recommended next simulation matrix
+Other candidates scale to:
 
-Run for each `a = 5 / 7.5 / 10 mm`:
+- `5.0 -> 1.04167 mm`;
+- `10.0 -> 2.08333 mm`.
 
-1. homogenized continuous Luneburg;
-2. explicit continuous sheet-gyroid;
-3. same reflector geometry;
-4. `tan(delta)=0`, then realistic resin loss;
-5. compare focus, backscatter/RCS gain, angular response and parasitic scattering.
+This preserves normalized RF scale but does **not** prove printability. Minimum wall/cure blur must be checked separately for FINAL_LENS_24G.
 
-Primary question:
+## Current selection
 
-> Does 7.5 mm preserve the RF behavior of the 5-mm structure while materially improving printable minimum features?
-
-Secondary question:
-
-> Does 10 mm produce measurable lattice scattering / anisotropy relative to the homogenized model?
-
-## Manufacturing tests before full lens
-
-Print small gyroid coupons at each cell size with at least:
-
-- `rho=0.12`;
-- `rho=0.20`;
-- `rho=0.50`;
-- `rho~=0.87`.
-
-Check:
-
-- survival after washing;
-- actual wall thickness after cure;
-- trapped resin / channel closure;
-- mass-based actual volume fraction;
-- dimensional error versus implicit model.
-
-Then use the measured geometry, not nominal CAD values, for final `epsilon_eff(rho)` calibration.
-
-## Current provisional selection
-
-**Start with `a=7.5 mm` for the first continuous-gyroid photopolymer prototype.**
-
-Keep 5 mm as EM-quality baseline and 10 mm as manufacturing-friendly upper comparison.
+`a=7.5 mm` stays nominal until data demonstrate a reason to change it.
