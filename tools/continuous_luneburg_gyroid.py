@@ -9,7 +9,9 @@ Pipeline:
     -> marching cubes -> STL
 
 Default dielectric mixing model: symmetric Bruggeman, resin + air.
-Replace it with measured epsilon_eff(rho) using --calibration-csv once coupons are measured.
+The provisional default epsilon_solid=2.30318 is the HARZ DE-10 manufacturer
+mean measured at 10 GHz. Replace it with own 5-GHz material data and use
+measured epsilon_eff(rho) through --calibration-csv once T4 is complete.
 """
 
 from __future__ import annotations
@@ -31,7 +33,7 @@ class Config:
     radius_mm: float = 120.0
     cell_mm: float = 7.5
     voxel_mm: float = 1.0
-    eps_solid: float = 2.19
+    eps_solid: float = 2.30318
     rho_min: float = 0.12
     rho_max: float = 0.90
     hemisphere: str = "upper"
@@ -175,7 +177,7 @@ def parse_args() -> Config:
     p.add_argument("--radius", type=float, default=120.0)
     p.add_argument("--cell", type=float, default=7.5)
     p.add_argument("--voxel", type=float, default=1.0)
-    p.add_argument("--eps-solid", type=float, default=2.19)
+    p.add_argument("--eps-solid", type=float, default=2.30318)
     p.add_argument("--rho-min", type=float, default=0.12)
     p.add_argument("--rho-max", type=float, default=0.90)
     p.add_argument("--hemisphere", choices=["upper","lower","full"], default="upper")
