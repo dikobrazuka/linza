@@ -75,6 +75,29 @@ FDM/PLA Aero/LW-PLA/TiO2 filler — R&D/backup.
 - `2.19` — допустимо только как literature value Arkema N3D-DIELEC731, не current DE-10 default;
 - `24.125 GHz`, `WR-42`, `TARGET_CLAMP_80` — не должны оставаться как current physical stand requirements.
 
+## Second consistency pass — COMPLETED
+
+После выполнения всех правок повторно проверены:
+
+- полное дерево repository;
+- `decisions/README.md` как superseding source;
+- `experiment/BUILD_MANUAL.md` как наиболее опасный старый physical-24-GHz файл;
+- `simulation/*`;
+- `tools/continuous_luneburg_gyroid.py`;
+- материалы и статусы primary/R&D branches.
+
+Подтверждённая current chain:
+
+`DE-10 -> T1 -> T2/T3 -> T4 -> M6/M7 -> M8/M9 -> TEST_LENS_5G_V1 Ø240 @5 GHz -> physical validation -> scale ×5/24 -> M10 FINAL_LENS_24G Ø50 @24 GHz`.
+
+Разрешённые старые упоминания `15 GHz` сохранены только как explicitly superseded/history/optional research; они не являются active instruction.
+
+`24.125 GHz / WR-42 / TARGET_CLAMP_80` удалены из active physical experiment/budget/team/manual path.
+
+Generator current provisional default verified:
+
+`epsilon_solid = 2.30318` (HARZ DE-10 manufacturer mean @10 GHz), с обязательной заменой на own T1/T4 data перед final model.
+
 ## Source-of-truth order после аудита
 
 При конфликте читать в этом порядке:
