@@ -2,163 +2,95 @@
 
 ## Цель
 
-Физически проверить масштабную Luneburg/GRIN-конструкцию `TEST_LENS_5G_V1` на **5.0 GHz** доступным VNA/measurement setup до ~6 GHz, затем сопоставить experiment vs Meep и только после этого масштабировать validated geometry на **24 GHz**.
+Физически проверить current V1 на `5.0 GHz` доступным measurement setup до ~6 GHz и сопоставить результат с Meep.
 
-Физический эксперимент на 5 GHz нельзя выдавать за прямое измерение 24-GHz конструкции.
+## Current physical target
 
-## Каноническая масштабная пара
+- `D=120 mm`;
+- `R=60 mm`;
+- `a=7.5 mm`;
+- `D/lambda0≈2.00`.
 
-Физический demonstrator:
+Ø240 mm остаётся только reference/comparison case.
 
-- `D = 240 mm`;
-- `R = 120 mm`;
-- `f = 5.0 GHz`;
-- nominal `a = 7.5 mm`.
+Strict-scaled 24-GHz reference:
 
-Final calculated design:
+- `D=25.0 mm`;
+- `R=12.5 mm`;
+- `a=1.5625 mm`.
 
-- scale `k = 5/24 = 0.2083333`;
-- `D = 50.0 mm`;
-- `R = 25.0 mm`;
-- `f = 24.0 GHz`;
-- nominal `a = 1.5625 mm`.
+## Stand
 
-Подробно: `docs/10_SCALING_5_TO_24.md`.
+`VNA Port 1 -> TX antenna -> TARGET -> RX antenna -> VNA Port 2`.
 
-## Схема стенда
+Measure complex `S21`.
 
-`VNA Port 1 -> TX antenna -> TARGET -> RX antenna -> VNA Port 2`
+## Geometry
 
-Используется complex `S21`.
+At 5 GHz:
 
-## Антенны
+`lambda0≈59.96 mm`.
 
-Нужны 2 одинаковые направленные антенны, уверенно работающие около 5 GHz.
+For D=120 mm:
 
-Требования:
+`R_ff≈2D²/lambda≈0.48 m`.
 
-- одинаковая polarization;
-- фиксированная TX/RX geometry;
-- обе направлены в target center;
-- кабели после calibration не перемещать.
+Start distance:
 
-## Геометрия
+`1.0–1.5 m`.
 
-Для `D=240 mm`, `f=5 GHz`:
+Check at minimum 1.0 / 1.25 / 1.5 m before final series to ensure result is not dominated by direct TX-RX coupling or room background.
 
-`lambda0 ≈59.96 mm`.
+## Configurations
 
-Far-field estimate:
+1. BACKGROUND;
+2. HOLDER;
+3. REFERENCE;
+4. BASELINE;
+5. LENS_NO_REFLECTOR;
+6. LENS_REFLECTOR.
 
-`R_ff ≈2D²/lambda ≈1.92 m`.
+`REFERENCE != BASELINE`.
 
-Рабочая стартовая distance:
+## Processing
 
-`2.5–3.0 m`.
-
-Target:
-
-- на преимущественно dielectric support;
-- center на одной высоте с antennas;
-- крупный металл/людей убрать из основной диаграммы;
-- положение stand отметить и не менять между runs.
-
-## Конфигурации
-
-1. `BACKGROUND` — target отсутствует;
-2. `HOLDER` — только holder;
-3. `REFERENCE` — известная/повторяемая metallic reference target;
-4. `BASELINE` — formal project baseline;
-5. `LENS_NO_REFLECTOR`;
-6. `LENS_REFLECTOR`.
-
-`REFERENCE != BASELINE` по смыслу.
-
-## VNA / setup
-
-Перед серией:
-
-1. warm-up;
-2. 2-port calibration;
-3. record sweep/power/points/IFBW/averaging where available;
-4. save complex `S21/.s2p`;
-5. cables/antennas не менять между configurations.
-
-Главное условие: `5.0 GHz` внутри usable band.
-
-## Background subtraction
-
-Complex:
+Complex subtraction:
 
 `H_target(f)=S21_target(f)-S21_background(f)`.
 
-Не заменять этим вычитанием dB magnitudes.
+Relative metric:
 
-Time-domain gating применять только если usable bandwidth даёт достаточное range resolution.
+`K_sigma=|H_test|²/|H_baseline|²`.
 
-## Relative metric
+`Delta_sigma_dB=20*log10(|H_test|/|H_baseline|)`.
 
-`K_sigma = |H_test|² / |H_baseline|²`.
-
-`Delta_sigma_dB = 20*log10(|H_test|/|H_baseline|)`.
-
-Цель:
+Target:
 
 `K_sigma>=10` <=> `Delta_sigma_dB>=+10 dB`.
 
-Абсолютную ЭПР в `m²` заявлять только при корректной отдельной RCS calibration.
+Time-domain gating only if usable sweep bandwidth gives useful range resolution.
 
-## Повторяемость
+## Repeatability
 
-Для key configurations минимум 3 независимых target placements:
+Key configurations: minimum 3 independent target placements.
 
-- BASELINE;
-- LENS_NO_REFLECTOR;
-- LENS_REFLECTOR;
-- желательно REFERENCE.
+Angular sweep:
 
-## Angular sweep
+- minimum `-30...+30°`, step `5°`;
+- preferred final `-60...+60°`, step `5°`.
 
-Minimum:
+## Diameter gate before manufacturing
 
-`-30°...+30°`, step `5°`.
+Because current V1 is only ~2 wavelengths across, compare M9-style models for:
 
-Preferred final:
+`D=120 / 150 / 180 / 240 mm`.
 
-`-60°...+60°`, step `5°`.
+Full Ø120 print only after it demonstrates adequate focus/backscatter performance with margin.
 
-На каждом angle менять только target angle.
+## Final scaling statement
 
-## Что сопоставляется с Meep
+Physical evidence: Ø120 @5 GHz.
 
-1. `Ø240 @5 GHz` physical measurement;
-2. `Ø240 @5 GHz` M9;
-3. measured vs simulated frequency/angular trend;
-4. validated geometry scaled `×5/24`;
-5. `Ø50 @24 GHz` M10 prediction.
+Strict-scaled prediction after model validation: Ø25 @24 GHz.
 
-Сравнивать:
-
-- `K_sigma`;
-- `Delta_sigma_dB`;
-- angular response;
-- frequency trend;
-- reflector effect;
-- focus where measured.
-
-## Ограничения scaling
-
-Strict similarity дополнительно требует контроля:
-
-- `epsilon_r(f)`;
-- `tan_delta(f)`;
-- normalized cell dimensions;
-- reflector geometry;
-- seam;
-- roughness/minimum wall/cure blur.
-
-Поэтому итоговая формулировка:
-
-> Экспериментальная верификация выполнена на масштабном демонстраторе Ø240 мм при 5 ГГц. После сопоставления физического результата с Meep все линейные размеры масштабированы в 4.8 раза, и рассчитана электромагнитно подобная конструкция Ø50 мм при 24 ГГц. 24-GHz результат является расчётным prediction и отдельно учитывает material/manufacturing sensitivity.
-
-Полный executable stand protocol: `experiment/BUILD_MANUAL.md`.
+Do not claim physical validation at 24 GHz.
