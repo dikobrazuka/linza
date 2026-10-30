@@ -1,0 +1,16 @@
+name: linza-meep
+channels:
+  - conda-forge
+channel_priority: strict
+dependencies:
+  - python=3.12
+  - pymeep
+  - numpy
+  - scipy
+  - pandas
+  - pyyaml
+  - matplotlib
+  - h5py
+  - pytest
+  - trimesh
+  - scikit-image
