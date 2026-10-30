@@ -1,253 +1,182 @@
 # Журнал инженерных решений
 
-Все значимые изменения проекта фиксировать здесь. Старые решения не удалять: помечать `SUPERSEDED`, если они заменены новым решением.
+Старые решения не удалять: заменённые решения помечать `SUPERSEDED`.
 
-## D-001 — ограничение габарита и массы
+## D-001 — конечный габарит и масса
 
-**Решение:** конечная конструкция `<=80 mm`, масса `<=300 g`.
+Конечная конструкция для защиты: `<=80 mm`, `<=300 g`.
 
-**Важно:** это ограничение конечной конструкции для защиты, а не масштабного лабораторного 5-GHz демонстратора.
+## D-002 — full-wave solver
 
----
+Основной инструмент: **Meep**.
 
-## D-002 — основной инструмент моделирования
+## D-003 — динамический сценарий
 
-**Решение:** использовать **Meep** как основной электродинамический инструмент.
-
----
-
-## D-003 — сценарий натурного движения
-
-**Решение:** если проводится динамическая демонстрация, цель движется по оси радара — приближение и удаление. Боковой пролёт не основной сценарий.
-
----
+Если нужен натурный dynamic demo: движение по оси радара; боковой пролёт не основной сценарий.
 
 ## D-004 — критерий ×10
 
-**Рабочее толкование:** увеличение обратного рассеяния/ЭПР в 10 раз относительно явно определённого baseline, то есть `+10 dB` по мощности/ЭПР.
-
-Калибровочная reference target и project baseline — разные сущности.
-
----
+`K_sigma=sigma_test/sigma_baseline>=10`, то есть `+10 dB` по ЭПР/мощности. Reference target и project baseline — разные сущности.
 
 ## D-005 — количественный стенд
 
-HB100/RCWL/CDM324/LD2410C/Arduino не использовать как основной количественный способ доказать ×10 ЭПР.
+HB100/RCWL/CDM324/LD2410/Arduino не использовать как основной способ доказать ×10. Нужен complex reproducible RF measurement.
 
-Нужен комплексный воспроизводимый измерительный тракт с background subtraction.
+## D-006 — доступный измерительный диапазон
 
----
+Physical RF validation around `5 GHz`; доступный measurement setup работает примерно до `6 GHz`.
 
-## D-006 — доступный измерительный тракт
+## D-007 — 5 -> 15 GHz
 
-**Решение:** доступный VNA/измерительный тракт работает примерно до `6 GHz`; физическую RF-валидацию вести около `5 GHz`.
+`SUPERSEDED by D-021`.
 
----
+Историческая пара: `Ø240 @5 -> Ø80 @15`.
 
-## D-007 — старая масштабная пара 5 -> 15 GHz
+## D-008 — similarity scaling
 
-**Статус:** `SUPERSEDED by D-021`.
+Принцип сохраняется: при строгом electromagnetic similarity абсолютная RCS приблизительно масштабируется как площадь, относительный `K_sigma` может сохраняться для подобных baseline/test geometries.
 
-Историческое решение было `Ø240 @5 GHz -> Ø80 @15 GHz`.
+## D-009 — zoned models
 
-Не использовать как текущую главную масштабную пару.
+6/8/11-zone — benchmark/fallback, не финальная geometry. 11-zone — основной zoned benchmark.
 
----
-
-## D-008 — масштабирование результатов
-
-**Статус:** принцип сохранён, числа `1:3` и `/9` заменены D-021.
-
-При строгом электромагнитном подобии сравнивать нормированные характеристики и относительный `K_sigma`. Абсолютная ЭПР в `m²` масштабируется приблизительно как квадрат линейного размера.
-
----
-
-## D-009 — зональные модели
-
-**Решение:** 6/8/11-zone не являются финальной конструкцией. Это benchmark/fallback для оценки цены дискретизации относительно continuous GRIN.
-
-11-zone остаётся основным zoned benchmark.
-
----
-
-## D-010 — идеальный профиль
+## D-010 — Luneburg law
 
 `epsilon_r(r)=2-(r/R)^2`.
 
-Для 5-GHz модели `R=120 mm`; 11 равных benchmark-зон имеют `dr=10.909 mm`.
+## D-011 — старый lattice nominal
 
----
+`SUPERSEDED by D-020/D-024`.
 
-## D-011 — старая оценка lattice size
+## D-012 — reflector candidates
 
-**Статус:** `SUPERSEDED by D-020/D-024`.
+Сравнивать full sphere + PEC cap и hemisphere + ground plane; reflector size выбирать параметрически.
 
-Историческая оценка `8–12 mm, nominal 10 mm` больше не является nominal design.
+## D-013 — 5-GHz physical stand
 
-Текущий nominal sheet-gyroid period для 5-GHz MVP: `a=7.5 mm`, с research sweep `5/7.5/10 mm`.
+`VNA Port1 -> TX -> TARGET -> RX -> Port2`, complex S21, BACKGROUND/HOLDER/REFERENCE/project configurations.
 
----
+## D-014 — старая 5->15 формулировка
 
-## D-012 — геометрия отражателя
+`SUPERSEDED by D-021`.
 
-До CAD сравнивать в Meep:
+## D-015 — continuous GRIN target
 
-1. full sphere + metallic/PEC cap;
-2. hemisphere + metallic ground plane.
+Финальный target — continuous radial permittivity profile; zones только benchmark.
 
-Размер отражателя подбирать параметрически.
+## D-016 — Orca/FDM continuous route
 
----
+R&D / reserve.
 
-## D-013 — физический измерительный стенд 5 GHz
+## D-017 — non-planar FDM
 
-Двухантенная схема:
+Deferred R&D.
 
-`VNA Port 1 -> TX antenna -> TARGET -> RX antenna -> VNA Port 2`.
+## D-018 — photopolymer radial TPMS
 
-Для `D=240 mm`, `f=5 GHz`: `R_ff≈1.92 m`; стартовая дистанция `2.5–3.0 m`.
+MSLA/DLP photopolymer route — primary MVP manufacturing route.
 
-Снимать complex `S21`, BACKGROUND, HOLDER, REFERENCE и проектные конфигурации; при достаточной полосе применять time-domain gating.
+## D-019 — preserve negative branches
 
----
-
-## D-014 — старая формулировка результата 5 ->15
-
-**Статус:** `SUPERSEDED by D-021`.
-
-Формулировку про `Ø80 @15 GHz` больше не использовать как главный итог защиты.
-
----
-
-## D-015 — continuous GRIN — основной target
-
-**Решение:** финальная физическая цель — непрерывный профиль `epsilon(r)`. 6/8/11-zone — benchmark/fallback.
-
----
-
-## D-016 — OrcaSlicer Python / continuous FDM
-
-**Статус:** R&D / reserve.
-
-Не входит в критический путь текущего photopolymer MVP.
-
----
-
-## D-017 — non-planar spherical FDM
-
-**Статус:** deferred R&D.
-
----
-
-## D-018 — photopolymer 3D radial lattice/TPMS
-
-**Решение:** MSLA/DLP photopolymer route — основной manufacturing route MVP.
-
-Настоящий radial gradient задаётся в 3D geometry через `rho(sqrt(x²+y²+z²))`; две открытые полусферы предпочтительны для washing/post-cure.
-
----
-
-## D-019 — хранить отрицательные/отложенные ветки
-
-Сохранять причину появления идеи, преимущества, ограничения, тесты, статус и условия возврата.
-
----
+Исторические/R&D ветки сохранять с причиной, ограничениями и условиями возврата.
 
 ## D-020 — continuous sheet-gyroid
 
-**Решение:** основной photopolymer candidate — sheet-gyroid с постоянным периодом `a` и непрерывным threshold `h(r)`:
+Primary geometry:
 
-`G = sin(kx)cos(ky)+sin(ky)cos(kz)+sin(kz)cos(kx)`;
+`G=sin(kx)cos(ky)+sin(ky)cos(kz)+sin(kz)cos(kx)`
 
-`|G| <= h(r)`.
+`|G|<=h(r)`
 
-Цепочка:
+Pipeline:
 
-`epsilon_target(r) -> rho(r) -> h(r) -> implicit 3D geometry`.
+`epsilon_target -> rho -> h -> implicit geometry`.
 
-Реализация: `tools/continuous_luneburg_gyroid.py`.
+## D-021 — 5 ->24 GHz scaling
 
----
+Physical validation at 5 GHz; final defense calculation at 24 GHz. Linear scaling `k=5/24`.
 
-## D-021 — КАНОНИЧЕСКОЕ масштабирование 5 -> 24 GHz
+Числа первоначально были записаны для Ø240 physical case; **size values superseded by D-025**, scaling law remains valid.
 
-**Дата:** 2026-10-30
+## D-022 — HARZ DE-10 primary MVP resin
 
-**Решение:** физический эксперимент выполняется на `TEST_LENS_5G_V1`, а конечный расчёт для защиты строится как строго геометрически масштабированная 24-GHz версия.
+Neat HARZ DE-10 primary. Manufacturer @10 GHz: mean `epsilon_r=2.30318`, mean `tan_delta=0.0024227`; own 5-GHz T1/T4 mandatory. Fillers R&D only.
 
-Физический демонстратор:
+## D-023 — physical calibration before full lens
 
-- `f_test=5.0 GHz`;
-- `D_test=240 mm`;
-- `R_test=120 mm`;
-- `a_test=7.5 mm`.
-
-Финальная расчётная версия:
-
-- `f_final=24.0 GHz`;
-- linear scale `k=5/24=0.2083333`;
-- `D_final=50.0 mm`;
-- `R_final=25.0 mm`;
-- `a_final=1.5625 mm`;
-- `L_24=L_5*(5/24)` для всех линейных размеров.
-
-**Причина:** доступный измерительный тракт ограничен ~6 GHz, но защита должна содержать расчёт на 24 GHz. Масштабирование сохраняет `D/lambda`, `a/lambda`, `r/R` и нормированную geometry при идеальном подобии.
-
-**Следствия:**
-
-- D-007 и D-014 superseded;
-- D-008 использовать с `k=5/24`; абсолютная ЭПР при строгом подобии масштабируется примерно `k²=1/23.04`;
-- 15 GHz не является главной конечной точкой;
-- 24-GHz версия Ø50 mm удовлетворяет ограничению `<=80 mm`;
-- material dispersion и physical printability `a=1.5625 mm` проверяются отдельно и не считаются доказанными 5-GHz экспериментом.
-
-Полный документ: `docs/10_SCALING_5_TO_24.md`.
-
----
-
-## D-022 — HARZ DE-10 — primary MVP resin
-
-**Дата:** 2026-10-30
-
-**Решение:** neat HARZ DE-10 — основной материал первого photopolymer MVP.
-
-Manufacturer data @10 GHz, 11 samples:
-
-- mean `epsilon_r=2.30318`;
-- mean `tan(delta)=0.0024227`;
-- 405 nm compatible.
-
-Собственные 5-GHz measurements обязательны до финальной модели. TiO2/SrTiO3 filler — только R&D/backup, пока neat DE-10 не покажет конкретную проблему.
-
----
-
-## D-023 — физическая калибровка материала до полной линзы
-
-**Решение:** до full lens закрыть последовательность:
-
-- T1 solid `epsilon_r/tan(delta)` @~5 GHz;
-- T2 cured density/shrinkage;
-- T3 gyroid printability + `rho_actual`;
-- T4 gyroid `epsilon_eff(rho,f)` + repeatability/anisotropy.
-
-Bruggeman после T4 использовать только как comparison, не как final calibration.
-
----
+Before full lens: T1 solid epsilon/loss -> T2 density/shrinkage -> T3 printability/rho_actual -> T4 gyroid epsilon_eff(rho,f).
 
 ## D-024 — nominal gyroid period
 
-**Решение:** nominal `a=7.5 mm` для 5-GHz MVP. `5/7.5/10 mm` — sensitivity/research sweep, а не три равноправные физические конструкции.
-
-При scaling к 24 GHz nominal `a=1.5625 mm`.
+Nominal `a=7.5 mm` @5 GHz. Research sweep `5/7.5/10 mm`. Strict scaling to 24 GHz gives `a=1.5625 mm`.
 
 ---
 
-## Правило superseding update
+## D-025 — current physical V1 diameter = 120 mm
 
-После изменения ключевой частоты, масштаба, материала или manufacturing route обязательно:
+**Дата:** 2026-10-31
 
-1. добавить новое decision;
-2. пометить старое как superseded;
-3. обновить `PROJECT_MEMORY.md` и `README.md`;
-4. выполнить поиск по всей репе старых чисел/формулировок;
-5. обновить связанные experiment/simulation/budget/docs файлы.
+**Решение:** заменить Ø240-mm physical V1 на **Ø120 mm @5 GHz** для первого полного photopolymer demonstrator.
+
+Current physical V1:
+
+- `f=5.0 GHz`;
+- `D=120 mm`;
+- `R=60 mm`;
+- `lambda0≈59.96 mm`;
+- `D/lambda0≈2.00`;
+- nominal `a=7.5 mm`.
+
+Strict-scaled 24-GHz reference:
+
+- `k=5/24`;
+- `D=25.0 mm`;
+- `R=12.5 mm`;
+- `a=1.5625 mm`.
+
+**Причина:** material balance. Ø240 full sphere по provisional DE-10 law требует порядка нескольких килограммов cured resin и не совместим с planned 1-kg procurement. Для Ø120 provisional estimate составляет около `356 g` cured resin ideal/unclamped и около `366 g` при provisional `rho_min=0.12`, `rho_solid=1.1 g/cm³`.
+
+**Критическое ограничение:** Ø120 = примерно `2 lambda0`, поэтому его RF performance нельзя считать достаточной автоматически.
+
+До full print выполнить diameter gate:
+
+- Ø120 current candidate;
+- Ø150 comparison;
+- Ø180 comparison;
+- Ø240 historical/reference.
+
+Сравнить `K_sigma`, `Delta_sigma_dB`, focus, spot width и angular response.
+
+Если Ø120 не проходит objective с запасом, увеличить diameter до минимального passing value **до печати полной линзы**.
+
+Far-field estimate for Ø120 @5 GHz:
+
+`R_ff≈0.48 m`.
+
+Start measurement distance:
+
+`1.0–1.5 m`, затем проверить sensitivity/background/direct coupling.
+
+---
+
+## D-026 — code/calibration corrections after audit
+
+**Дата:** 2026-10-31
+
+1. `uniform_sheet_gyroid_coupon.py`: исправить broadcasting/box clipping и гарантировать closed marching-cubes envelope.
+2. `continuous_luneburg_gyroid.py`: measured T4 CSV должен работать при отсутствии measured rho=0/1 coupons; физические endpoints добавляются автоматически:
+   - `rho=0 -> epsilon=1`;
+   - `rho=1 -> epsilon=epsilon_solid(T1)`.
+3. Final manufacturing clamp всё равно задаётся measured `rho_min_print/rho_max_print` из T3.
+4. Generator должен уметь оценивать full-sphere polymer volume/mass до печати.
+
+## Governance rule
+
+После изменения frequency/diameter/material/manufacturing route:
+
+1. новое/superseding decision;
+2. PROJECT_MEMORY + README;
+3. full-repo consistency pass;
+4. update experiment/simulation/budget/code;
+5. smoke-test executable code;
+6. только после этого считать репу актуальной.
