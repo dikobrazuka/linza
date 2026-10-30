@@ -2,11 +2,11 @@
 
 Updated: 2026-10-30
 
-Goal: find materials that can be obtained quickly in Russia/Kazan while keeping RF loss low and `epsilon_solid>2` for a single-material classic Luneburg profile.
+Goal: materials obtainable in Russia/Kazan with low RF loss and `epsilon_solid>2` for a single-material classic Luneburg profile.
 
 ## 1. HARZ Labs DE-10 / dedicated dielectric material — current local #1
 
-Status: **primary local MVP candidate**.
+Status: **primary local MVP material; 1 kg planned from current stock; own 5-GHz validation pending**.
 
 Manufacturer supplied direct measurements of 11 samples at **10 GHz**:
 
@@ -19,43 +19,46 @@ Manufacturer supplied direct measurements of 11 samples at **10 GHz**:
 - sample SD `≈0.0003436`;
 - range `0.00184...0.00310`.
 
-Manufacturer also confirmed 405-nm printability. Availability/production timing is being checked.
+Manufacturer confirmed 405-nm compatibility.
 
-Why this is now the best local route:
+Current procurement information:
 
-- `epsilon_solid>2`, so a single resin + air structure can realize the entire classic Luneburg range `2 -> 1`;
-- mean `tan(delta)` @10 GHz is lower than the nominal values of many imported RF resins;
-- local procurement may remove the main MVP schedule risk.
+- current stock up to `1.5 kg`;
+- packing `0.5 kg`;
+- `7000 RUB / 0.5 kg`;
+- expiry `12.01.2027`;
+- project plan: buy `1.0 kg = 14 000 RUB`.
 
-Important limitation:
+Why this is the best local route:
 
-- final prototype is tested around 5 GHz, while supplied data are at 10 GHz;
-- own solid-coupon characterization around 5 GHz remains mandatory.
+- `epsilon_solid>2`, so resin + air can cover classic Luneburg center-to-edge range in principle;
+- mean loss @10 GHz is low;
+- local procurement removes import risk;
+- preliminary Bruggeman center estimate with `epsilon_solid=2.30318`: `rho_center≈0.806`.
 
-Preliminary Bruggeman estimate for center `epsilon_eff=2` with `epsilon_solid=2.30318`:
+Critical limitation:
 
-`rho_center≈0.806`.
-
-So the center can remain open-cell rather than fully solid.
+- supplied dielectric data are at 10 GHz;
+- physical demonstrator is validated around 5 GHz;
+- own T1/T4 are mandatory;
+- 24-GHz final design remains a calculation with material-dispersion sensitivity unless 24-GHz DE-10 data are obtained.
 
 ## 2. HARZ Labs Dielectric, epsilon≈1.628
 
-Status: **secondary low-epsilon research material**.
+Status: **secondary low-epsilon R&D material**.
 
 Published/test-program values:
 
 - `epsilon_r=1.628`;
 - `tan(delta)=5.39e-3`.
 
-This material is low-loss but cannot alone realize the classic Luneburg center `epsilon=2` because its solid permittivity is below 2.
+Cannot alone realize classic Luneburg center `epsilon=2`.
 
 Keep only for:
 
 - multi-material research;
 - outer-zone studies;
 - filler-composite experiments.
-
-It is no longer the primary local candidate.
 
 ## 3. Anycubic DLP Craftsman
 
@@ -66,7 +69,7 @@ Published microwave data suggest roughly:
 - `epsilon_r≈2.66`;
 - `tan(delta)≈0.03`.
 
-Easy to obtain and sufficient for geometry tests, but much lossier than HARZ DE-10.
+Easy to obtain, but much lossier than DE-10.
 
 ## 4. HARZ Industrial ABS
 
@@ -81,13 +84,11 @@ Can realize the center but is much lossier than DE-10.
 
 ### Arkema N3D-DIELEC731
 
-Still an excellent RF reference/backup.
-
-Typical values:
+Reference/backup:
 
 - official `epsilon_r≈2.59 @10 GHz`;
 - official `tan(delta)≈0.0030 @10 GHz`;
-- printed-process literature reported lower `epsilon_r` near 2.19 and `tan(delta)≈0.0028 @11 GHz`.
+- printed-process literature reported `epsilon_r≈2.19`, `tan(delta)≈0.0028 @11 GHz`.
 
 ### Rogers Radix 2.8Dk
 
@@ -96,22 +97,14 @@ Backup:
 - `epsilon_r≈2.8`;
 - `tan(delta)≈0.0043 @10 GHz`.
 
-## 6. Current local ranking
+## 6. Current ranking
 
-For a single-material classic Luneburg MVP:
-
-1. **HARZ DE-10 / dedicated dielectric material** — current #1.
+1. **HARZ DE-10** — primary MVP.
 2. Arkema N3D-DIELEC731 — imported reference/backup.
 3. Rogers Radix 2.8Dk — imported backup.
-4. Anycubic Craftsman — fast geometry/process fallback.
-5. HARZ Industrial ABS — local but lossy fallback.
+4. Anycubic Craftsman — geometry/process fallback.
+5. HARZ Industrial ABS — local lossy fallback.
 
 ## 7. Current action
 
-- obtain DE-10;
-- lock printer + wash + post-cure process;
-- print solid coupons;
-- measure `epsilon_r/tan(delta)` around 5 GHz;
-- print gyroid coupons at multiple `rho`;
-- measure `epsilon_eff(rho)`;
-- feed measured interpolation into `tools/continuous_luneburg_gyroid.py`.
+`DE-10 -> T1 solid 5-GHz characterization -> T2 density/shrinkage -> T3 gyroid printability -> T4 measured epsilon_eff(rho) -> generator -> TEST_LENS_5G_V1 -> validated Meep -> Ø50 @24 GHz calculation`.
