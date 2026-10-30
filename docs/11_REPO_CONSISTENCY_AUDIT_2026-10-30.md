@@ -1,122 +1,138 @@
-# Полный consistency-audit репозитория LINZA
+# Repository consistency audit — corrected
 
-Дата: 2026-10-30
+Original audit date: 2026-10-30
+Correction pass: 2026-10-31
 
-Причина: предыдущие актуализации были точечными и оставили старую ветку `5 GHz -> 15 GHz`, physical 24-GHz stand и FDM-MVP в нескольких файлах. Этот audit выполнен по полному дереву репозитория.
+## Why this file was corrected
 
-## Каноническая версия, относительно которой проверены файлы
+The first audit was not sufficient. A second engineering audit found real problems that text-only consistency checks missed:
 
-Физическая верификация:
+1. Ø240 physical V1 was materially infeasible with planned 1-kg DE-10 procurement.
+2. `uniform_sheet_gyroid_coupon.py` contained a NumPy broadcasting bug in box clipping.
+3. `continuous_luneburg_gyroid.py` could fail with measured T4 calibration because the Luneburg profile reaches epsilon=1 while measured coupon CSV would normally not include rho=0/epsilon=1.
+4. The audit relied too much on GitHub code search, which returned incomplete/empty results and cannot be trusted alone for consistency proof.
 
-- `TEST_LENS_5G_V1`;
-- `f=5.0 GHz`;
-- `D=240 mm`;
-- `R=120 mm`;
-- nominal `a=7.5 mm`;
-- measurement setup примерно до 6 GHz.
+## Current canonical state
 
-Финальная расчётная версия для защиты:
+Physical candidate:
 
-- `f=24.0 GHz`;
-- scale `5/24=0.2083333`;
-- `D=50.0 mm`;
-- `R=25.0 mm`;
-- nominal `a=1.5625 mm`.
+- `f=5 GHz`;
+- `D=120 mm`;
+- `R=60 mm`;
+- `a=7.5 mm`;
+- `D/lambda0≈2.0`.
 
-Primary manufacturing route:
+Strict-scaled 24-GHz reference:
 
-`HARZ DE-10 -> photopolymer continuous radial sheet-gyroid`.
+- `D=25 mm`;
+- `R=12.5 mm`;
+- `a=1.5625 mm`.
 
-FDM/PLA Aero/LW-PLA/TiO2 filler — R&D/backup.
+Ø120 must pass the diameter gate before full print.
 
-## Проверка каждого файла
+## Material balance correction
 
-| Файл | Статус после аудита | Что сделано |
-|---|---|---|
-| `README.md` | UPDATED | canonical 5-GHz validation -> Ø50 @24-GHz calculation |
-| `PROJECT_MEMORY.md` | UPDATED | заменён главный source of truth; добавлено governance rule |
-| `budget/README.md` | UPDATED | убран обязательный 24-GHz VNA/WR-42; добавлен 5-GHz stand и DE-10 1 kg = 14k RUB |
-| `data/README.md` | UPDATED | T1-T4 + complex `.s2p` + M0-M10; старый threshold/detected format убран из primary path |
-| `decisions/README.md` | UPDATED | old D-007/D-014/D-011 marked superseded; D-021..D-024 added |
-| `docs/00_CONTEXT.md` | UPDATED | clarified final <=80-mm limit vs physical Ø240 demonstrator |
-| `docs/01_REQUIREMENTS.md` | UPDATED | removed mandatory FDM; final target 24 GHz Ø50 |
-| `docs/02_PLAN.md` | UPDATED | replaced 5->15 route by 5->24 route |
-| `docs/03_TEAM.md` | UPDATED | removed physical 24.125-GHz/Ø80/FDM assignments |
-| `docs/04_NEXT_ACTIONS.md` | UPDATED | T1-T4, M0-M10, physical 5 GHz, M10 Ø50 @24 GHz |
-| `docs/05_BEGINNER_GUIDE.md` | UPDATED | corrected scaling and primary manufacturing route |
-| `docs/06_DESIGN_SPACE_AND_REASONING.md` | CHECKED / KEEP | historical design-space file; current primary photopolymer/gyroid and deferred FDM branches already represented; historical branches intentionally preserved |
-| `docs/07_CALCULATION_WORKFLOW.md` | UPDATED | rewritten M0-M10; M10 = Ø50 @24 GHz |
-| `docs/08_DE10_SPDR_T1_PROTOCOL.md` | CHECKED / KEEP | current T1 protocol; no obsolete 15/24-GHz physical path |
-| `docs/09_DE10_GYROID_T2_T3_PROTOCOL.md` | CHECKED / KEEP | current T2/T3 protocol; nominal a=7.5 and current rho series |
-| `docs/10_SCALING_5_TO_24.md` | NEW | canonical scaling rule and limitations |
-| `experiment/BUILD_MANUAL.md` | UPDATED | completely rewritten from 24.125-GHz/WR-42/Ø80 to 5-GHz/Ø240 stand |
-| `experiment/README.md` | UPDATED | physical 5 GHz -> calculated Ø50 @24 GHz |
-| `materials/HARZ_TIO2_COMPOSITE.md` | UPDATED | downgraded from active MVP to R&D/backup behind neat DE-10 |
-| `materials/LOCAL_RU_RESINS.md` | UPDATED | DE-10 stock/price/1-kg plan and 5->24 validation path |
-| `materials/LWPLA_THERMAL_GRADIENT.md` | CHECKED / KEEP | explicitly deferred R&D; no conflict with primary route |
-| `materials/RESIN_CANDIDATES.md` | UPDATED | current DE-10 procurement and T1-T4 path; filler R&D only |
-| `photo_log/README.md` | UPDATED | T1-T4 + Ø240 physical demonstrator + calculated Ø50 @24; removed <=80-mm requirement from physical sample |
-| `references/README.md` | CHECKED / KEEP | reference index; no active project-state conflict |
-| `simulation/CALCULATIONS.md` | UPDATED | scale 5/24, Ø50 @24, a=7.5, DE-10 provisional, RCS scaling 1/23.04 |
-| `simulation/CONTINUOUS_GYROID.md` | UPDATED | DE-10 eps 2.30318, rho_center≈0.806, a24=1.5625 |
-| `simulation/GYROID_CELL_SWEEP.md` | UPDATED | removed Arkema 2.19 as active assumption; current T3 series/DE-10 |
-| `simulation/INPUTS_TEMPLATE.yaml` | UPDATED | explicit physical validation and final_target sections; rho limits null until T3 |
-| `simulation/README.md` | UPDATED | M10 Ø50 @24; old Ø80@15 main pair removed |
-| `tools/continuous_luneburg_gyroid.py` | UPDATED | default provisional `eps_solid 2.19 -> 2.30318`; measured CSV still final path |
-| `tools/uniform_sheet_gyroid_coupon.py` | CHECKED / KEEP | current T3 geometry and rho series; no scaling/material-route conflict |
+Current provisional Ø120 numbers:
 
-## Старые значения: допустимые остаточные упоминания
+- sphere envelope: `904.78 cm3`;
+- ideal Bruggeman volume-average rho: `≈0.358`;
+- cured resin: `≈356 g` at 1.1 g/cm3 without clamp;
+- `≈366 g` with provisional rho_min=0.12.
 
-Некоторые старые значения могут намеренно оставаться только в историческом контексте:
+Ø240 is no longer current physical V1; it remains comparison/reference only.
 
-- `15 GHz` — допустимо только если явно сказано, что это старая/superseded или optional intermediate research point;
-- `Ø80 mm` — допустимо как исходное ограничение эксперта `<=80 mm` или историческая superseded branch, но не как current physical sample;
-- `FDM` — допустимо как R&D/history, но не primary MVP;
-- `2.19` — допустимо только как literature value Arkema N3D-DIELEC731, не current DE-10 default;
-- `24.125 GHz`, `WR-42`, `TARGET_CLAMP_80` — не должны оставаться как current physical stand requirements.
+## Code corrections
 
-## Second consistency pass — COMPLETED
+### tools/uniform_sheet_gyroid_coupon.py
 
-После выполнения всех правок повторно проверены:
+Corrected:
 
-- полное дерево repository;
-- `decisions/README.md` как superseding source;
-- `experiment/BUILD_MANUAL.md` как наиболее опасный старый physical-24-GHz файл;
-- `simulation/*`;
-- `tools/continuous_luneburg_gyroid.py`;
-- материалы и статусы primary/R&D branches.
+- invalid `np.minimum.reduce` over differently-shaped broadcast arrays;
+- box clipping now uses pairwise broadcasting;
+- padded outside samples added so marching cubes can close the clipped envelope;
+- actual grid spacing saved to output CSV.
 
-Подтверждённая current chain:
+### tools/continuous_luneburg_gyroid.py
 
-`DE-10 -> T1 -> T2/T3 -> T4 -> M6/M7 -> M8/M9 -> TEST_LENS_5G_V1 Ø240 @5 GHz -> physical validation -> scale ×5/24 -> M10 FINAL_LENS_24G Ø50 @24 GHz`.
+Corrected:
 
-Разрешённые старые упоминания `15 GHz` сохранены только как explicitly superseded/history/optional research; они не являются active instruction.
+- default radius `120 -> 60 mm`;
+- measured calibration now adds physical endpoints automatically:
+  - `rho=0 -> epsilon=1`;
+  - `rho=1 -> epsilon=epsilon_solid`;
+- T3 clamp is independent of measured interpolation;
+- generator reports full-sphere polymer volume and optional cured mass;
+- default rho clamp is `0..1` until measured T3 values are explicitly supplied.
 
-`24.125 GHz / WR-42 / TARGET_CLAMP_80` удалены из active physical experiment/budget/team/manual path.
+Local logic smoke-test passed for:
 
-Generator current provisional default verified:
+- coupon box broadcasting;
+- measured interpolation endpoint behavior.
 
-`epsilon_solid = 2.30318` (HARZ DE-10 manufacturer mean @10 GHz), с обязательной заменой на own T1/T4 data перед final model.
+A full cloned CLI smoke-test could not be run in the container because outbound DNS to GitHub was unavailable; this limitation is recorded rather than hidden.
 
-## Source-of-truth order после аудита
+## Diameter gate
 
-При конфликте читать в этом порядке:
+Before full manufacture compare:
 
-1. `decisions/README.md` — newest non-superseded decision;
+`D=120 / 150 / 180 / 240 mm`.
+
+Select the smallest passing diameter based on:
+
+- K_sigma;
+- Delta_sigma_dB;
+- focus position;
+- spot width;
+- angular response;
+- material mass.
+
+## Active files updated in correction pass
+
+- `README.md`
+- `PROJECT_MEMORY.md`
+- `decisions/README.md`
+- `docs/00_CONTEXT.md`
+- `docs/01_REQUIREMENTS.md`
+- `docs/02_PLAN.md`
+- `docs/03_TEAM.md`
+- `docs/04_NEXT_ACTIONS.md`
+- `docs/05_BEGINNER_GUIDE.md`
+- `docs/07_CALCULATION_WORKFLOW.md`
+- `docs/10_SCALING_5_TO_24.md`
+- `budget/README.md`
+- `experiment/README.md`
+- `experiment/BUILD_MANUAL.md`
+- `simulation/README.md`
+- `simulation/CALCULATIONS.md`
+- `simulation/CONTINUOUS_GYROID.md`
+- `simulation/INPUTS_TEMPLATE.yaml`
+- `photo_log/README.md`
+- `tools/continuous_luneburg_gyroid.py`
+- `tools/uniform_sheet_gyroid_coupon.py`
+
+## Files intentionally not diameter-dependent
+
+- T1 protocol;
+- T2/T3 coupon protocol;
+- material candidate/reference documents;
+- historical design-space/R&D documents.
+
+## Current source-of-truth order
+
+1. newest non-superseded decision;
 2. `PROJECT_MEMORY.md`;
-3. `README.md`;
+3. root `README.md`;
 4. `docs/04_NEXT_ACTIONS.md`;
 5. stage-specific protocol;
-6. historical design-space/reference documents.
+6. historical/R&D docs.
 
 ## Governance rule
 
-Фраза «актуализировать GitHub» для этого проекта означает:
+An update is not complete until:
 
-1. update decision;
-2. update project memory;
-3. update root README;
-4. search full repository for obsolete values;
-5. update every active instruction affected by the change;
-6. preserve old branches only when explicitly marked historical/R&D/superseded;
-7. perform a second consistency pass before declaring the repository updated.
+1. engineering decision updated;
+2. source-of-truth docs updated;
+3. active instructions updated;
+4. material/geometry arithmetic checked;
+5. code smoke-tested where executable;
+6. a second post-change consistency pass is performed.
