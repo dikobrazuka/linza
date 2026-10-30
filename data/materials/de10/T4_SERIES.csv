@@ -1,0 +1,8 @@
+sample_id,rho_target,h,rho_mesh,rho_actual,orientation,fixture_length_mm,physical_duplicate,repeat_count,status,notes
+T4_GYR_01,,,,,,,A,3,PLANNED,
+T4_GYR_02,,,,,,,A,3,PLANNED,
+T4_GYR_03,,,,,,,A,3,PLANNED,
+T4_GYR_04,,,,,,,A,3,PLANNED,
+T4_GYR_05,,,,,,,A,3,PLANNED,
+T4_GYR_DUP_MID,,,,,,,B,3,PLANNED,
+T4_GYR_DUP_HIGH,,,,,,,B,3,PLANNED,
