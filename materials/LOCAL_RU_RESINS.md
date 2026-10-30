@@ -2,143 +2,116 @@
 
 Updated: 2026-10-30
 
-Goal: find materials that can be obtained quickly in Russia/Kazan while keeping RF loss as low as possible.
+Goal: find materials that can be obtained quickly in Russia/Kazan while keeping RF loss low and `epsilon_solid>2` for a single-material classic Luneburg profile.
 
-## 1. HARZ Labs Dielectric — most interesting local low-loss resin
+## 1. HARZ Labs DE-10 / dedicated dielectric material — current local #1
 
-Status: **high-interest local experimental candidate, but NOT sufficient alone for classic Luneburg center**.
+Status: **primary local MVP candidate**.
 
-HARZ Labs test program lists a resin called `Dielectric` for desktop LCD/DLP printers:
+Manufacturer supplied direct measurements of 11 samples at **10 GHz**:
 
-- color: yellow transparent;
-- `epsilon_r = 1.628`;
-- `tan(delta) = 5.39e-3`;
-- intended specifically as a low-permittivity dielectric material.
+- `epsilon_r`: 2.367, 2.187, 2.252, 2.345, 2.266, 2.358, 2.308, 2.346, 2.275, 2.384, 2.247;
+- mean `epsilon_r = 2.30318`;
+- sample SD `≈0.06218`;
+- range `2.187...2.384`;
+- `tan(delta)`: 0.00226, 0.00253, 0.00253, 0.00218, 0.00258, 0.00254, 0.00215, 0.00184, 0.00275, 0.00219, 0.00310;
+- mean `tan(delta)=0.0024227`;
+- sample SD `≈0.0003436`;
+- range `0.00184...0.00310`.
 
-Source:
-https://harzlabs.ru/support/test-program/about-program/
+Manufacturer also confirmed 405-nm printability. Availability/production timing is being checked.
 
-The HARZ Labs testing program states that test-material samples are provided to registered participants. This makes it potentially much faster and cheaper to obtain in Russia than imported Arkema/Rogers.
+Why this is now the best local route:
 
-### Why it is interesting
+- `epsilon_solid>2`, so a single resin + air structure can realize the entire classic Luneburg range `2 -> 1`;
+- mean `tan(delta)` @10 GHz is lower than the nominal values of many imported RF resins;
+- local procurement may remove the main MVP schedule risk.
 
-Its loss tangent is in the same order as Rogers Radix and only roughly 2x worse than Arkema N3D-DIELEC731:
+Important limitation:
 
-- HARZ Dielectric: `tan(delta) ~0.00539`;
-- Rogers Radix: `~0.0043 @10 GHz`;
-- Arkema N3D-DIELEC731: `~0.0030 @10 GHz`.
+- final prototype is tested around 5 GHz, while supplied data are at 10 GHz;
+- own solid-coupon characterization around 5 GHz remains mandatory.
 
-### Why it cannot be the only resin for classic Luneburg
+Preliminary Bruggeman estimate for center `epsilon_eff=2` with `epsilon_solid=2.30318`:
 
-Classic Luneburg requires:
+`rho_center≈0.806`.
 
-`epsilon_target(r)=2-(r/R)^2`,
+So the center can remain open-cell rather than fully solid.
 
-therefore the center requires `epsilon=2`.
+## 2. HARZ Labs Dielectric, epsilon≈1.628
 
-A solid resin with `epsilon_solid=1.628` cannot be diluted with air to reach `epsilon=2`; geometry can only reduce its effective epsilon further.
+Status: **secondary low-epsilon research material**.
 
-The radius at which ideal Luneburg reaches `epsilon=1.628` is:
+Published/test-program values:
 
-`r/R = sqrt(2-1.628) ~0.610`.
+- `epsilon_r=1.628`;
+- `tan(delta)=5.39e-3`.
 
-So HARZ Dielectric is naturally suitable only for approximately the outer `39%` of radius in a classic Luneburg lens unless paired with a higher-epsilon material.
+This material is low-loss but cannot alone realize the classic Luneburg center `epsilon=2` because its solid permittivity is below 2.
 
-Possible future branch: nested/two-material construction, but not preferred for the fastest single-material MVP.
+Keep only for:
 
-## 2. HARZ Labs Industrial ABS — locally available but lossy
+- multi-material research;
+- outer-zone studies;
+- filler-composite experiments.
 
-HARZ Labs published 10-GHz measurements:
+It is no longer the primary local candidate.
 
-- `epsilon_r = 2.200 +/- 0.006`;
-- `tan(delta) = 0.0218 +/- 0.0002`.
+## 3. Anycubic DLP Craftsman
 
-Source:
-https://harzlabs.ru/upload/iblock/c8e/z57l26i8njot7d6l4g5zemzqxaev3yt4/ABS-dielektricheskaya-pronitsaemost.pdf
+Status: geometry/process fallback.
 
-Advantage: epsilon is high enough to generate a classic Luneburg profile by adding air/porosity.
+Published microwave data suggest roughly:
 
-Disadvantage: losses are about 7x Arkema N3D-DIELEC731 and about 4x HARZ Dielectric. Therefore it is not preferred as final RF material, but it could be used for quick geometry/process experiments.
+- `epsilon_r≈2.66`;
+- `tan(delta)≈0.03`.
 
-## 3. Anycubic DLP Craftsman — easiest known off-the-shelf compromise
+Easy to obtain and sufficient for geometry tests, but much lossier than HARZ DE-10.
 
-Published microwave experiment at 22-33 GHz used Anycubic Craftsman and reported approximately:
+## 4. HARZ Industrial ABS
 
-`epsilon ~= 2.6569 * (1 - 0.03j)`
+Published around 10 GHz:
 
-which corresponds to a loss tangent of about `0.03`.
+- `epsilon_r≈2.20`;
+- `tan(delta)≈0.0218`.
 
-Advantage:
+Can realize the center but is much lossier than DE-10.
 
-- easy to obtain in Russia;
-- standard LCD/DLP workflow;
-- epsilon comfortably above 2;
-- therefore can realize `epsilon=2 -> 1` via geometry.
+## 5. Imported references
 
-Disadvantage: substantially lossier than purpose-built RF resins.
+### Arkema N3D-DIELEC731
 
-Russian stock example: 3DVision lists Anycubic DLP Craftsman as available, around 3400 RUB depending on pack/variant.
+Still an excellent RF reference/backup.
 
-## 4. Formlabs materials — some promising electrical numbers, but poor MVP fit
+Typical values:
 
-Formlabs publishes electrical data for several resins. Example values include:
+- official `epsilon_r≈2.59 @10 GHz`;
+- official `tan(delta)≈0.0030 @10 GHz`;
+- printed-process literature reported lower `epsilon_r` near 2.19 and `tan(delta)≈0.0028 @11 GHz`.
 
-- High Temp Resin V1: dielectric constant ~2.6, dissipation factor ~0.0114;
-- Rigid 10K: dissipation factor reported as low as ~0.002 at 13.56 MHz in Formlabs electrical-property data.
+### Rogers Radix 2.8Dk
 
-However:
+Backup:
 
-- MHz values cannot be assumed to remain the same at 5-10 GHz;
-- Formlabs cartridge/process ecosystem complicates use on a generic Elegoo/Anycubic MSLA machine;
-- W-band measurements of several ordinary Formlabs resins show loss tangents typically around 0.019-0.024.
+- `epsilon_r≈2.8`;
+- `tan(delta)≈0.0043 @10 GHz`.
 
-Conclusion: not the preferred fast route unless a suitable Formlabs printer/material is already available.
+## 6. Current local ranking
 
-## 5. Phrozen / generic consumer resins
+For a single-material classic Luneburg MVP:
 
-Phrozen resins are widely available in Russia and in Kazan distributors, including Aqua, TR250LV, TR300, etc.
+1. **HARZ DE-10 / dedicated dielectric material** — current #1.
+2. Arkema N3D-DIELEC731 — imported reference/backup.
+3. Rogers Radix 2.8Dk — imported backup.
+4. Anycubic Craftsman — fast geometry/process fallback.
+5. HARZ Industrial ABS — local but lossy fallback.
 
-Current problem: no strong RF characterization was found showing a clear low-loss advantage over Anycubic Craftsman. Do not choose based on mechanical/thermal TDS alone.
+## 7. Current action
 
-Use only for geometry/process trials unless measured locally.
-
-## 6. Local procurement channels in Kazan
-
-### Color World / Cvetmir3D Kazan
-
-Address listed by distributor:
-
-`Kazan, Nikolaya Ershova 29B, BC Tatariya`.
-
-They distribute Anycubic, Phrozen, HARZ Labs, Formlabs and other resin brands.
-
-Useful action: ask whether they can bring HARZ Labs test or engineering resin through their existing HARZ distribution channel.
-
-### 3DVision Kazan
-
-Local branch/service point exists in Kazan and the national catalog lists Anycubic Craftsman and HARZ materials.
-
-Useful action: ask for same-day/fast transfer of Craftsman or HARZ engineering resins.
-
-## 7. Current local ranking
-
-For a **single-material classic Luneburg MVP**:
-
-1. Imported Arkema N3D-DIELEC731 — still best technical choice.
-2. Rogers Radix 2.8Dk — excellent backup, imported.
-3. Anycubic Craftsman — easiest locally available material with published microwave data and epsilon >2, but high loss.
-4. HARZ Industrial ABS — epsilon >2 and measured at 10 GHz, but also high loss.
-
-For a **local low-loss research sample**:
-
-1. HARZ Labs Dielectric — strongest Russian low-loss finding so far (`epsilon=1.628`, `tan(delta)=0.00539`), but cannot alone realize the center of a classic Luneburg lens.
-
-## 8. Practical MVP recommendation
-
-Run two procurement tracks in parallel:
-
-- get Anycubic Craftsman immediately for geometry/printing/RF workflow validation;
-- apply to HARZ Labs test program for `Dielectric` and measure it locally;
-- continue trying to obtain Arkema N3D-DIELEC731 for the final single-material continuous-gyroid lens.
-
-Do not stop the project while waiting for the ideal resin.
+- obtain DE-10;
+- lock printer + wash + post-cure process;
+- print solid coupons;
+- measure `epsilon_r/tan(delta)` around 5 GHz;
+- print gyroid coupons at multiple `rho`;
+- measure `epsilon_eff(rho)`;
+- feed measured interpolation into `tools/continuous_luneburg_gyroid.py`.
