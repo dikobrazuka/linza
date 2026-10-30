@@ -4,7 +4,7 @@ Updated: 2026-10-30
 
 ## Current MVP first choice — HARZ Labs DE-10 / dedicated dielectric material
 
-Status: **primary MVP resin candidate, pending availability and own 5-GHz validation**.
+Status: **primary MVP resin; 1 kg planned from current stock; own 5-GHz validation pending**.
 
 Direct manufacturer measurements on 11 samples at **10 GHz**:
 
@@ -15,26 +15,38 @@ Direct manufacturer measurements on 11 samples at **10 GHz**:
 - sample SD `≈0.0003436`;
 - range `0.00184...0.00310`.
 
-Manufacturer confirmed 405-nm printability. Print/post-cure parameters depend on the specific equipment. Availability/production timing is being checked.
+Manufacturer confirmed 405-nm compatibility.
 
-### Why this is currently #1 for the MVP
+Current stock/procurement:
 
-- local/Russian procurement is potentially much faster than Arkema/Rogers import;
-- `epsilon_solid>2`, so a classic single-material Luneburg profile is possible through resin/air geometry;
-- losses @10 GHz are excellent;
-- preliminary Bruggeman estimate for center `epsilon_eff=2` gives `rho_center≈0.806`, leaving an open-cell center rather than requiring a solid core.
+- up to `1.5 kg` available;
+- packing `0.5 kg`;
+- `7000 RUB / 0.5 kg`;
+- expiry `12.01.2027`;
+- project plan: `1.0 kg = 14 000 RUB`.
+
+### Why this is #1
+
+- local procurement;
+- `epsilon_solid>2`;
+- very low measured loss @10 GHz;
+- preliminary Bruggeman center estimate `rho_center≈0.806`.
 
 ### Critical limitation
 
-The supplied measurements are at `10 GHz`, while the physical prototype is tested around `5 GHz`.
+The supplied measurements are at `10 GHz`, while the physical demonstrator is tested around `5 GHz`.
 
-Therefore before final full-lens manufacture:
+Required current path:
 
-1. print solid coupons with the exact intended process;
-2. measure `epsilon_r/tan(delta)` around 5 GHz;
-3. print gyroid coupons at several `rho`;
-4. measure `epsilon_eff(rho)`;
-5. replace all provisional mixing-law values with measured interpolation.
+1. T1: solid DE-10 `epsilon_r/tan(delta)` around 5 GHz;
+2. T2: cured density/shrinkage;
+3. T3: gyroid printability + actual volume fraction;
+4. T4: measured `epsilon_eff(rho,f)` around 5 GHz;
+5. replace provisional Bruggeman with measured interpolation;
+6. validate `TEST_LENS_5G_V1`;
+7. scale validated geometry `×5/24` and calculate Ø50-mm @24-GHz final design.
+
+24-GHz material behavior must be treated with dispersion/loss sensitivity unless direct DE-10 data at 24 GHz are obtained.
 
 ## Reference / backup #1 — Arkema N3D-DIELEC731
 
@@ -44,17 +56,14 @@ Official data:
 
 - `epsilon_r≈2.59 @10 GHz`;
 - `tan(delta)≈0.0030 @10 GHz`;
-- SLA/DLP/LCD compatible;
-- unfilled RF photopolymer.
+- SLA/DLP/LCD compatible.
 
-Direct 2026 GRIN-lens literature used this resin with gyroid structures and reported printed-process values around:
+Published printed-process literature reported values around:
 
 - `epsilon_r≈2.19`;
 - `tan(delta)≈0.0028 @11 GHz`.
 
-This remains the strongest literature precedent for our architecture.
-
-Important: datasheet and printed-process permittivity differ substantially, confirming that our own printed coupon measurements are mandatory for any resin.
+Datasheet and printed-process differences reinforce the need for own coupon measurements.
 
 ## Reference / backup #2 — Rogers Radix 2.8Dk
 
@@ -63,10 +72,9 @@ Official values:
 - `epsilon_r≈2.8 @10 GHz`;
 - `epsilon_r≈2.8 @24 GHz`;
 - `tan(delta)≈0.0043 @10 GHz`;
-- `tan(delta)≈0.0046 @24 GHz`;
-- ceramic-filled UV-curable SLA/DLP resin.
+- `tan(delta)≈0.0046 @24 GHz`.
 
-Useful as high-Dk backup but less attractive for our open TPMS because of filler rheology/sedimentation and somewhat higher loss.
+Useful high-Dk backup, but filler rheology/sedimentation and higher loss make it less attractive for the first open-TPMS MVP.
 
 ## Other candidates
 
@@ -78,7 +86,7 @@ Vendor claim:
 - `tan(delta)≈0.0008`;
 - 385–405 nm.
 
-Status: interesting but insufficient independent validation.
+Status: interesting, insufficient independent validation.
 
 ### HARZ low-epsilon Dielectric
 
@@ -87,7 +95,7 @@ Reported:
 - `epsilon_r≈1.628`;
 - `tan(delta)≈0.00539`.
 
-Useful for research, outer-zone or multi-material/filler work, but `epsilon_solid<2` means it cannot alone realize the center of a classic Luneburg lens.
+Useful only for research/outer-zone/multi-material/filler work because `epsilon_solid<2`.
 
 ### Anycubic Craftsman
 
@@ -96,29 +104,24 @@ Published microwave data suggest roughly:
 - `epsilon_r≈2.66`;
 - `tan(delta)≈0.03`.
 
-Good fast geometry/process fallback, too lossy to be first RF choice.
+Geometry/process fallback, too lossy for first RF choice.
 
 ## Filler R&D branch
 
-TiO2 / SrTiO3 filling remains a research branch, not the current MVP route.
+TiO2 / SrTiO3 filling remains **R&D/backup**, not the current MVP route.
 
-Because HARZ DE-10 already appears to provide `epsilon_solid>2` and very low loss, do **not** complicate the first MVP with ceramic filler unless a concrete problem appears:
+Do not complicate neat DE-10 unless a concrete trigger appears:
 
 - insufficient `epsilon_solid`;
+- unacceptable loss;
 - unacceptable printability;
-- material unavailable;
-- need for custom higher-Dk formulation.
+- supply problem;
+- later need for custom higher-Dk formulation.
 
 See `HARZ_TIO2_COMPOSITE.md`.
 
-## Current material decision
-
-For fastest MVP:
+## Current decision
 
 1. **HARZ DE-10** — primary.
 2. **Arkema N3D-DIELEC731** — reference/backup.
 3. **Rogers Radix 2.8Dk** — backup.
-
-Required validation is the same regardless of material:
-
-`solid coupon -> 5-GHz epsilon/tanδ -> gyroid coupons -> measured epsilon_eff(rho) -> generator -> whole lens`.
