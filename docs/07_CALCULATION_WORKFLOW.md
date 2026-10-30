@@ -1,693 +1,500 @@
-# Расчётный маршрут без выбора модели — от исходных данных до Meep и измерения
+# Расчётный маршрут — TEST_LENS_5G_V1 -> FINAL_LENS_24G
 
 Дата: 2026-10-30
 
-Цель файла: исключить повторные решения «какую модель сейчас считать» и «какие данные нужны». Для `TEST_LENS_5G_V1` расчёты всегда идут в порядке ниже. Если какого-то входа нет — используется явно помеченная временная гипотеза, а не скрытое допущение.
+Цель: один фиксированный порядок расчётов без повторного выбора «что считать дальше».
 
 ---
 
-## 0. Зафиксированные параметры проекта
+## 0. Канонические параметры
 
-Физический MVP:
+### Физическая верификация
 
 - `f_test = 5.0 GHz`;
 - `D_test = 240 mm`;
 - `R_test = 120 mm`;
-- `lambda0_test ≈ 60 mm`;
-- `D/lambda0 ≈ 4`.
+- `lambda0_test = c/f ≈ 59.96 mm`;
+- `D/lambda0 ≈ 4.00`;
+- nominal gyroid period `a_test = 7.5 mm`;
+- доступный измерительный тракт до ~6 GHz.
 
-Основная масштабная пара:
+### Финальная расчётная точка для защиты
 
-- `D_final = 80 mm`;
-- `f_scaled = 15 GHz`;
-- масштаб геометрии `1:3`;
-- `D/lambda0` сохраняется.
+- `f_final = 24.0 GHz`;
+- linear scale `k = 5/24 = 0.2083333`;
+- `D_final = 50.0 mm`;
+- `R_final = 25.0 mm`;
+- `a_final = 1.5625 mm`;
+- любой линейный размер `L_24 = L_5 * 5/24`.
 
-Дополнительная расчётная точка:
+Старая основная цепочка `Ø240 @5 -> Ø80 @15` отменена. 15 GHz допускается только как необязательная промежуточная точка.
 
-- `D_final = 80 mm`;
-- `f = 24 GHz`;
-- это НЕ точная масштабная пара 5 ГГц.
-
-Целевой профиль классической линзы Люнеберга:
+### Идеальный профиль
 
 `epsilon_target(r) = 2 - (r/R)^2`.
 
-Цель по ЭПР:
+### Цель по ЭПР
 
-`K_sigma = sigma_test / sigma_baseline >= 10`.
+`K_sigma = sigma_test/sigma_baseline >= 10`.
 
 `Delta_sigma_dB = 10*log10(K_sigma) >= +10 dB`.
 
-Основной manufacturing route MVP:
+### Manufacturing route
 
-**photopolymer + continuous radial sheet-gyroid / TPMS**.
+**Photopolymer + continuous radial sheet-gyroid / TPMS.**
 
-FDM / PLA Aero / LW-PLA не входят в критический путь MVP и считаются отдельной R&D-веткой.
+FDM / PLA Aero / LW-PLA — R&D.
 
 ---
 
-# 1. Один файл исходных данных
+# 1. Входы каждого расчёта
 
-Перед любым расчётом заполнить `simulation/INPUTS_TEMPLATE.yaml` и сохранить копию конкретного расчёта в `simulation/configs/`.
+Перед run копировать `simulation/INPUTS_TEMPLATE.yaml` в отдельный config.
 
-Без заполненного config расчёт не считать воспроизводимым.
+Обязательные входы:
 
-Минимально обязательные входы:
+## Geometry
 
-## 1.1. Геометрия
+- `f`;
+- `D`, `R`;
+- gyroid `a`;
+- `rho_min`, `rho_max`;
+- seam geometry;
+- reflector geometry;
+- incidence angle/polarization.
 
-- частота `f`;
-- диаметр `D`;
-- радиус `R`;
-- тип модели: берётся из фиксированной лестницы ниже, вручную не выбирается;
-- период gyroid `a`;
-- технологический `rho_min`;
-- технологический `rho_max`;
-- толщина/тип шва между полусферами;
-- размеры металлического reflector.
-
-## 1.2. Материал
-
-Обязательно:
+## Material
 
 - `epsilon_solid(f)`;
 - `tan_delta(f)`;
-- частота, на которой эти параметры измерены;
-- способ post-cure;
-- плотность материала для проверки массы.
+- frequency of measurement;
+- measured `epsilon_eff(rho,f)` если уже есть T4;
+- cured density;
+- shrinkage;
+- post-cure process.
 
-Желательно:
+## Experiment
 
-- `epsilon_solid` и `tan_delta` в нескольких точках частоты;
-- shrinkage после post-cure;
-- минимальная воспроизводимая толщина стенки.
-
-Текущий локальный кандидат HARZ DE-10:
-
-- измерения выполнены на `10 GHz`;
-- 11 образцов;
-- среднее `epsilon_r = 2.30318`;
-- sample SD `≈0.06218`;
-- диапазон `2.187...2.384`;
-- среднее `tan(delta) = 0.0024227`;
-- sample SD `≈0.0003436`;
-- диапазон `0.00184...0.00310`;
-- 405 нм поддерживается по ответу производителя;
-- доступность материала уточняется.
-
-ВАЖНО: эти 10-ГГц значения можно использовать для предварительного sensitivity-study, но для физического 5-ГГц MVP они не заменяют собственное измерение около 5 ГГц.
-
-## 1.3. Эксперимент
-
-- определение `baseline`;
-- расстояние до мишени;
-- диапазон частот NanoVNA;
-- TX/RX антенны;
-- положение и ориентация мишени;
-- держатель;
-- reference target.
+- baseline definition;
+- target distance;
+- TX/RX antennas;
+- VNA sweep;
+- reference target;
+- holder;
+- target orientation.
 
 ---
 
-# 2. Фиксированная лестница моделей
+# 2. Материал-кандидат
 
-Не выбирать модель каждый раз. Идти строго сверху вниз.
+HARZ DE-10 manufacturer data @10 GHz, 11 samples:
 
-## M0 — EMPTY / BACKGROUND
+- mean `epsilon_r = 2.30318`;
+- range `2.187...2.384`;
+- mean `tan(delta)=0.0024227`;
+- range `0.00184...0.00310`;
+- 405 nm compatible.
 
-Геометрия стенда без линзы и без project baseline-object.
+Эти значения допустимы только как provisional sensitivity input.
 
-Зачем:
+Для финальной 5-GHz модели использовать собственный T1/T4.
 
-- получить incident/background field;
-- проверить PML / domain / source;
-- база для scattered-field subtraction.
+Для 24-GHz M10 при отсутствии измеренных DE-10 data использовать dispersion/loss sensitivity и маркировать результат как prediction.
 
-## M1 — numerical reference / simple scatterer
+---
 
-Простая сфера или другой объект с известным/предсказуемым scattering.
+# 3. Фиксированная лестница моделей
 
-Зачем:
+## M0 — background
 
-- проверить near-to-far;
-- проверить нормировку;
-- проверить resolution convergence.
+Пустой domain/стенд без lens и baseline object.
 
-## M2 — homogeneous dielectric sphere
+Проверить:
 
-Сфера Ø240 мм с постоянным `epsilon`.
+- PML;
+- source;
+- domain size;
+- numerical reflections;
+- field normalization.
 
-Использовать как контроль, а не как финальную конструкцию.
+## M1 — numerical reference
+
+Простой scatterer с известной/проверяемой response.
+
+Цель:
+
+- validate near-to-far;
+- normalization;
+- resolution convergence.
+
+## M2 — homogeneous sphere control
+
+`D=240 mm`, constant epsilon.
+
+Контроль кода, не финальная design.
 
 ## M3 — ideal continuous Luneburg, lossless
 
-Использовать аналитический профиль прямо в Meep:
-
 `epsilon(r)=2-(r/R)^2`.
 
-Reflector пока НЕ ставить.
+Без reflector.
 
-Проверить сначала только физику фокусировки.
+Outputs:
 
-## M4 — ideal continuous Luneburg + loss
+- focus position;
+- focus intensity;
+- -3/-6 dB spot size;
+- field maps.
 
-Та же модель, но с реалистичным `tan(delta)`.
+## M4 — ideal continuous + loss sensitivity
 
-Если материал пока не измерен на 5 ГГц, выполнить sensitivity:
+До own T1:
 
-- `tan(delta)=0`;
+- `tan_delta = 0`;
 - `0.0025`;
 - `0.005`;
 - `0.01`;
 - `0.02`.
 
+После T1 — measured value + uncertainty range.
+
 ## M5 — zoned benchmark
 
-Использовать 11-zone модель как основной дискретный benchmark.
+Основной zoned benchmark: `11 zones`.
 
-6 и 8 зон посчитать один раз для демонстрации convergence/цены дискретизации. После этого не использовать их в каждом sweep.
+6 и 8 zones — один convergence comparison.
 
-Зональные значения брать из `simulation/CALCULATIONS.md`.
+Не использовать zoned model как final physical target по умолчанию.
 
 ## M6 — homogenized manufacturable continuous GRIN
 
-Это основная инженерная модель будущей детали.
+Основная whole-lens инженерная модель.
 
-В ней уже нет идеального `epsilon(r)` напрямую. Цепочка:
+Pipeline:
 
-`epsilon_target(r) -> rho_required(r) -> technological clamp -> epsilon_realized(r)`.
+`epsilon_target(r)`
 
-До своих измерений допускается Bruggeman как временная модель. После coupon measurement — только экспериментальная `epsilon_eff(rho)`.
+`-> rho_required(r)`
 
-## M7 — explicit periodic unit cell / coupon
+`-> technological clamp [rho_min,rho_max]`
 
-Не моделировать сразу весь Ø240-мм gyroid с субмиллиметровыми стенками.
+`-> epsilon_realized(r)`.
 
-Сначала моделировать ОДНУ периодическую ячейку или небольшой массив ячеек с реальной геометрией.
+До T4 можно использовать Bruggeman только временно.
+
+После T4:
+
+**только measured/interpolated `epsilon_eff(rho,f)` как primary law.**
+
+## M7 — explicit periodic gyroid/coupon
+
+Моделировать реальную explicit TPMS geometry на unit-cell/coupon scale.
 
 Задачи:
 
-- получить `epsilon_eff(rho)`;
-- проверить anisotropy;
-- проверить влияние `a/lambda`;
-- сравнить с Bruggeman;
-- проверить loss.
+- compare with measured T4;
+- retrieve/check `epsilon_eff(rho)`;
+- anisotropy;
+- lattice scattering;
+- `a/lambda` sensitivity;
+- loss.
 
-Это основной full-wave explicit-geometry расчёт для калибровки материала.
+Nominal `a=7.5 mm`.
 
-## M8 — explicit local / reduced gyroid validation
+Research sweep `a=5/7.5/10 mm`.
 
-Небольшой сектор, slab или уменьшенная representative geometry с явными стенками gyroid.
+## M8 — reduced explicit gyroid validation
 
-Зачем:
+Небольшой representative slab/sector с explicit walls.
 
-- убедиться, что homogenized approximation не скрывает сильное lattice scattering;
-- проверить шов, край структуры и локальные дефекты.
+Проверить:
 
-Полный explicit Ø240-mm gyroid считать только при наличии достаточных вычислительных ресурсов. Для MVP это НЕ обязательный первый расчёт.
+- homogenization validity;
+- edge effects;
+- seam/local defects;
+- finite-array effects.
 
-## M9 — final lens + reflector
+Полный explicit Ø240-mm gyroid не обязателен.
 
-Основная whole-lens модель для RCS:
+## M9 — final 5-GHz lens + reflector
 
-- homogenized manufacturable continuous GRIN;
-- measured/validated material law;
-- reflector.
+Whole-lens homogenized measured GRIN.
 
-Сначала `full sphere + PEC cap`.
+Сначала:
 
-После выбора лучшего cap — сравнить с `hemisphere + ground plane`.
+`full sphere + PEC cap`.
 
-## M10 — scaled final geometry
+Cap half-angle sweep:
 
-После совпадения 5-ГГц модели с экспериментом:
+`15/30/45/60/90°`.
 
-1. масштаб `1:3` -> Ø80 мм @15 ГГц;
-2. отдельный расчёт Ø80 мм @24 ГГц.
+После выбора — compare с:
+
+`hemisphere + PEC ground plane`.
+
+Outputs:
+
+- `K_sigma(f,theta)`;
+- `Delta_sigma_dB(f,theta)`;
+- focus;
+- material-loss sensitivity;
+- seam sensitivity;
+- reflector sensitivity.
+
+M9 считается физически валидированным только после сравнения с 5-GHz experiment.
+
+## M10 — scaled final geometry @24 GHz
+
+Только после M9 + experiment validation.
+
+Scale:
+
+`k = 5/24`.
+
+Geometry:
+
+- `D=50.0 mm`;
+- `R=25.0 mm`;
+- `a=1.5625 mm`;
+- reflector dimensions `×5/24`;
+- seam/geometric features `×5/24` как ideal scaling baseline.
+
+Run separately:
+
+1. ideal scaled material assumption;
+2. epsilon dispersion sensitivity;
+3. tan(delta) sensitivity;
+4. geometric-resolution/manufacturability sensitivity;
+5. seam/min-feature sensitivity.
+
+M10 = prediction, не physical measurement.
 
 ---
 
-# 3. Расчёт шага за шагом
+# 4. Расчёт geometry: шаг за шагом
 
-## Шаг 1 — базовые длины
+## 4.1 Базовые длины @5 GHz
 
-Для каждой частоты:
+`lambda0 = c/f ≈59.96 mm`.
 
-`lambda0 = c/f`.
+В центре Luneburg:
 
-Минимальная локальная длина волны в классической Luneburg:
+`lambda_min ≈ lambda0/sqrt(2) ≈42.40 mm`.
 
-`lambda_min ≈ lambda0/sqrt(2)`.
+Для nominal `a=7.5 mm`:
 
-Для 5 ГГц:
+- `a/lambda0 ≈0.1251`;
+- `a/lambda_min ≈0.1769`.
 
-- `lambda0 ≈ 59.96 mm`;
-- `lambda_min ≈ 42.4 mm`.
+## 4.2 Ideal radial profile
 
-Посчитать:
-
-- `D/lambda0`;
-- `a/lambda_min`;
-- `a/lambda0`.
-
-Стартовый cell sweep:
-
-`a = 5 / 7.5 / 10 mm`.
-
-Текущий nominal candidate:
-
-`a = 7.5 mm`.
-
----
-
-## Шаг 2 — ideal radial profile
-
-Создать radial grid, например `r=0...R` с шагом 0.5–1 мм.
+Создать grid `r=0...R`.
 
 Для каждой точки:
 
 `epsilon_target = 2-(r/R)^2`.
 
-Сохранить CSV:
+Сохранять:
 
 - `r_mm`;
 - `r_over_R`;
 - `epsilon_target`.
 
-Никакой manufacturability на этом шаге не учитывать.
+## 4.3 Проверить solid material
 
----
-
-## Шаг 3 — проверить, подходит ли solid material вообще
-
-Условие для single-material classic Luneburg:
+Для classic single-material resin+air Luneburg необходимо:
 
 `epsilon_solid > 2`.
 
-Если `epsilon_solid <= 2`, одной смесью resin+air центр `epsilon=2` реализовать нельзя.
+Если `epsilon_solid<=2`, центр `epsilon_eff=2` недостижим через dilution with air.
 
-Для HARZ DE-10 по измерению @10 GHz:
+## 4.4 Временный epsilon -> rho
 
-`epsilon_solid_mean ≈ 2.303` -> условие выполняется.
+Priority:
 
----
+1. measured T4 `rho -> epsilon_eff`;
+2. validated M7 retrieval;
+3. Bruggeman only provisional.
 
-## Шаг 4 — временно перевести epsilon_target -> rho
+Symmetric Bruggeman:
 
-Порядок приоритета модели:
+`rho*(eps_s-eps)/(eps_s+2eps) + (1-rho)*(1-eps)/(1+2eps) = 0`.
 
-1. **измеренная таблица `rho -> epsilon_eff`**;
-2. periodic full-wave unit-cell retrieval;
-3. Bruggeman только как временная оценка.
+Для `eps_s=2.30318`, `eps=2`:
 
-Временная symmetric Bruggeman модель resin+air:
+`rho_center ≈0.806`.
 
-`rho*(eps_s-eps)/(eps_s+2*eps) + (1-rho)*(1-eps)/(1+2*eps) = 0`.
-
-Удобная форма для прямого расчёта `rho`:
-
-`A=(eps_s-eps)/(eps_s+2*eps)`
-
-`B=(1-eps)/(1+2*eps)`
-
-`rho=-B/(A-B)`.
-
-Для `eps_s=2.30318` и центра `eps=2`:
-
-`rho_center ≈ 0.806`.
-
-То есть предварительно около 80.6% объёмной доли solid в центре.
-
-Это хорошее положение: центр не обязан быть монолитным.
-
----
-
-## Шаг 5 — перевести rho -> sheet-gyroid threshold h
+## 4.5 rho -> gyroid threshold h
 
 Gyroid:
 
-`G = sin(kx)cos(ky)+sin(ky)cos(kz)+sin(kz)cos(kx)`
+`G = sin(kx)cos(ky)+sin(ky)cos(kz)+sin(kz)cos(kx)`.
 
 `k=2*pi/a`.
 
 Sheet solid:
 
-`|G| <= h`.
+`|G|<=h`.
 
-Не выводить `rho(h)` аналитически вручную.
-
-Алгоритм всегда один:
-
-1. взять одну ячейку `0...a` по XYZ;
-2. построить fine voxel grid;
-3. sweep `h`;
-4. для каждого `h` посчитать долю voxel, где `|G|<=h`;
-5. получить lookup `h -> rho`;
-6. инвертировать interpolation -> `rho -> h`.
-
-После этого:
+`rho(h)` вычислять численно на unit cell, затем invert interpolation:
 
 `h(r)=H^-1(rho(r))`.
 
----
+## 4.6 Technological clamp
 
-## Шаг 6 — ввести реальные технологические ограничения
+Из T3 получить:
 
-Пока `rho_min/rho_max` не измерены — НЕ считать их истинными свойствами процесса.
+- `rho_min_print`;
+- `rho_max_print`.
 
-После print-coupon определить:
+Использовать:
 
-- минимальную стенку после wash/post-cure;
-- максимальную плотность, при которой поры ещё открыты;
-- фактическую mass-based `rho`.
+`rho_used = clip(rho_required,rho_min_print,rho_max_print)`.
 
-Затем:
-
-`rho_used = clip(rho_required, rho_min, rho_max)`.
-
-И обратно получить реальную электродинамику:
+После T4:
 
 `epsilon_realized = F_measured(rho_used)`.
 
-Обязательно сохранить ошибку:
+Сохранять:
 
-`Delta_epsilon(r) = epsilon_realized - epsilon_target`.
+`Delta_epsilon(r)=epsilon_realized-epsilon_target`.
 
-И отдельно долю радиуса, где работает clamp.
+## 4.7 Full-lens manufacturing geometry
 
-Пример только для понимания: при `eps_s=2.303` и временном `rho_min=0.12` Bruggeman даёт `epsilon_min≈1.115`, поэтому крайние ~5.9% радиуса уже не соответствуют ideal profile.
+До full print проверить:
 
----
+- min wall;
+- washability;
+- trapped resin;
+- shrinkage;
+- mass;
+- seam;
+- alignment features.
 
-## Шаг 7 — whole-lens Meep сначала только homogenized
-
-Для всей Ø240-мм линзы использовать continuous scalar `epsilon_realized(r)`.
-
-Почему:
-
-- это на порядки дешевле полного explicit gyroid;
-- именно эта модель нужна для reflector sweep и RCS;
-- explicit cell physics проверяется отдельно на M7/M8.
-
-Сетка whole-lens модели выбирается по EM convergence, а не по толщине каждой TPMS-стенки, потому что TPMS здесь уже homogenized.
-
-Минимум выполнить resolution sweep и принять resolution, после которого ключевая метрика меняется мало. Рабочий критерий проекта:
-
-- изменение `Delta_sigma_dB` < `0.5 dB` при дальнейшем повышении resolution;
-- положение фокуса меняется < `1% R`.
+Основной manufacturing concept: две открытые полусферы.
 
 ---
 
-## Шаг 8 — проверить фокус ДО reflector
+# 5. Экспериментальная привязка
 
-Источник: плоская волна.
+## T1
 
-Модель: M3/M4/M6 без металла.
+Solid DE-10 `epsilon_r/tan_delta` около 5 GHz.
 
-Сохранить:
+## T2
 
-- `|E|^2` в диаметральном сечении;
-- координату peak;
-- расстояние peak от центра;
-- -3 dB spot size;
-- -6 dB spot size.
+Cured density/shrinkage.
 
-Для ideal Luneburg фокус должен быть около противоположной поверхности.
+## T3
 
-Если ideal model не фокусирует правильно — reflector/RCS пока не считать. Сначала исправить source, domain, PML, units или geometry.
+Gyroid printability + actual volume fraction.
 
----
+## T4
 
-## Шаг 9 — reflector sweep
+Measured gyroid `epsilon_eff(rho,f)` + repeatability/anisotropy.
 
-Default architecture для первого sweep:
-
-**full sphere + PEC cap**.
-
-Cap находится в фокальной области на противоположной от падения волны поверхности.
-
-Sweep полуугла:
-
-`alpha = 15 / 30 / 45 / 60 / 90 deg`.
-
-Для каждого сохранить:
-
-- monostatic `K_sigma(0)`;
-- `Delta_sigma_dB(0)`;
-- angular response.
-
-Выбрать не просто самый большой cap, а минимальный cap, после которого дальнейшее увеличение даёт малый прирост.
-
-После этого сравнить победителя с:
-
-**hemisphere + PEC ground plane**.
+После T4 M6/M7 пересчитать.
 
 ---
 
-## Шаг 10 — считать RCS одинаково во всех моделях
+# 6. Physical 5-GHz stand
 
-В Meep сначала получить scattered field через reference/background subtraction.
+Target:
 
-Для относительного сравнения при неизменных source/geometry/distance:
+`D=240 mm`.
 
-`K_sigma = |E_scat,test|^2 / |E_scat,baseline|^2`.
+Far field estimate:
 
-Или через одинаково обработанный complex transfer response.
+`R_ff≈2D²/lambda≈1.92 m`.
 
-`Delta_sigma_dB = 10*log10(K_sigma)`.
+Start distance:
 
-Эквивалентно по амплитуде поля:
+`2.5–3.0 m`.
 
-`Delta_sigma_dB = 20*log10(|E_test|/|E_baseline|)`.
+Measure:
 
-Цель:
+- BACKGROUND;
+- HOLDER;
+- REFERENCE;
+- BASELINE;
+- LENS_NO_REFLECTOR;
+- LENS+REFLECTOR.
 
-`Delta_sigma_dB >= +10 dB`.
+Save complex `S21/.s2p`.
 
-Абсолютную RCS считать только после проверки нормировки near-to-far. Основная проектная метрика на этапе MVP — относительный `K_sigma`.
+Repeat key configurations >=3 times with re-installation.
 
----
-
-## Шаг 11 — модель потерь
-
-Для узкополосного расчёта около одной частоты материал можно представить через `epsilon'` и эквивалентную dielectric loss.
-
-Физическая связь:
-
-`epsilon'' = epsilon' * tan(delta)`.
-
-Эквивалентная проводимость в SI:
-
-`sigma = omega * epsilon0 * epsilon' * tan(delta)`.
-
-Для Meep переводить это в его нормированные units последовательно с выбранной единицей длины.
-
-Для 15/24 ГГц НЕ переносить автоматически `tan(delta)` @10 GHz без sensitivity/измерения. Если дисперсионной кривой нет — считать несколько plausible значений и явно маркировать неопределённость.
+Background subtraction must be complex, not subtraction of dB magnitudes.
 
 ---
 
-## Шаг 12 — periodic unit-cell calculation
+# 7. Model validation gate
 
-Для каждого `a` и нескольких `rho`:
+Перед scaling на 24 GHz должно быть показано, что Meep reproduces физический 5-GHz trend:
 
-- `rho ~0.12`;
-- `0.20`;
-- `0.40`;
-- `0.60`;
-- `rho_center`;
+- frequency response;
+- angular response;
+- relative gain `K_sigma`;
+- reflector effect.
 
-построить explicit gyroid cell.
+Рабочий numerical convergence gate:
 
-Считать минимум для распространения вдоль X/Y/Z.
+- `Delta_sigma_dB` changes < `0.5 dB` при дальнейшем resolution increase;
+- focus position changes < `1% R`.
 
-Выход:
-
-- effective phase delay / retrieved `epsilon_eff`;
-- loss;
-- отличие X/Y/Z;
-- отличие от Bruggeman.
-
-Если directional difference существенна — материал нельзя считать scalar-isotropic без дополнительного анализа.
-
-Рабочий инженерный gate для первого MVP:
-
-- желательно <5% различия `epsilon_eff` между главными направлениями;
-- explicit vs homogenized response в representative model желательно в пределах ~1 dB по главной RF-метрике.
-
-Эти пороги — проектные критерии, не фундаментальные константы; при необходимости фиксировать их изменение в decisions.
+Experimental repeatability хранить отдельно от numerical convergence.
 
 ---
 
-## Шаг 13 — что НЕ надо моделировать первым
+# 8. Scaling 5 ->24 GHz
 
-Не начинать с полного explicit Ø240-mm gyroid с реальными ~0.2–0.5-mm стенками.
+`k=5/24=0.2083333`.
 
-Причина: сетка станет огромной, а большую часть задачи можно надёжнее разделить на два масштаба:
-
-1. **unit cell / coupon:** explicit geometry;
-2. **whole lens:** homogenized measured material law.
-
-Это основной multi-scale workflow проекта.
-
----
-
-## Шаг 14 — масштабирование 5 -> 15 GHz
-
-Для точного подобия должны сохраняться:
+Сохраняются при ideal similarity:
 
 - `D/lambda`;
 - `a/lambda`;
-- reflector/D;
-- seam/D;
-- wall/lambda, если explicit feature масштабируется;
-- material dispersion должна быть учтена отдельно.
+- `r/R`;
+- normalized reflector geometry;
+- normalized angular pattern в идеальном случае.
 
-Геометрически:
+Не сохраняются автоматически:
 
-`L_15GHz = L_5GHz / 3`.
+- `epsilon_r(f)`;
+- `tan_delta(f)`;
+- roughness;
+- minimum printable wall;
+- cure blur;
+- absolute RCS in m².
 
-Абсолютная RCS при строгом подобии:
+Approximate RCS area scaling:
 
-`sigma_80 ≈ sigma_240 / 9`.
+`sigma_24/sigma_5 ≈ k² = 1/23.04`.
 
-Относительный `K_sigma` для подобных baseline/test систем должен оставаться примерно одинаковым.
+Volume/mass geometric scaling:
 
----
+`m_24/m_5 ≈ k³ = 1/110.592`, если material/volume fraction similar.
 
-## Шаг 15 — 24 GHz
-
-Ø80 мм @24 ГГц не является масштабной копией Ø240 @5 ГГц.
-
-Поэтому:
-
-- использовать физический D=80 мм;
-- реальную геометрию конечной детали;
-- реальные/оценённые свойства материала @24 ГГц;
-- заново считать RCS и angular response.
-
-Не переносить результат 5->24 простым коэффициентом.
+Подробно: `docs/10_SCALING_5_TO_24.md`.
 
 ---
 
-# 4. Что измерить до финальной генерации линзы
+# 9. Порядок действий без выбора
 
-Минимальный material-coupon пакет:
+1. lock DE-10 process;
+2. T1;
+3. T2/T3;
+4. параллельно M0-M5;
+5. T4;
+6. rerun M6/M7 with measured law;
+7. M8;
+8. M9 reflector optimization;
+9. print full TEST_LENS_5G_V1;
+10. physical 5-GHz experiment;
+11. validate M9 vs experiment;
+12. freeze validated 5-GHz geometry;
+13. scale all linear dimensions `×5/24`;
+14. run M10 @24 GHz;
+15. prepare defense package.
 
-1. solid resin coupon;
-2. gyroid coupon `rho≈0.2`;
-3. `rho≈0.4`;
-4. `rho≈0.6`;
-5. `rho≈rho_center`.
-
-Для каждого:
-
-- масса;
-- внешний объём;
-- фактическая volume fraction;
-- wall thickness;
-- shrinkage;
-- `epsilon_eff`;
-- `tan(delta)`.
-
-После этого заменить все временные mixing-law значения в generator на measured interpolation.
-
----
-
-# 5. Физический NanoVNA-эксперимент
-
-Фиксированная схема:
-
-`Port 1 -> TX -> target -> RX -> Port 2`.
-
-Дистанция для Ø240 мм @5 ГГц:
-
-`R_ff ≈ 2D^2/lambda ≈ 1.92 m`.
-
-Рабочий старт:
-
-`2.5...3.0 m`.
-
-Для каждой конфигурации сохранить complex `S21(f)`:
-
-1. BACKGROUND;
-2. HOLDER;
-3. REFERENCE TARGET;
-4. BASELINE;
-5. LENS без reflector;
-6. LENS + reflector.
-
-Background-subtracted complex amplitude:
-
-`H_target = S21_target - S21_background`.
-
-Для одинаковой геометрии стенда относительный RCS gain:
-
-`K_sigma ≈ |H_test|^2 / |H_baseline|^2`.
-
-`Delta_sigma_dB = 20*log10(|H_test|/|H_baseline|)`.
-
-Повтор ключевых измерений минимум 3 раза.
-
----
-
-# 6. Порядок принятия решения
-
-Не принимать решение по одной красивой карте поля.
-
-Конструкция переходит к печати полного V1 только если одновременно:
-
-1. ideal M3 корректно фокусирует;
-2. numerical convergence закрыта;
-3. M6 manufacturable profile рассчитан;
-4. material data известны хотя бы около 5 ГГц или закрыты sensitivity диапазоном;
-5. unit-cell explicit model не показывает критическую anisotropy/lattice scattering;
-6. reflector sweep завершён;
-7. predicted `Delta_sigma_dB` имеет запас относительно +10 dB;
-8. geometry проходит min-wall/washing constraints.
-
----
-
-# 7. Минимальный набор выходных файлов каждого расчёта
-
-Для каждого run сохранить:
-
-- config YAML;
-- git commit SHA;
-- Meep version;
-- resolution;
-- domain/PML settings;
-- frequency;
-- material data + source/frequency measurement;
-- geometry parameters;
-- raw DFT/near-to-far data;
-- field map;
-- CSV `RCS/Gain vs angle/frequency`;
-- короткий `RESULT.md` с выводом PASS/FAIL и причиной.
-
----
-
-# 8. Коротко: что считать прямо сейчас
-
-Текущий deterministic path:
-
-1. `M0/M1` — validate Meep;
-2. `M3` — ideal Ø240 @5 GHz;
-3. `M4` — loss sensitivity;
-4. `M5` — 11-zone + один раз 6/8-zone comparison;
-5. HARZ DE-10 использовать как provisional material scenario: `eps=2.303`, `tanδ=0.00242 @10 GHz`;
-6. Bruggeman -> preliminary `rho(r)`;
-7. `a=7.5 mm` primary, `5/10 mm` comparison;
-8. periodic explicit gyroid cells -> `epsilon_eff(rho)`;
-9. M6 whole-lens homogenized manufacturable profile;
-10. cap sweep;
-11. choose full-sphere cap vs hemisphere ground plane;
-12. print coupons -> replace provisional law with measured 5-GHz law;
-13. rerun M6/M9;
-14. print full V1;
-15. NanoVNA experiment;
-16. validate Meep vs experiment;
-17. scale to Ø80 @15 GHz;
-18. separate Ø80 @24 GHz calculation.
-
-Если возникает вопрос «какую модель теперь считать?» — ответ всегда следующий незакрытый пункт этого списка.
+Если возникает вопрос «что считать дальше?» — следующий незакрытый пункт этого списка.
