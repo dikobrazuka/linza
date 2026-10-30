@@ -1,111 +1,139 @@
 # Ближайшие действия — TEST_LENS_5G_V1
 
-## Приоритет №1 — Meep до печати
+## Приоритет №1 — закрыть расчётную лестницу M0-M6
 
-- [ ] Построить Ø240 мм / 5.0 ГГц continuous Luneburg.
-- [ ] Сравнить 6 / 8 / 11 зон.
-- [ ] Добавить homogeneous sphere как контроль.
-- [ ] Для 11 зон внести целевые epsilon из `simulation/CALCULATIONS.md`.
-- [ ] Добавить минимум одну **explicit continuous-gradient geometry**, а не только зональную модель.
-- [ ] Сравнить full sphere + cap и hemisphere + ground plane.
-- [ ] Прогнать отражатель по нескольким размерам.
-- [ ] Снять `RCS(theta)` хотя бы 0, 10, 20, 30, 45, 60°.
-- [ ] Провести sensitivity sweep по `tan(delta)` материала.
-- [ ] Выбрать конструкцию для печати только после этого сравнения.
+Главный маршрут: `docs/07_CALCULATION_WORKFLOW.md`.
 
-## Параллельно — сравнение технологий изготовления
+- [ ] M0 — empty/background.
+- [ ] M1 — numerical scattering reference + near-to-far validation.
+- [ ] M2 — homogeneous sphere control.
+- [ ] M3 — ideal continuous Luneburg Ø240 мм @5.0 ГГц, lossless.
+- [ ] M4 — loss sensitivity.
+- [ ] M5 — 11-zone benchmark; один раз сравнить 6/8-zone.
+- [ ] M6 — homogenized manufacturable continuous GRIN.
+- [ ] Закрыть resolution convergence.
+- [ ] Для каждого run использовать копию `simulation/INPUTS_TEMPLATE.yaml`.
 
-### FDM continuous gradient
+## Приоритет №2 — HARZ DE-10 как текущий MVP material candidate
 
-- [ ] Проверить `grin_lens_orca_v0_1.py` в актуальной OrcaSlicer.
-- [ ] Убедиться, что `posPrepareInfill` корректно перестраивает Preview/G-code.
-- [ ] Напечатать маленький test coupon с радиально меняющимся размером ячейки.
-- [ ] Измерить фактические min wall / min hole / shrinkage.
-- [ ] Не считать квадратную ячейку финальной RF-геометрией.
-- [ ] Рассмотреть более изотропный pattern.
+Получены данные производителя на 10 ГГц по 11 образцам:
 
-### Photopolymer 3D radial lattice / TPMS
+- mean `epsilon_r≈2.30318`;
+- sample SD `≈0.06218`;
+- range `2.187...2.384`;
+- mean `tan(delta)≈0.0024227`;
+- sample SD `≈0.0003436`;
+- range `0.00184...0.00310`;
+- 405 nm compatible.
 
-- [ ] Выбрать 2–3 доступные смолы-кандидата.
-- [ ] Найти или измерить `epsilon_r` и `tan(delta)` около 5 ГГц.
-- [ ] Сделать простую 3D radial open-cell модель `rho(r)`.
-- [ ] Сделать TPMS-кандидат с радиально меняющимся параметром.
-- [ ] Проверить сообщаемость пор для washing и отсутствие trapped resin.
-- [ ] Сравнить одну цельную сферу и две полусферы технологически; для V1 приоритет двум полусферам.
-- [ ] Внести шов/стык половин в EM-модель, если он не пренебрежимо мал.
+Действия:
 
-## Параллельно — материал / effective medium
+- [ ] Получить материал/срок отгрузки HARZ.
+- [ ] Зафиксировать принтер, wash и post-cure process.
+- [ ] Напечатать solid RF coupons.
+- [ ] Измерить `epsilon_r` и `tan(delta)` около **5 GHz**.
+- [ ] Не переносить 10-GHz значения в финальную модель без проверки.
+- [ ] Сохранить raw measurement и обработанную таблицу в `data/materials/`.
 
-- [ ] Для каждого кандидата получить `epsilon_solid(f)` и `tan(delta)`.
-- [ ] Построить calibration samples с несколькими volume fractions.
-- [ ] Получить зависимость `geometry / rho -> epsilon_eff`.
-- [ ] Проверить анизотропию хотя бы для финальных 1–2 lattice geometries.
-- [ ] Не использовать простое `infill % -> epsilon_eff` без проверки.
+## Приоритет №3 — gyroid calibration
 
-## Параллельно — NanoVNA-стенд
+Текущий nominal cell:
 
-- [ ] Подтвердить NanoVNA-F V3 и его устойчивую работу около 5 ГГц.
-- [ ] Найти **2 одинаковые направленные антенны** на 5 ГГц.
-- [ ] Найти 2 одинаковых RF-кабеля и комплект для 2-port calibration.
-- [ ] Сделать общую жёсткую базу TX/RX.
-- [ ] Сделать диэлектрическую стойку мишени.
-- [ ] Сделать поворотную платформу минимум -60...+60°.
-- [ ] Рабочую дистанцию начать с **2.5–3.0 м**.
-- [ ] Проверить BACKGROUND и металлическую reference target.
-- [ ] Научиться сохранять комплексный S21/.s2p.
+`a=7.5 mm`.
 
-## После выбора manufacturing route
+Comparison:
 
-- [ ] Сделать CAD `TEST_LENS_5G_V1` Ø240 мм.
-- [ ] При необходимости разделить конструкцию на полусферы/сегменты.
-- [ ] Напечатать технологический фрагмент.
-- [ ] Проверить размер lattice, толщины стенок, открытость пор и зазоры.
-- [ ] Сравнить фактическую массу с моделью.
-- [ ] Напечатать полный V1.
-- [ ] Сделать рассчитанный металлический reflector.
+`5 / 7.5 / 10 mm`.
 
-## Первая измерительная серия
+- [ ] Напечатать gyroid coupons `rho≈0.2/0.4/0.6/rho_center`.
+- [ ] Для provisional HARZ `epsilon_solid=2.303` preliminary `rho_center≈0.806`.
+- [ ] Измерить массу и фактическую volume fraction.
+- [ ] Проверить min wall после wash/post-cure.
+- [ ] Проверить trapped resin/channel closure.
+- [ ] Измерить `epsilon_eff(rho)` около 5 ГГц.
+- [ ] Выполнить M7 periodic unit-cell simulations.
+- [ ] Проверить anisotropy X/Y/Z.
+- [ ] Заменить Bruggeman в generator на measured interpolation.
 
+## Приоритет №4 — reflector и whole-lens
+
+После M6/M7:
+
+- [ ] M9: full sphere + PEC cap.
+- [ ] Cap sweep `15/30/45/60/90°`.
+- [ ] Выбрать минимальный cap после насыщения прироста.
+- [ ] Сравнить с hemisphere + ground plane.
+- [ ] Снять `RCS(theta)` минимум до ±60°.
+- [ ] Проверить seam sensitivity для двух полусфер.
+- [ ] Проверить material-loss sensitivity.
+- [ ] Требовать запас относительно +10 dB до печати полного V1.
+
+## Приоритет №5 — изготовление V1
+
+Основной manufacturing route уже выбран:
+
+**photopolymer continuous radial sheet-gyroid / TPMS**.
+
+- [ ] Сгенерировать финальную geometry с measured `epsilon_eff(rho)`.
+- [ ] Разделить на две открытые полусферы.
+- [ ] Добавить alignment features без существенного RF-возмущения.
+- [ ] Напечатать технологический сегмент.
+- [ ] Проверить washing/post-cure.
+- [ ] Проверить размеры, массу, shrinkage, wall thickness.
+- [ ] Напечатать полный TEST_LENS_5G_V1.
+- [ ] Сделать выбранный металлический reflector.
+
+## NanoVNA-стенд
+
+- [ ] Подтвердить устойчивую работу NanoVNA-F V3 около 5 ГГц.
+- [ ] Найти 2 одинаковые направленные антенны.
+- [ ] Найти 2 одинаковых RF-кабеля.
+- [ ] Жёсткая база TX/RX.
+- [ ] Диэлектрическая стойка мишени.
+- [ ] Поворотная платформа минимум ±60°.
+- [ ] Дистанция: начать 2.5–3.0 м.
 - [ ] 2-port calibration.
 - [ ] BACKGROUND.
 - [ ] HOLDER.
 - [ ] REFERENCE target.
+- [ ] BASELINE.
 - [ ] LENS без reflector.
 - [ ] LENS + reflector.
-- [ ] Выбранный BASELINE.
-- [ ] Повтор ключевых конфигураций минимум 3 раза.
-- [ ] Angle sweep минимум -30...+30° шаг 5°, желательно до ±60°.
-- [ ] Комплексное background subtraction.
-- [ ] Рассчитать `K_sigma` и `Delta_sigma_dB`.
+- [ ] Сохранять complex S21/.s2p.
+- [ ] Повтор ключевых измерений минимум 3 раза.
 
-## Проверка масштабирования
+## Масштабирование после валидации
 
-- [ ] Сопоставить experiment Ø240 @ 5 ГГц с Meep Ø240 @ 5 ГГц.
-- [ ] Масштабировать выбранную геометрию до Ø80 мм.
-- [ ] Рассчитать Ø80 @ **15 ГГц**.
-- [ ] Отдельно рассчитать Ø80 @ **24 ГГц**.
-- [ ] Сравнить нормированные угловые характеристики и относительный gain.
-- [ ] Проверить, не ломает ли scaling дисперсия `epsilon_r/tan(delta)`.
+- [ ] Сопоставить Meep Ø240 @5 GHz с физическим experiment.
+- [ ] Масштабировать geometry 1:3.
+- [ ] Рассчитать Ø80 @15 GHz.
+- [ ] Отдельно рассчитать Ø80 @24 GHz.
+- [ ] Учесть dispersion `epsilon/tan(delta)`.
+- [ ] Не утверждать физическую проверку 15/24 GHz, если измерялся только 5-GHz prototype.
 
-## Минимальный результат итерации
+## R&D ветки, которые НЕ должны тормозить MVP
 
-1. Meep показывает работу continuous ideal Ø240 мм на 5 ГГц.
-2. 6/8/11-zone сравнены с continuous.
-3. Хотя бы одна explicit printable continuous-gradient geometry рассчитана.
-4. Есть материал-кандидат с известными `epsilon_r` и `tan(delta)`.
-5. Выбран manufacturing route: FDM или photopolymer по данным, а не по удобству.
-6. NanoVNA различает reference target на 2.5–3 м.
+### PLA Aero / LW-PLA
+
+- [ ] Сохранить как R&D branch.
+- [ ] Позже: `T/flow/speed -> foam density -> epsilon`.
+- [ ] Custom G-code только после первого photopolymer MVP.
+
+### TiO2 / SrTiO3 filled resin
+
+- [ ] Сохранять как material-development branch.
+- [ ] Не легировать текущий HARZ DE-10, если neat material уже даёт `epsilon>2` и низкий loss, пока не появится конкретная причина.
+- [ ] Возвращаться к filler branch, если нужно больше `epsilon_solid`, ниже loss, лучшая printability или контролируемая custom formulation.
+
+## Минимальный результат текущей итерации
+
+1. M0-M5 закрыты и воспроизводимы.
+2. HARZ DE-10 получен или есть точный срок.
+3. Есть собственные 5-GHz solid-coupon data.
+4. Есть measured `epsilon_eff(rho)` хотя бы для 4 gyroid densities.
+5. M6/M7 согласуются достаточно для homogenized whole-lens workflow.
+6. Reflector выбран по M9 sweep.
 7. Напечатан TEST_LENS_5G_V1.
-8. Получен физический `K_sigma(theta)` на 5 ГГц.
+8. Получен экспериментальный `K_sigma(theta)`.
 9. Meep воспроизводит физический тренд.
-10. Есть prediction для Ø80 @15 ГГц и @24 ГГц.
-
-## Не делать сейчас
-
-- не считать 5 ГГц частью заданного рабочего диапазона конечного изделия: это **частота масштабной модели**;
-- не утверждать, что 24 ГГц проверены физически;
-- не возвращаться к HB100/LD2410/Arduino как к основному количественному стенду;
-- не печатать зональную V1 только потому, что она проще;
-- не считать Orca square-hole pattern финальной RF-структурой;
-- не выбирать фотополимер до проверки потерь;
-- не выбрасывать из истории неудачные ветки: фиксировать причину отказа в `docs/06_DESIGN_SPACE_AND_REASONING.md`.
+10. Есть prediction Ø80 @15 GHz и отдельный расчёт @24 GHz.
