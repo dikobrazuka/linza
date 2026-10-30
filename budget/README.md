@@ -1,133 +1,74 @@
-# Смета — актуальная версия под 5-GHz физическую верификацию
+# Смета — physical V1 Ø120 @5 GHz
 
-## 1. Что уже зафиксировано
+## 1. RF setup
 
-Физический эксперимент:
+Доступный measurement setup работает примерно до 6 GHz. Отдельный 24-GHz VNA/WR-42 для текущего MVP не требуется.
 
-- `f ≈ 5.0 GHz`;
-- `D_test = 240 mm`;
-- доступный VNA/measurement setup работает примерно до `6 GHz`;
-- две одинаковые направленные антенны около 5 GHz;
-- distance `2.5–3.0 m`;
-- final 24-GHz version — **расчётная**, отдельный 24-GHz VNA для MVP не требуется.
+Physical V1:
 
-Старая смета с 24-GHz VNA, WR-42 и Ø80-mm physical target снята с основного маршрута.
+- `f≈5 GHz`;
+- `D=120 mm`;
+- start distance `1.0–1.5 m`.
 
-## 2. RF-часть стенда
+## 2. HARZ DE-10
 
-| Позиция | Кол-во | Требование | Статус/бюджет |
-|---|---:|---|---:|
-| 2-port VNA / measurement setup | 1 | устойчиво работает около 5 GHz, верх примерно 6 GHz | **ЕСТЬ / ДОСТУПЕН** |
-| Направленная антенна около 5 GHz | 2 | одинаковые, одна поляризация | проверить/найти |
-| RF-кабель | 2 | работает в используемом sweep | проверить/найти |
-| Calibration kit | 1 | под используемые разъёмы | проверить наличие |
-| RF adapters | комплект | VNA <-> cables <-> antennas | по факту стенда |
+Supplier status:
 
-Отдельный комплект 18–26.5 GHz / WR-42 для текущего MVP **не покупать и не искать как обязательный**.
+- pack `0.5 kg`;
+- `7000 RUB / 0.5 kg`;
+- available current stock up to `1.5 kg`;
+- planned purchase `1.0 kg`;
+- planned resin cost `14,000 RUB`.
 
-## 3. HARZ DE-10
+## 3. Material balance
 
-Поставщик сообщил:
+Current preliminary Ø120 calculation:
 
-- упаковка: `0.5 kg`;
-- цена: `7000 RUB / 0.5 kg`;
-- текущий доступный остаток: до `1.5 kg`;
-- срок годности текущей партии: `12.01.2027`;
-- план закупки проекта: `1.0 kg`.
+- sphere envelope `904.78 cm³`;
+- ideal/unclamped volume-average rho `≈0.358`;
+- cured resin `≈356 g` at provisional density `1.1 g/cm³`;
+- with provisional `rho_min=0.12`: `≈366 g`.
 
-Стоимость 1 kg:
+Reserve remaining material for:
 
-`2 × 7000 = 14 000 RUB`.
+- T1;
+- T2;
+- T3;
+- T4;
+- exposure/process calibration;
+- technological gradient segment;
+- failed prints / supports / vat losses.
 
-Основной резерв материала:
+Do not print full lens until exact mass is recomputed from T2/T3/T4.
 
-- T1 solid SPDR plates;
-- T2 density/shrinkage samples;
-- T3 gyroid printability samples;
-- T4 RF gyroid coupons;
-- technological segment;
-- full `TEST_LENS_5G_V1`.
+## 4. Mechanical stand
 
-## 4. Механика 5-GHz стенда
+For Ø120 target:
 
-| Позиция | Кол-во | Ориентир, RUB | Назначение |
-|---|---:|---:|---|
-| Жёсткая база TX/RX | 1 | 300–1000 | фиксирует обе антенны |
-| Штатив/стойка антенн | 1 | 1000–2000 | высота/наведение |
-| Диэлектрическая стойка target | 1 | 300–800 | Ø240-mm demonstrator |
-| Основание target stand | 1 | 300–700 | устойчивость |
-| Печатные adapters/clamps | комплект | 300–800 | крепления |
-| Поворотная платформа | 1 | 300–800 | angular sweep |
-| Рулетка/дальномер | 1 | 200–1000 | 2.5–3.0 m |
-| Лазерный уровень/указатель | 1 | 300–800 | юстировка |
-| Разметка/скотч | комплект | 100–300 | repeatable positions |
+- rigid TX/RX base;
+- dielectric target stand;
+- rotation stage;
+- repeatable target holder;
+- tape/markers;
+- ruler/rangefinder;
+- alignment tool.
 
-Если часть механики уже есть, фактический расход ниже.
+Start stand distance is 1.0–1.5 m, not old 2.5–3.0 m.
 
-## 5. Target / reflector
+## 5. Known minimum budget
 
-| Позиция | Кол-во | Ориентир, RUB | Назначение |
-|---|---:|---:|---|
-| Алюминиевая/медная фольга или tape | 1 | 200–600 | PEC-like reflector |
-| Reference target | 1 | зависит от наличия | calibration/check |
-| Материал baseline target | 1 | 200–1000 | честный project baseline |
-| Доп. крепёж | комплект | 200–500 | reflector/target |
+- DE-10 1 kg: `14,000 RUB`.
 
-Размер reference/baseline не фиксировать старым Ø80: он выбирается под 5-GHz стенд и конкретную методику.
+Additional mechanics/consumables: roughly `3,000–8,000 RUB` if RF equipment is already available.
 
-## 6. Инструменты/расходники для T1-T4
+Current MVP budget without purchasing RF instrument: approximately `17,000–22,000 RUB`, subject to actual available hardware.
 
-Желательно иметь:
+## 6. 24-GHz reference
 
-- микрометр `0.001 mm`;
-- весы `0.001 g`;
-- штангенциркуль;
-- IPA/мойка;
-- post-cure unit;
-- individual containers/labels;
-- PPE для фотополимера.
+Strict-scaled current V1:
 
-Если оборудование уже есть, в бюджет не включать повторно.
+- `D=25 mm`;
+- `R=12.5 mm`;
+- `a=1.5625 mm`.
 
-## 7. Что сейчас НЕ покупать
-
-Не является critical path:
-
-- VNA до 26.5 GHz;
-- WR-42 horns;
-- 24-GHz cables/cal kit;
-- HB100;
-- RCWL-0516;
-- CDM324;
-- LD2410;
-- Arduino/ESP32 для основного количественного измерения;
-- Doppler-only stand;
-- отдельный radar detector.
-
-## 8. Минимальный известный денежный минимум
-
-Жёстко известный текущий расход:
-
-- `1 kg DE-10 = 14 000 RUB`.
-
-Остальная сумма зависит от того, какие VNA/antennas/cables/mechanics уже доступны.
-
-При наличии RF-части и большей части инструмента разумный дополнительный механический/расходный резерв:
-
-`~3 000–8 000 RUB`.
-
-Итого текущий ориентир MVP без покупки RF-прибора:
-
-`~17 000–22 000 RUB`.
-
-Это не финальная смета: после фиксации точных антенн, fixture T4 и полного расхода DE-10 пересчитать.
-
-## 9. 24-GHz версия
-
-`FINAL_LENS_24G` сейчас является расчётной:
-
-- `D=50 mm`;
-- `R=25 mm`;
-- `a=1.5625 mm` ideal scaled.
-
-Не закладывать отдельный 24-GHz measurement stand в MVP-бюджет, пока не появится отдельное требование физически измерить финальную 24-GHz конструкцию.
+24-GHz stage is calculation/prediction for current MVP; do not budget a separate 24-GHz stand unless requirements change.
