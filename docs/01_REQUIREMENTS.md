@@ -2,87 +2,79 @@
 
 ## 1. Конечная конструкция для защиты
 
-- расчётная частота: **24 GHz**;
-- максимальный габарит: **80 mm**;
-- максимальная масса: **300 g**;
-- конструкция пассивная;
-- основной manufacturing route: **photopolymer continuous radial sheet-gyroid / TPMS**;
-- FDM / PLA Aero / LW-PLA — R&D, не критический путь;
-- основной full-wave инструмент: **Meep**.
+- расчётная частота: `24 GHz`;
+- габарит `<=80 mm`;
+- масса `<=300 g`;
+- пассивная конструкция;
+- primary manufacturing route: photopolymer continuous radial sheet-gyroid;
+- Meep — основной full-wave solver.
 
-Текущая строго масштабированная версия от физического 5-GHz демонстратора имеет:
+Current strict-scaled reference from physical V1:
 
-- `D_final=50.0 mm`;
-- `R_final=25.0 mm`;
-- `a_final=1.5625 mm`;
-- scale `5/24`.
+- `D=25.0 mm`;
+- `R=12.5 mm`;
+- `a=1.5625 mm`.
 
-## 2. Физическая экспериментальная верификация
+## 2. Physical validation
 
-Физический демонстратор не обязан удовлетворять ограничению `<=80 mm`, потому что это масштабная лабораторная модель.
-
-`TEST_LENS_5G_V1`:
+Current physical V1 candidate:
 
 - `f=5.0 GHz`;
-- `D=240 mm`;
-- `R=120 mm`;
-- nominal `a=7.5 mm`;
-- измерительный тракт до ~6 GHz;
-- стартовая дистанция `2.5–3.0 m`.
+- `D=120 mm`;
+- `R=60 mm`;
+- `a=7.5 mm`;
+- available setup to ~6 GHz;
+- start distance `1.0–1.5 m`.
 
-Физически измеряется 5-GHz модель. 24-GHz результат — расчётная prediction после валидации Meep на 5 GHz.
+Because `D/lambda0≈2`, this diameter must pass the numerical diameter gate before full print.
 
-## 3. Основной показатель
+## 3. Main metric
 
-`K_sigma = sigma_test / sigma_baseline`.
+`K_sigma=sigma_test/sigma_baseline`.
 
-Цель:
+Success target:
 
-`K_sigma >= 10`.
+`K_sigma>=10`;
+`Delta_sigma_dB>=+10 dB`.
 
-В dB:
+## 4. Mandatory evidence
 
-`Delta_sigma_dB = 10*log10(K_sigma) >= +10 dB`.
-
-Reference target и project baseline не смешивать.
-
-## 4. Обязательные дополнительные показатели
-
-- focus position;
-- focal spot size;
-- `epsilon_r/tan(delta)` материала около 5 GHz;
-- measured `epsilon_eff(rho,f)` gyroid;
+- own DE-10 epsilon/tan(delta) @~5 GHz;
+- cured density/shrinkage;
+- real gyroid printability limits;
+- measured epsilon_eff(rho,f);
+- focus position/spot;
+- angular response;
 - repeatability;
 - anisotropy;
-- angular response;
 - material-loss sensitivity;
 - seam sensitivity;
-- model vs experiment mismatch;
-- масса/габарит 24-GHz design prediction;
-- оценка технологичности scaled geometry.
+- model vs experiment comparison;
+- 24-GHz prediction with dispersion/manufacturability sensitivity.
 
-## 5. Честность сравнения
+## 5. Pre-print gates
 
-Baseline и test должны иметь одинаковые:
+Full physical lens may be printed only after both gates pass:
 
-- положение;
-- держатель;
-- высоту;
-- расстояние;
-- ориентацию;
-- настройки VNA;
-- положение кабелей/антенн.
+### RF gate
 
-## 6. Критерий завершения текущей итерации
+Compare at least `D=120/150/180/240 mm` in Meep and select the smallest passing diameter.
 
-1. T1: собственные `epsilon_r/tan(delta)` DE-10 около 5 GHz.
-2. T2: cured density/shrinkage.
-3. T3: реальные `rho_min_print/rho_max_print` и `h -> rho_actual`.
-4. T4: measured `epsilon_eff(rho,f)` около 5 GHz.
-5. M0-M9 воспроизводимы в Meep.
-6. Напечатан и измерен `TEST_LENS_5G_V1` Ø240 mm @5 GHz.
-7. Получен `K_sigma` и model-vs-experiment comparison.
-8. Все линейные размеры масштабированы `×5/24`.
-9. Выполнен M10 для Ø50 mm @24 GHz.
-10. Для 24 GHz явно разделены: рассчитанное, измеренное на 5 GHz и неизвестное из-за dispersion/manufacturability.
-11. Есть фотофиксация, raw data, итоговый отчёт и презентация.
+### Material gate
+
+Recalculate full-lens polymer volume/mass using T2/T3/T4 and confirm available DE-10 reserve is sufficient.
+
+Current provisional Ø120 mass estimate: about `356–366 g` cured resin depending on clamp assumptions.
+
+## 6. Completion criteria
+
+1. T1-T4 closed.
+2. M0-M8 reproducible.
+3. Diameter selected by RF gate.
+4. Material budget passes.
+5. Tech segment passes wash/cure/geometry checks.
+6. Physical 5-GHz lens printed and measured.
+7. Experimental `K_sigma` quantified.
+8. Meep reproduces physical trend.
+9. M10 strict 5/24 scaling calculated.
+10. Defense package clearly separates measured 5-GHz evidence from calculated 24-GHz prediction.
