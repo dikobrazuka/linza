@@ -1,253 +1,231 @@
-# Ближайшие действия — TEST_LENS_5G_V1 -> FINAL_LENS_24G
+# Ближайшие действия — упрощённый MVP
 
-## Каноническая схема
+Дата: 2026-10-31
 
-Физическая верификация:
+Основной принцип: **не превращать проект в отдельную научную программу**. Практика должна доказать работоспособность идеи минимальным числом шагов. Расширенные sweep/uncertainty/aniso/topology исследования оставить как optional appendix.
 
-- `f=5.0 GHz`;
-- current preferred `D=120 mm`;
-- `R=60 mm`;
-- `lambda0≈59.96 mm`;
-- `D/lambda0≈2.00`;
-- nominal `a=7.5 mm`;
+## Канон проекта
+
+Физическая проверка:
+
+- `f = 5.0 GHz`;
+- `D = 120 mm`;
+- `R = 60 mm`;
+- `a = 7.5 mm`;
 - measurement setup до ~6 GHz.
 
-Strict-scaled 24-GHz reference при сохранении Ø120:
+Расчётная версия после валидации:
 
-- scale `5/24=0.2083333`;
-- `D=25.0 mm`;
-- `R=12.5 mm`;
-- `a=1.5625 mm`.
+- `f = 24 GHz`;
+- scale `5/24`;
+- при Ø120: `D = 25 mm`, `R = 12.5 mm`, `a = 1.5625 mm`.
 
-## Приоритет №1 — M0-M6
+## Приоритет №1 — материал
 
-- [ ] M0 background.
-- [ ] M1 numerical reference + near-to-far validation.
-- [ ] M2 homogeneous sphere control.
-- [ ] M3 ideal continuous Luneburg Ø120 @5 GHz, lossless.
-- [ ] M4 loss sensitivity.
-- [ ] M5 11-zone benchmark + one-time 6/8-zone comparison.
-- [ ] M6 homogenized manufacturable continuous GRIN.
-- [ ] Resolution convergence.
+### T1 — solid DE-10
 
-## Mandatory diameter gate
+Сделать **3 пластины** примерно `80×80×1.5 mm` или размера, который реально требует лабораторная оснастка.
 
-Документы:
+Получить около 5 ГГц:
 
-- `simulation/DIAMETER_GATE.md`;
-- `simulation/configs/DIAMETER_GATE_5G.yaml`.
+- `epsilon_solid`;
+- `tan_delta`.
 
-Сравнить:
+Если три образца дают согласованный результат — расширенную серию не делать.
 
-- `D=120 mm` current preferred;
-- `D=150 mm`;
-- `D=180 mm`;
-- `D=240 mm` reference.
+### T2 — cured density
 
-Outputs:
+Сделать **3 образца `20×20×10 mm`**.
 
-- peak `K_sigma`;
-- `Delta_sigma_dB`;
-- focus position/R;
-- spot width/lambda;
-- angular width;
-- frequency response;
-- numerical convergence;
-- predicted cured mass.
+После полного post-cure:
 
-Selection rule:
+- измерить X/Y/Z;
+- взвесить;
+- получить cured density.
 
-**выбрать минимальный D, который проходит RF + numerical + material + stand gates.**
+## Приоритет №2 — gyroid-калибровка
 
-Ø120 до этого имеет статус:
+Базовый coupon:
 
-`PREFERRED / NOT YET RF-LOCKED`.
+- `30×30×15 mm`;
+- `a=7.5 mm`.
 
-## Приоритет №2 — T1 DE-10
+Пять плотностей:
 
-Protocol: `docs/08_DE10_SPDR_T1_PROTOCOL.md`.
+- `0.15`;
+- `0.30`;
+- `0.50`;
+- `0.65`;
+- `0.80`.
 
-- [ ] Lock `PROFILE_DE10_V1`.
-- [ ] Print `DE10-S01...S04`, `80×80×1.50 mm`.
-- [ ] Identical wash/post-cure.
-- [ ] 24 h conditioning.
-- [ ] Thickness map.
-- [ ] 3 physical samples ×3 placements minimum.
-- [ ] Own `epsilon_r/tan_delta` around 5 GHz.
+Для каждой:
 
-## Приоритет №3 — T2/T3
+- [ ] напечатать;
+- [ ] промыть;
+- [ ] post-cure;
+- [ ] проверить отсутствие trapped resin;
+- [ ] взвесить;
+- [ ] вычислить фактическую volume fraction;
+- [ ] измерить `epsilon_eff` около 5 ГГц.
 
-Protocol: `docs/09_DE10_GYROID_T2_T3_PROTOCOL.md`.
+Основной output:
 
-### T2
+`rho_actual -> epsilon_eff`.
 
-- [ ] 5 solid coupons `20×20×10 mm`.
-- [ ] Cured density.
-- [ ] Shrinkage X/Y/Z.
+Если крайняя плотность не печатается — рабочий диапазон просто ограничить ближайшей успешной точкой.
 
-### T3
+Не делать 9 плотностей, finite-length campaign, anisotropy matrix и физические дубликаты, если основной результат достаточно чистый.
 
-- nominal `a=7.5 mm`;
-- coupon `30×30×15 mm`;
-- rho series `0.10/0.15/0.20/0.30/0.40/0.50/0.65/0.81/0.90`.
+## Приоритет №3 — расчёт Ø120
 
-- [ ] Generate STL with `tools/uniform_sheet_gyroid_coupon.py`.
-- [ ] Require `watertight=True` and `|rho_mesh_error|<=2%` before print.
-- [ ] Determine measured `rho_min_print/rho_max_print`.
-- [ ] Calculate `rho_actual` from measured cured density.
+Идеальный профиль:
 
-## Приоритет №4 — T4
+`epsilon(r)=2-(r/R)^2`.
 
-Executable protocol:
+По экспериментальной таблице построить:
 
-`docs/12_T4_RF_GYROID_PROTOCOL.md`.
+`epsilon_target(r) -> rho(r) -> h(r)`.
 
-Data workspace:
+Сгенерировать continuous sheet-gyroid Ø120.
 
-`data/materials/de10/`.
+### Обязательные расчёты
 
-### T4-0 — fixture gate
+Всего три:
 
-- [ ] Fill `data/materials/de10/T4_FIXTURE_CARD.md`.
-- [ ] Record exact method / VNA / fixture / aperture / holder / calibration planes / deembedding / raw export.
-- [ ] Until T4-0 is filled: **NO-CAD / NO-PRINT for RF coupons**.
+1. **Ideal Ø120** — поле + фокус + backscatter.
+2. **Manufacturable Ø120** — measured `rho->epsilon`, реальные limits по плотности.
+3. **Reflector sweep только 30/60/90°** — baseline reflector-only и lens+same reflector.
 
-### T4-1 — pilot
+Если Ø120 уже показывает нормальный результат — mandatory diameter sweep 120/150/180/240 не делать.
 
-- [ ] After T3 choose representative mid density.
-- [ ] If fixture allows, compare propagation length `2a=15 mm`, `3a=22.5 mm`, optional `4a=30 mm`.
-- [ ] 3 independent insertions each.
-- [ ] Check finite-length sensitivity, extraction stability and dynamic range.
+Расширенный diameter gate оставить только как fallback, если Ø120 не даёт требуемого эффекта.
 
-### T4-2 — calibration series
+## Приоритет №4 — изготовление
 
-- [ ] Minimum 5 PASS densities across printable range.
-- [ ] Include low/mid/high and center-region density if printable.
-- [ ] Minimum 2 physical duplicate coupons at representative mid/high points.
-- [ ] Minimum 3 reinsertions per physical coupon.
-- [ ] Save raw complex data.
-- [ ] Repeatability and physical sample-to-sample reproducibility separately.
-- [ ] Check anisotropy at minimum two densities.
-- [ ] Produce `DE10_GYROID_EPS_CAL_5GHz.csv`.
+Перед full print:
 
-Generator after T4:
+- [ ] проверить массу;
+- [ ] проверить build volume;
+- [ ] проверить минимальную стенку;
+- [ ] убедиться, что каналы моются.
 
-- measured interior points define calibration;
-- `rho=0 -> epsilon=1` added automatically;
-- `rho=1 -> epsilon=epsilon_solid(T1)` added automatically;
-- final manufacturing clamp still comes from T3.
+Затем:
 
-## Приоритет №5 — M7-M9
+- [ ] напечатать две открытые полусферы;
+- [ ] wash;
+- [ ] post-cure;
+- [ ] взвесить;
+- [ ] измерить итоговый D;
+- [ ] собрать;
+- [ ] поставить выбранный reflector.
 
-- [ ] M7 explicit gyroid unit-cell/coupon.
-- [ ] Validate against T4.
-- [ ] a=5/7.5/10 mm sensitivity; nominal 7.5.
-- [ ] M8 reduced explicit validation.
-- [ ] Run diameter gate DG-B with measured manufacturable law.
-- [ ] Lock smallest passing physical diameter.
-- [ ] M9 whole selected-D lens + reflector.
-- [ ] PEC cap sweep 15/30/45/60/90°.
-- [ ] Compare full sphere + cap vs hemisphere + ground plane.
-- [ ] Seam/loss sensitivity.
+Отдельный technological segment не обязателен, если gyroid calibration coupons уже содержат сопоставимые минимальные стенки и успешно промываются.
 
-## Приоритет №6 — material budget before full print
+## Приоритет №5 — эксперимент 5 ГГц
 
-Tool:
+Стенд:
 
-```bash
-python tools/material_budget.py --diameters 120 150 180 240
-```
+`VNA Port 1 -> TX -> target -> RX -> VNA Port 2`.
 
-Current provisional assumptions:
-
-- `epsilon_solid=2.30318`;
-- cured density `1.10 g/cm³`;
-- no technological clamp;
-- purchased resin `1000 g`;
-- reserve `250 g`;
-- usable lens budget `750 g`.
-
-Reference result:
-
-| D | cured mass | provisional material gate |
-|---:|---:|---|
-| 120 | ~356.5 g | PASS |
-| 150 | ~696.3 g | PASS |
-| 180 | ~1203.1 g | FAIL |
-| 240 | ~2851.9 g | FAIL |
-
-After T2/T3/T4 rerun with measured:
-
-- cured density;
-- rho_min/rho_max;
-- measured epsilon law.
-
-## Приоритет №7 — manufacture selected V1
-
-Only after diameter + material GO:
-
-- [ ] Generate measured-law geometry.
-- [ ] Split into open hemispheres / manufacturing sections as required by real printer build volume.
-- [ ] Add minimal alignment features.
-- [ ] Print technological segment.
-- [ ] Verify wash/post-cure/shrinkage/mass/min wall.
-- [ ] Print full selected physical demonstrator.
-- [ ] Manufacture selected reflector.
-
-## Приоритет №8 — physical 5-GHz experiment
-
-For current Ø120 candidate:
-
-`R_ff≈0.48 m`.
-
-Start distance:
+Для Ø120 стартовая distance:
 
 `1.0–1.5 m`.
 
-- [ ] Confirm stable setup at 5 GHz.
-- [ ] 2 identical directional antennas.
-- [ ] Fixed TX/RX base.
-- [ ] BACKGROUND / HOLDER / REFERENCE / BASELINE / LENS_NO_REFLECTOR / LENS+REFLECTOR.
-- [ ] Save complex `.s2p`.
-- [ ] Repeat key placements >=3.
-- [ ] Angular sweep minimum -30...+30° step 5°; preferred ±60°.
-- [ ] Verify distance/background/direct-coupling sensitivity.
-- [ ] Repeat stand gate if selected D differs from 120 mm.
+Минимальный набор состояний:
 
-## Приоритет №9 — M10 @24 GHz
+1. `BACKGROUND`;
+2. `REFERENCE` — металлическая sphere;
+3. `BASELINE` — reflector only;
+4. `TEST` — lens + reflector.
 
-After 5-GHz validation:
+Для `BASELINE` и `TEST`:
 
-- [ ] Scale all linear dimensions ×`5/24`.
-- [ ] If Ø120 retained: `D:120 ->25 mm`, `R:60 ->12.5 mm`, `a:7.5 ->1.5625 mm`.
-- [ ] If another D wins diameter gate, regenerate scaled dimensions from that D.
-- [ ] Run Meep @24 GHz.
-- [ ] Material-dispersion sensitivity.
-- [ ] Loss sensitivity.
-- [ ] Manufacturability/min-wall sensitivity.
-- [ ] Estimate mass.
-- [ ] Do not claim physical 24-GHz validation.
+- **3 независимых установки**;
+- сохранять complex `.s2p`.
 
-## Automated quality checks
+Главный результат:
 
-Run locally:
+`Delta_sigma_dB = 20 log10(|S21_test/S21_baseline|)`
 
-```bash
-pytest -q
-```
+после одинаковой complex background subtraction.
 
-CI:
+Цель:
 
-`.github/workflows/python-tests.yml`.
+`Delta_sigma_dB >= +10 dB`.
 
-Regression checks include:
+Angular sweep:
 
-- gyroid box clipping + watertight mesh;
-- measured calibration endpoints;
-- full Luneburg epsilon mapping;
-- Ø120 material budget;
-- canonical dimensions across code/docs.
+- сначала качественная центральная точка `0°`;
+- потом, если времени хватает, `-30...+30°`, step `5°`.
 
-## Critical path summary
+## Приоритет №6 — 24 ГГц для защиты
 
-`T1 -> T2/T3 -> T4 -> M6/M7 -> diameter gate -> M8/M9 -> material-budget gate -> tech segment -> full print -> 5-GHz measurement -> M10 scaled @24 GHz`.
+После сопоставления 5-ГГц experiment vs model:
+
+- [ ] масштабировать все линейные размеры ×`5/24`;
+- [ ] при Ø120 получить Ø25 мм;
+- [ ] рассчитать 24-ГГц модель;
+- [ ] показать sensitivity к `epsilon/tan_delta`;
+- [ ] проверить минимальную scaled wall;
+- [ ] не выдавать 24-ГГц результат за физически измеренный.
+
+## Теория для оформления
+
+Основной файл:
+
+`docs/16_THEORY_FOR_REPORT.md`.
+
+В нём уже собраны:
+
+- ЭПР/RCS;
+- линза Люнеберга;
+- профиль `epsilon(r)`;
+- фазовая скорость и образование фокуса;
+- роль reflector;
+- effective medium;
+- sheet-gyroid/TPMS;
+- DE-10;
+- dielectric loss;
+- FDTD/Meep;
+- scaling 5 ->24 GHz;
+- ограничения метода;
+- причинно-следственная цепочка для защиты.
+
+## Optional / только если понадобится
+
+Не входит в обязательный MVP:
+
+- diameter sweep `120/150/180/240`;
+- full reflector sweep `15/30/45/60/90`;
+- extensive uncertainty budget;
+- anisotropy campaign;
+- topology comparison;
+- 9-density calibration;
+- full 24-GHz experiment;
+- отдельный сложный автоматический report generator.
+
+Инструменты можно оставить в репе как запас.
+
+## Критический путь
+
+`3 solid RF plates`
+
+→ `3 density samples`
+
+→ `5 gyroid RF coupons`
+
+→ `rho_actual -> epsilon_eff`
+
+→ `Ø120 continuous gyroid model`
+
+→ `30/60/90° reflector comparison`
+
+→ `print Ø120`
+
+→ `BACKGROUND / REFERENCE / BASELINE / TEST @5 GHz`
+
+→ `Delta_sigma_dB`
+
+→ `scale ×5/24`
+
+→ `24-GHz calculated result`.
