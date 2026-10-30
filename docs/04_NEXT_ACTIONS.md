@@ -70,26 +70,73 @@
 - [ ] Не переносить 10-GHz значения производителя в финальную модель без проверки.
 - [ ] Сохранить raw measurement и обработанную таблицу в `data/materials/de10/`.
 
-## Приоритет №3 — gyroid calibration
+## Приоритет №3 — T2/T3: density, shrinkage и технологический диапазон gyroid
 
-Текущий nominal cell:
+Исполняемый протокол:
 
-`a=7.5 mm`.
+`docs/09_DE10_GYROID_T2_T3_PROTOCOL.md`
 
-Comparison:
+Генератор uniform coupons:
 
-`5 / 7.5 / 10 mm`.
+`tools/uniform_sheet_gyroid_coupon.py`
 
-- [ ] После закрытия T1 определить реальные `rho_min_print` / `rho_max_print`.
-- [ ] Напечатать gyroid coupons `rho≈0.2/0.4/0.6/rho_center`.
-- [ ] Для provisional HARZ `epsilon_solid=2.303` preliminary `rho_center≈0.806`.
-- [ ] Измерить массу и фактическую volume fraction.
-- [ ] Проверить min wall после wash/post-cure.
-- [ ] Проверить trapped resin/channel closure.
-- [ ] Измерить `epsilon_eff(rho)` около 5 ГГц.
+### T2 — solid density / shrinkage
+
+- [ ] Напечатать 5 solid coupons `20.00 × 20.00 × 10.00 mm`.
+- [ ] После wash измерить X/Y/Z и массу.
+- [ ] После post-cure + 24 h повторно измерить X/Y/Z и массу.
+- [ ] Рассчитать `rho_solid_geom` по фактическому cured volume.
+- [ ] Рассчитать shrinkage X/Y/Z.
+- [ ] Требовать `CV(rho_solid_geom) <= 1.5%`; иначе повторить T2 до использования density в mass-based gyroid calibration.
+- [ ] Если доступна лабораторная гидростатика, дополнительно получить ISO 1183-1 Method A / ASTM D792 reference density.
+
+### T3 — uniform sheet-gyroid printability
+
+Текущий nominal period:
+
+`a = 7.5 mm`.
+
+Базовый coupon:
+
+`30.00 × 30.00 × 15.00 mm = 4 × 4 × 2 gyroid periods`.
+
+Базовая серия:
+
+- `rho=0.10`, `h≈0.155137`;
+- `rho=0.15`, `h≈0.233275`;
+- `rho=0.20`, `h≈0.310328`;
+- `rho=0.30`, `h≈0.462674`;
+- `rho=0.40`, `h≈0.619249`;
+- `rho=0.50`, `h≈0.766812`;
+- `rho=0.65`, `h≈0.987636`;
+- `rho=0.81`, `h≈1.211042`;
+- `rho=0.90`, `h≈1.329630`.
+
+Действия:
+
+- [ ] Сгенерировать 9 STL через `tools/uniform_sheet_gyroid_coupon.py`.
+- [ ] До печати требовать `watertight=True` и `|rho_mesh_error| <= 2%`.
+- [ ] Для low-density `rho=0.10/0.15` при необходимости уменьшить voxel до `0.05 mm`.
+- [ ] Напечатать все 9 coupons одним профилем/ориентацией/process.
+- [ ] Выполнить один wash protocol и фиксировать `mass_after_wash_0h` / `mass_after_wash_24h`.
+- [ ] После post-cure + 24 h измерить массу и bounding X/Y/Z.
+- [ ] Рассчитать `rho_actual_mass = mass / (rho_solid * V_env)` с `V_env=13.5 cm³`.
+- [ ] Сравнивать прежде всего с `rho_mesh`, а не только с аналитическим `rho_target`.
+- [ ] PASS calibration point: complete print + washable + mechanically intact + no massive sheet fusion + `|rho_actual-rho_mesh|/rho_mesh <= 5%`.
+- [ ] Определить экспериментальные `rho_min_print` и `rho_max_print` только по PASS samples.
+- [ ] Если граница PASS/FAIL между двумя точками — делать midpoint/bisection до `Δrho <= 0.025` либо до отсутствия практического смысла дальнейшего уточнения.
+- [ ] Сохранить `h -> rho_mesh -> rho_actual` в `data/materials/de10/T3_GYROID_RESULT.csv`.
+
+### RF calibration после T3
+
+- [ ] Не печатать RF-waveguide coupons заранее.
+- [ ] Сначала зафиксировать конкретный fixture/waveguide и его фактический internal aperture.
+- [ ] После этого сделать отдельный T4 protocol для `epsilon_eff(rho,f)` по complex S-parameters.
 - [ ] Выполнить M7 periodic unit-cell simulations.
-- [ ] Проверить anisotropy X/Y/Z.
-- [ ] Заменить Bruggeman в generator на measured interpolation.
+- [ ] Проверить anisotropy X/Y/Z на выбранных density points.
+- [ ] Заменить Bruggeman в continuous generator на measured interpolation.
+
+Comparison period `5 / 7.5 / 10 mm` оставить как отдельный M7/RF sensitivity sweep после подтверждения технологической работоспособности nominal `a=7.5 mm`; не размножать physical coupons по трём периодам до необходимости.
 
 ## Приоритет №4 — reflector и whole-lens
 
@@ -166,10 +213,11 @@ Comparison:
 1. M0-M5 закрыты и воспроизводимы.
 2. HARZ DE-10 получен или есть точный срок.
 3. T1 закрыт: есть собственные 5-GHz solid-coupon data минимум по 3 физическим образцам.
-4. Есть measured `epsilon_eff(rho)` хотя бы для 4 gyroid densities.
-5. M6/M7 согласуются достаточно для homogenized whole-lens workflow.
-6. Reflector выбран по M9 sweep.
-7. Напечатан TEST_LENS_5G_V1.
-8. Получен экспериментальный `K_sigma(theta)`.
-9. Meep воспроизводит физический тренд.
-10. Есть prediction Ø80 @15 GHz и отдельный расчёт @24 GHz.
+4. T2 закрыт: есть measured cured-solid density и shrinkage.
+5. T3 закрыт: определены `rho_min_print`, `rho_max_print`, `h -> rho_mesh -> rho_actual`.
+6. Есть measured `epsilon_eff(rho)` минимум для выбранных RF calibration points.
+7. M6/M7 согласуются достаточно для homogenized whole-lens workflow.
+8. Reflector выбран по M9 sweep.
+9. Напечатан TEST_LENS_5G_V1.
+10. Получен экспериментальный `K_sigma(theta)` и Meep воспроизводит физический тренд.
+11. Есть prediction Ø80 @15 GHz и отдельный расчёт @24 GHz.
