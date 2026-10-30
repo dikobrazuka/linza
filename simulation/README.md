@@ -1,169 +1,150 @@
 # Расчёты и моделирование — Meep
 
-HFSS не используется как основной инструмент из-за платной лицензии. Основная расчётная ветка проекта — **Meep**.
+Основной полно-волновой инструмент проекта — **Meep**.
 
-## Входные данные
+Главный документ расчётной логики:
 
-- максимальный диаметр: 80 мм;
-- максимальная масса: 300 г;
-- фактическая частота физического стенда — зафиксировать после выбора оборудования;
-- целевой показатель: относительное обратное рассеяние/ЭПР;
-- основной угол: 0° по оси радара;
-- дополнительный диапазон углов: минимум ±20°.
+- `docs/07_CALCULATION_WORKFLOW.md` — фиксированный порядок моделей, входы, формулы, критерии PASS/FAIL.
 
-## Базовая модель
+Главный файл входов:
 
-### Идеальная линза Люнеберга
+- `simulation/INPUTS_TEMPLATE.yaml` — копировать для каждого расчёта в `simulation/configs/`.
 
-Радиус:
+## Актуальный объект расчёта
 
-`R = 40 mm`
+`TEST_LENS_5G_V1`:
 
-Профиль относительной диэлектрической проницаемости:
+- `f = 5.0 GHz`;
+- `D = 240 mm`;
+- `R = 120 mm`;
+- `lambda0 ≈ 60 mm`;
+- physical scaling pair: `Ø80 mm @15 GHz`;
+- `Ø80 mm @24 GHz` — отдельная расчётная точка.
 
-`epsilon_r(r) = 2 - (r/R)^2`
+Идеальный профиль:
 
-### Зачем эта модель
+`epsilon_r(r)=2-(r/R)^2`.
 
-Не для поиска абстрактного «максимума ЭПР», а для определения:
+Основной manufacturing route MVP:
 
-1. формируется ли фокус;
-2. где он находится;
-3. какого размера фокальное пятно;
-4. насколько результат меняется после дискретизации на печатаемые зоны.
+**photopolymer + continuous radial sheet-gyroid / TPMS**.
 
-## Шаг 1. Проверка Meep
+## Текущий материал-сценарий
 
-Перед собственной моделью запустить стандартный пример scattering/Mie sphere и убедиться, что:
+HARZ DE-10, предварительно по данным производителя @10 GHz:
 
-- расчёт запускается;
-- near-to-far работает;
-- данные сохраняются;
-- построение поля воспроизводимо.
+- 11 измеренных образцов;
+- mean `epsilon_r ≈2.30318`;
+- sample SD `≈0.06218`;
+- range `2.187...2.384`;
+- mean `tan(delta)≈0.0024227`;
+- sample SD `≈0.0003436`;
+- range `0.00184...0.00310`;
+- 405 nm compatible по ответу производителя.
 
-## Шаг 2. Идеальная непрерывная линза
+Это **provisional material scenario** для sensitivity/calculation. До финальной 5-GHz модели нужна собственная characterization около 5 GHz.
 
-Построить Ø80 мм с непрерывным `epsilon_r(r)`.
+## Не выбирать модель вручную
 
-Источник — плоская волна на фактической частоте стенда.
+Считать строго по лестнице:
 
-Сохранить карту `|E|^2` в диаметральном сечении.
+1. `M0` — empty/background;
+2. `M1` — numerical scattering reference;
+3. `M2` — homogeneous sphere control;
+4. `M3` — ideal continuous Luneburg, lossless;
+5. `M4` — ideal continuous + loss sensitivity;
+6. `M5` — 11-zone benchmark, плюс один раз 6/8-zone comparison;
+7. `M6` — homogenized manufacturable continuous GRIN;
+8. `M7` — explicit periodic gyroid unit cell/coupon;
+9. `M8` — reduced explicit gyroid validation;
+10. `M9` — whole lens + reflector;
+11. `M10` — Ø80 mm @15 GHz и затем отдельный Ø80 mm @24 GHz.
 
-Измерить:
+Подробности: `docs/07_CALCULATION_WORKFLOW.md`.
 
-- координату максимума поля;
-- расстояние фокуса от центра;
-- размер пятна по -3 dB;
-- размер пятна по -6 dB.
+## Multi-scale правило
 
-## Шаг 3. Шестизонная модель
+Не начинать с полного explicit Ø240-mm gyroid.
 
-Разделить радиус 40 мм на 6 зон одинаковой толщины:
+Разделить расчёт:
 
-`dr = 6.667 mm`
+- **micro scale:** explicit unit cell / coupon -> `epsilon_eff(rho)`, anisotropy, loss;
+- **macro scale:** whole lens -> homogenized measured `epsilon_realized(r)`.
 
-Стартовая аппроксимация по значениям профиля в середине каждой зоны:
+Полный explicit gyroid нужен только как дополнительная валидация при достаточных ресурсах.
 
-| Зона | r_mid, мм | epsilon_r, старт |
-|---|---:|---:|
-| 1 | 3.33 | 1.993 |
-| 2 | 10.00 | 1.938 |
-| 3 | 16.67 | 1.826 |
-| 4 | 23.33 | 1.660 |
-| 5 | 30.00 | 1.438 |
-| 6 | 36.67 | 1.160 |
+## Gyroid
 
-Эти значения — **цель для материала**, а не проценты infill.
+Основная implicit geometry:
 
-Сравнить с непрерывной моделью:
+`G = sin(kx)cos(ky)+sin(ky)cos(kz)+sin(kz)cos(kx)`
 
-- положение фокуса;
-- размер пятна;
-- пиковое поле;
-- обратное рассеяние.
+`k=2*pi/a`.
 
-## Шаг 4. Отражающий сектор
+Sheet solid:
 
-После нахождения фокуса добавить проводящий сектор на задней поверхности линзы.
+`|G|<=h(r)`.
 
-Начальные варианты полуугла сектора:
+Цепочка:
 
-- 10°;
-- 20°;
-- 30°;
-- 45°.
+`epsilon_target(r) -> rho(r) -> h(r) -> geometry`.
 
-Для каждого варианта получить возвратный сигнал/обратное рассеяние при 0°.
+Текущий cell sweep:
 
-Выбрать **минимальный сектор**, после которого дальнейшее увеличение площади металла почти не улучшает результат.
+- `a=5 mm` — EM reference;
+- `a=7.5 mm` — current first prototype candidate;
+- `a=10 mm` — manufacturing-friendly upper comparison.
 
-## Шаг 5. Угловая характеристика
+## Reflector
 
-Для выбранной конструкции выполнить расчёт как минимум:
+Первый whole-lens sweep:
 
-`theta = -20, -15, -10, -5, 0, +5, +10, +15, +20 deg`
+`full sphere + PEC cap`.
 
-Сохранить:
+Cap half-angle:
 
-- `backscatter(theta)`;
-- относительный прирост к baseline;
-- угол, на котором прирост падает ниже требуемого уровня.
+`15 / 30 / 45 / 60 / 90 deg`.
 
-## Шаг 6. Реальные свойства печати
+После выбора cap сравнить с:
 
-После получения таблицы `infill -> epsilon_r` заменить идеальные значения зон ближайшими физически достижимыми значениями.
+`hemisphere + PEC ground plane`.
 
-Повторить:
+## Основные выходы
 
-- фокус;
-- отражатель;
-- backscatter 0°;
-- угловую характеристику.
+Для каждой модели сохранять:
 
-## Baseline
+- focus position;
+- -3 dB / -6 dB spot size;
+- complex scattered response;
+- `K_sigma(theta)`;
+- `Delta_sigma_dB(theta)`;
+- material-loss sensitivity;
+- resolution convergence;
+- config YAML;
+- raw data;
+- `RESULT.md` с PASS/FAIL.
 
-Обязательно считать минимум две конфигурации:
+Главная проектная метрика:
 
-1. `baseline` — держатель/объект без линзы;
-2. `lens` — та же система с линзой.
+`K_sigma = sigma_test/sigma_baseline`.
 
-Основная величина:
+Цель:
 
-`K = sigma_lens / sigma_baseline`
+`K_sigma>=10`, то есть `Delta_sigma_dB>=+10 dB`.
 
-`Gain_dB = 10*log10(K)`
+## Численная сходимость
 
-Цель текущей версии проекта:
+Расчёт не считать закрытым без resolution sweep.
 
-`Gain_dB >= 10 dB`
+Текущий проектный gate:
 
-## Что сохранять из каждого расчёта
+- изменение `Delta_sigma_dB <0.5 dB` при дальнейшем повышении resolution;
+- изменение focus position `<1% R`.
 
-В `simulation/results/`:
+## Файлы
 
-- параметры модели;
-- частоту;
-- сетку/resolution;
-- геометрию зон;
-- epsilon каждой зоны;
-- размер отражателя;
-- карты поля;
-- сырые near-to-far данные;
-- итоговые CSV;
-- графики;
-- git commit, которым получен результат.
-
-## Рекомендуемая структура кода
-
-```text
-simulation/
-  README.md
-  src/
-    00_validate_meep.py
-    01_continuous_luneburg.py
-    02_six_zone_luneburg.py
-    03_reflector_sweep.py
-    04_angle_sweep.py
-  configs/
-  results/
-```
+- `CALCULATIONS.md` — базовые числа TEST_LENS_5G_V1 и зональные benchmark;
+- `CONTINUOUS_GYROID.md` — математика continuous sheet-gyroid;
+- `GYROID_CELL_SWEEP.md` — 5/7.5/10-mm comparison;
+- `INPUTS_TEMPLATE.yaml` — canonical run inputs;
+- `../docs/07_CALCULATION_WORKFLOW.md` — основной алгоритм расчёта.
