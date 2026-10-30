@@ -3,15 +3,16 @@ run_id: CHANGE_ME
 
 validation:
   physical_frequency_ghz: 5.0
-  physical_diameter_mm: 240.0
-  physical_radius_mm: 120.0
+  physical_diameter_mm: 120.0
+  physical_radius_mm: 60.0
   measurement_upper_limit_ghz_approx: 6.0
+  diameter_gate_mm: [120.0, 150.0, 180.0, 240.0]
 
 final_target:
   frequency_ghz: 24.0
-  linear_scale_from_5ghz: 0.2083333333   # 5/24
-  diameter_mm: 50.0
-  radius_mm: 25.0
+  linear_scale_from_5ghz: 0.2083333333
+  diameter_mm_strict_scaled: 25.0
+  radius_mm_strict_scaled: 12.5
   nominal_gyroid_cell_mm: 1.5625
   status: CALCULATED_PREDICTION
 
@@ -20,12 +21,12 @@ frequency:
   sweep_ghz: [4.8, 5.0, 5.2]
 
 geometry:
-  diameter_mm: 240.0
-  radius_mm: 120.0
-  architecture: full_sphere_cap   # full_sphere_cap | hemisphere_ground_plane
+  diameter_mm: 120.0
+  radius_mm: 60.0
+  architecture: full_sphere_cap
   gyroid_cell_mm: 7.5
-  rho_min: null                    # replace after T3
-  rho_max: null                    # replace after T3
+  rho_min: null
+  rho_max: null
   hemisphere_split: true
   seam_mm: null
 
@@ -34,10 +35,16 @@ material:
   epsilon_solid: 2.30318
   tan_delta: 0.0024227
   measured_at_ghz: 10.0
-  calibration_csv: null            # set after T4: rho,epsilon_eff
-  density_g_cm3: null              # set after T2
+  calibration_csv: null
+  density_g_cm3: null
   post_cure: UNKNOWN
-  source_note: "11 HARZ DE-10 manufacturer samples measured at 10 GHz; replace with own T1/T4 data for final 5 GHz model"
+  source_note: "Manufacturer 10-GHz values are provisional; replace with T1/T4 measured values before final manufacturing model"
+
+material_budget:
+  planned_purchase_g: 1000.0
+  provisional_full_lens_cured_mass_g_unclamped: 356.5
+  provisional_full_lens_cured_mass_g_rho_min_0p12: 366.4
+  require_recompute_after_t2_t3_t4: true
 
 reflector:
   type: PEC_cap
@@ -59,7 +66,8 @@ meep:
 
 experiment:
   baseline_definition: TODO
-  distance_m: 2.5
+  distance_m_start: 1.0
+  distance_m_check: [1.0, 1.25, 1.5]
   setup_upper_limit_ghz_approx: 6.0
   vna_or_setup: TODO
   tx_antenna: TODO
@@ -69,7 +77,7 @@ experiment:
   repeat_count_min: 3
 
 scaling_5_to_24:
-  enabled: false                 # true only for M10 config
+  enabled: false
   scale_all_linear_dimensions: 0.2083333333
   require_material_dispersion_sensitivity: true
   require_loss_sensitivity: true
