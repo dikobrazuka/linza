@@ -4,116 +4,124 @@
 
 ## Цель проекта
 
-Разработать, изготовить и экспериментально проверить компактный пассивный радиолокационный отражатель на основе 3D-печатной линзы Люнеберга для БПЛА.
+Разработать компактную пассивную GRIN/Luneburg-структуру для увеличения обратного радиолокационного рассеяния/ЭПР БПЛА и подтвердить расчёт физическим масштабным экспериментом.
 
-## Ограничения конечной конструкции
+## Каноническая схема проекта
 
-- максимальный габарит образца: **80 мм**;
-- максимальная масса: **300 г**;
-- рабочий диапазон проекта: **8–24 ГГц**;
-- основной manufacturing route MVP: **photopolymer continuous sheet-gyroid / TPMS**;
-- FDM / PLA Aero / LW-PLA: **R&D branch**, не критический путь MVP;
-- моделирование: **Meep**;
-- рабочая цель: прирост обратного рассеяния/ЭПР **не менее 10 раз**, то есть **+10 dB**, относительно явно выбранной baseline-конфигурации.
+### Физическая верификация
 
-## Текущая экспериментальная стратегия
+`TEST_LENS_5G_V1`:
 
-### TEST_LENS_5G_V1
+- `f_test = 5.0 GHz`;
+- `D_test = 240 mm`;
+- `R_test = 120 mm`;
+- доступный измерительный тракт работает до ~6 GHz;
+- физический эксперимент выполняется около 5 GHz;
+- основной manufacturing route: **photopolymer continuous radial sheet-gyroid / TPMS**;
+- материал-кандидат: **HARZ Labs DE-10**;
+- nominal gyroid period: `a_test = 7.5 mm`.
 
-- физическая частота: **5.0 ГГц**;
-- диаметр: **240 мм**;
-- радиус: **120 мм**;
-- масштаб относительно конечной конструкции: **3:1**;
-- электромагнитно подобный конечный вариант: **Ø80 мм @15 ГГц**;
-- 24 ГГц — отдельная расчётная точка;
-- 6/8/11 зон — benchmark;
-- основной target — **continuous GRIN**;
-- основной printable candidate — **continuous radial sheet-gyroid**;
-- reflector architectures: `full sphere + metal cap` и `hemisphere + metal ground plane`.
+### Расчётная версия для защиты
 
-## Текущий материал-кандидат
+Основная финальная точка:
 
-Сильнейший локальный MVP-кандидат сейчас — **HARZ Labs DE-10 / dielectric material**.
+- `f_final = 24.0 GHz`;
+- все линейные размеры масштабируются коэффициентом `5/24 = 0.2083333`;
+- `D_final = 240 * 5/24 = 50.0 mm`;
+- `R_final = 25.0 mm`;
+- `a_final = 7.5 * 5/24 = 1.5625 mm`.
 
-По данным производителя на 10 ГГц, 11 образцов:
+Ограничение эксперта `<=80 mm / <=300 g` относится к **конечной конструкции**, а не к лабораторному 5-GHz демонстратору. Ø50 мм автоматически удовлетворяет ограничению по габариту.
 
-- mean `epsilon_r ≈2.30318`;
-- range `2.187...2.384`;
-- mean `tan(delta)≈0.0024227`;
-- range `0.00184...0.00310`;
-- 405 нм поддерживается.
+Старая цепочка `Ø240 @5 GHz -> Ø80 @15 GHz` больше не является основной. 15 GHz можно использовать только как необязательную промежуточную расчётную точку.
 
-Это provisional material scenario. Для финального 5-ГГц прототипа нужна собственная characterization около 5 ГГц.
+Подробно: [`docs/10_SCALING_5_TO_24.md`](docs/10_SCALING_5_TO_24.md).
 
-Arkema N3D-DIELEC731 остаётся reference/backup material. Rogers Radix 2.8Dk — импортный backup.
+## Целевая физика
 
-## Профиль линзы
-
-Идеальный профиль:
+Идеальный профиль классической сферической линзы Люнеберга:
 
 `epsilon_r(r)=2-(r/R)^2`.
 
-Для HARZ DE-10 с preliminary `epsilon_solid≈2.303` временная Bruggeman-оценка даёт для центра `epsilon_eff=2`:
-
-`rho_center≈0.806`.
-
-Финальная связь `rho -> epsilon_eff` должна быть получена из measured coupons или explicit unit-cell retrieval.
-
-## Расчётный порядок
-
-Не выбирать модель вручную. Идти по фиксированной лестнице из `docs/07_CALCULATION_WORKFLOW.md`:
-
-`M0 background -> M1 numerical reference -> M2 homogeneous control -> M3 ideal continuous -> M4 loss sensitivity -> M5 zoned benchmark -> M6 homogenized manufacturable continuous -> M7 explicit unit cell -> M8 reduced explicit validation -> M9 final lens + reflector -> M10 scaled final geometry`.
-
-Главный input template:
-
-`simulation/INPUTS_TEMPLATE.yaml`.
-
-Multi-scale правило:
-
-- micro: explicit unit-cell / coupon;
-- macro: whole-lens homogenized measured GRIN;
-- полный explicit Ø240-mm gyroid не нужен первым расчётом.
-
-## Физический эксперимент
-
-Основной тракт:
-
-`NanoVNA Port 1 -> TX antenna -> TARGET -> RX antenna -> NanoVNA Port 2`.
-
-Рабочая стартовая дистанция для Ø240 мм @5 ГГц:
-
-**2.5–3 м**.
-
-Сохранять complex `S21(f)` и выполнять background subtraction.
-
-Главная метрика:
+Главная проектная метрика:
 
 `K_sigma = sigma_test/sigma_baseline`.
 
 Цель:
 
-`K_sigma>=10`, то есть `Delta_sigma_dB>=+10 dB`.
+`K_sigma >= 10`, то есть `Delta_sigma_dB >= +10 dB`.
 
-## Структура репозитория
+6/8/11-zone модели используются только как benchmark. Финальный target — **continuous GRIN**.
 
-Начинать отсюда:
+## Материал
 
-- [`PROJECT_MEMORY.md`](PROJECT_MEMORY.md) — актуальное состояние;
-- [`docs/07_CALCULATION_WORKFLOW.md`](docs/07_CALCULATION_WORKFLOW.md) — **главный пошаговый расчётный маршрут**;
-- [`simulation/INPUTS_TEMPLATE.yaml`](simulation/INPUTS_TEMPLATE.yaml) — canonical inputs для каждого run;
-- [`simulation/README.md`](simulation/README.md) — актуальная Meep-структура;
-- [`simulation/CALCULATIONS.md`](simulation/CALCULATIONS.md) — базовые числа TEST_LENS_5G_V1;
-- [`simulation/CONTINUOUS_GYROID.md`](simulation/CONTINUOUS_GYROID.md) — математика continuous gyroid;
-- [`simulation/GYROID_CELL_SWEEP.md`](simulation/GYROID_CELL_SWEEP.md) — 5/7.5/10-mm sweep;
-- [`materials/LOCAL_RU_RESINS.md`](materials/LOCAL_RU_RESINS.md) — локальные смолы;
-- [`materials/RESIN_CANDIDATES.md`](materials/RESIN_CANDIDATES.md) — RF resin shortlist;
-- [`materials/HARZ_TIO2_COMPOSITE.md`](materials/HARZ_TIO2_COMPOSITE.md) — filler R&D branch;
-- [`docs/06_DESIGN_SPACE_AND_REASONING.md`](docs/06_DESIGN_SPACE_AND_REASONING.md) — дерево инженерных веток;
+Primary MVP candidate: **HARZ Labs DE-10**.
+
+Данные производителя по 11 образцам на 10 GHz:
+
+- mean `epsilon_r = 2.30318`;
+- range `2.187...2.384`;
+- mean `tan(delta)=0.0024227`;
+- range `0.00184...0.00310`;
+- 405 nm compatible.
+
+Для физической 5-GHz модели собственное измерение материала около 5 GHz обязательно.
+
+Предварительно при `epsilon_solid=2.30318` Bruggeman даёт для центра `epsilon_eff=2` около `rho_center=0.806`.
+
+TiO2/SrTiO3 filling, PLA Aero/LW-PLA и другие FDM-варианты — **R&D / backup**, не критический путь первого MVP.
+
+## Текущий экспериментальный маршрут
+
+1. T1 — solid DE-10: `epsilon_r`, `tan(delta)` около 5 GHz.
+2. T2 — cured density и shrinkage.
+3. T3 — технологический диапазон sheet-gyroid и `h -> rho_actual`.
+4. T4 — measured `epsilon_eff(rho,f)` для gyroid около 5 GHz.
+5. M0-M9 — Meep: ideal -> loss -> benchmark -> manufacturable GRIN -> reflector.
+6. Печать `TEST_LENS_5G_V1` Ø240 mm.
+7. Физическое измерение около 5 GHz на доступном тракте до ~6 GHz.
+8. Сопоставление experiment vs Meep.
+9. Масштабирование всех линейных размеров `×5/24`.
+10. Расчёт `FINAL_LENS_24G` Ø50 mm @24 GHz с отдельной sensitivity по материалу/дисперсии/технологичности.
+
+## Meep
+
+Фиксированная лестница:
+
+`M0 background -> M1 numerical reference -> M2 homogeneous control -> M3 ideal continuous -> M4 loss sensitivity -> M5 zoned benchmark -> M6 homogenized manufacturable continuous -> M7 explicit unit cell/coupon -> M8 reduced explicit validation -> M9 final lens + reflector -> M10 scaled Ø50 @24 GHz`.
+
+Главный input template:
+
+`simulation/INPUTS_TEMPLATE.yaml`.
+
+## Физический стенд
+
+Основной тракт:
+
+`VNA Port 1 -> TX antenna -> TARGET -> RX antenna -> VNA Port 2`.
+
+Для `D=240 mm`, `f=5 GHz`:
+
+`lambda0 ≈ 59.96 mm`;
+
+`R_ff ≈ 2D^2/lambda ≈ 1.92 m`.
+
+Рабочая стартовая дистанция: **2.5–3.0 m**.
+
+Сохранять complex `S21/.s2p`, BACKGROUND, HOLDER, REFERENCE, BASELINE, LENS_NO_REFLECTOR, LENS+REFLECTOR.
+
+## Основные документы
+
+- [`PROJECT_MEMORY.md`](PROJECT_MEMORY.md) — текущее состояние;
+- [`decisions/README.md`](decisions/README.md) — журнал решений;
 - [`docs/04_NEXT_ACTIONS.md`](docs/04_NEXT_ACTIONS.md) — ближайшие действия;
-- [`experiment/README.md`](experiment/README.md) — эксперимент;
-- [`decisions/README.md`](decisions/README.md) — журнал решений.
+- [`docs/07_CALCULATION_WORKFLOW.md`](docs/07_CALCULATION_WORKFLOW.md) — расчётный маршрут;
+- [`docs/08_DE10_SPDR_T1_PROTOCOL.md`](docs/08_DE10_SPDR_T1_PROTOCOL.md) — T1;
+- [`docs/09_DE10_GYROID_T2_T3_PROTOCOL.md`](docs/09_DE10_GYROID_T2_T3_PROTOCOL.md) — T2/T3;
+- [`docs/10_SCALING_5_TO_24.md`](docs/10_SCALING_5_TO_24.md) — канонический scaling 5->24 GHz;
+- [`simulation/CONTINUOUS_GYROID.md`](simulation/CONTINUOUS_GYROID.md) — continuous gyroid;
+- [`experiment/README.md`](experiment/README.md) — физический эксперимент.
 
-## Основной цикл
+## Главное правило
 
-**material coupon -> measured dielectric law -> unit-cell validation -> whole-lens homogenized Meep -> reflector sweep -> print V1 -> NanoVNA experiment -> validate @5 GHz -> scale Ø80 @15 GHz -> separate 24-GHz calculation**
+**5 GHz = физическая верификация. 24 GHz = расчётная конечная версия для защиты. Не смешивать эти два уровня и не выдавать 24-GHz конструкцию за физически измеренную.**
