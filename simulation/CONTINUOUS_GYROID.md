@@ -1,78 +1,86 @@
 # Continuous Luneburg sheet-gyroid
 
-Дата: 2026-10-29
+Дата: 2026-10-30
 
 ## Цель
 
-Сделать не 6/8/11 радиальных зон, а одну связную 3D-структуру, в которой локальная доля фотополимера меняется непрерывно с радиусом и реализует профиль линзы Люнеберга.
+Сделать одну связную 3D TPMS-структуру, в которой локальная доля фотополимера меняется непрерывно с радиусом и реализует профиль классической линзы Люнеберга.
+
+6/8/11-zone модели остаются benchmark, не final geometry.
 
 ## 1. Целевая электродинамика
 
-Для сферической линзы Люнеберга:
-
 `epsilon_target(r) = 2 - (r/R)^2`
 
-где
+`r = sqrt(x^2+y^2+z^2)`.
 
-`r = sqrt(x^2 + y^2 + z^2)`.
+Для физического `TEST_LENS_5G_V1`:
 
-Для `TEST_LENS_5G_V1`:
+- `R=120 mm`;
+- `D=240 mm`;
+- `f=5.0 GHz`;
+- nominal `a=7.5 mm`.
 
-- `R = 120 mm`;
-- `D = 240 mm`;
-- `f = 5 GHz`.
+Для scaled 24-GHz prediction:
 
-## 2. Переход epsilon -> volume fraction
+- scale `5/24`;
+- `R=25 mm`;
+- `D=50 mm`;
+- nominal `a=1.5625 mm`.
 
-Нужна функция
+## 2. epsilon -> volume fraction
+
+Нужна функция:
 
 `epsilon_eff = F(rho)`
 
-где `rho` — локальная объёмная доля смолы.
+где `rho` — локальная объёмная доля cured DE-10.
 
-Пока собственных измерений нет, генератор использует symmetric Bruggeman для смеси resin + air:
+До собственного T4 допускается provisional symmetric Bruggeman resin+air:
 
-`rho*(eps_s-eps)/(eps_s+2 eps) + (1-rho)*(1-eps)/(1+2 eps) = 0`.
+`rho*(eps_s-eps)/(eps_s+2eps) + (1-rho)*(1-eps)/(1+2eps) = 0`.
 
-После изготовления калибровочных образцов это обязательно заменить на измеренную таблицу `rho, epsilon_eff`.
+Текущий provisional material input — HARZ DE-10 manufacturer mean @10 GHz:
 
-Для предварительного `eps_solid = 2.19` идеальный центр `epsilon=2` требует около `rho=0.867`.
+`eps_solid = 2.30318`.
 
-У поверхности `epsilon -> 1`, следовательно математически `rho -> 0`. Реальная структура не сможет дойти до нулевой толщины, поэтому внешняя область будет ограничена технологическим `rho_min`; это нужно учитывать в Meep как реальное отклонение от ideal Luneburg.
+Для center target `epsilon_eff=2`:
 
-## 3. Базовая TPMS-функция
+`rho_center ≈0.806`.
+
+Это только предварительная оценка. После T4 генератор должен использовать measured CSV `rho,epsilon_eff` около 5 GHz.
+
+У поверхности ideal profile требует `epsilon->1`, то есть математически `rho->0`. Реальная структура ограничивается экспериментальными `rho_min_print/rho_max_print` из T3.
+
+## 3. TPMS-функция
 
 Classic gyroid:
 
-`G(x,y,z) = sin(kx) cos(ky) + sin(ky) cos(kz) + sin(kz) cos(kx)`
+`G(x,y,z)=sin(kx)cos(ky)+sin(ky)cos(kz)+sin(kz)cos(kx)`.
 
-`k = 2*pi/a`,
+`k=2*pi/a`.
 
-где `a` — постоянный период ячейки.
-
-Период `a` предпочтительно не менять по радиусу: так сохраняется единая пространственная фаза и уменьшается риск дополнительных неоднородностей из-за растяжения/сжатия lattice.
+Период `a` по радиусу не меняется в основной architecture. Градиент создаётся threshold, а не растяжением lattice.
 
 ## 4. Sheet gyroid
 
-Для sheet-gyroid материал задаётся условием
+Material domain:
 
 `|G(x,y,z)| <= h`.
 
-При постоянном `h` объёмная доля постоянна.
+Для continuous radial gradient:
 
-Наша ключевая модификация:
+`h=h(r)`.
 
-`h = h(r)`.
+Implicit field:
 
-Итоговое implicit-field:
+`S(x,y,z)=h(sqrt(x²+y²+z²))-|G(x,y,z)|`.
 
-`S(x,y,z) = h(sqrt(x^2+y^2+z^2)) - |G(x,y,z)|`.
+Material exists where:
 
-Материал существует там, где
+`S>=0`.
 
-`S(x,y,z) >= 0`.
-
-Таким образом градиент плотности математически непрерывен во всём объёме. Внутренних границ зон нет.
+Таким образом локальная volume fraction меняется непрерывно, без внутренних границ зон.
 
 ## 5. Полная цепочка
 
@@ -80,79 +88,118 @@ Classic gyroid:
 
 `-> epsilon_target(r)`
 
-`-> rho_required(r) = F^-1(epsilon_target)`
+`-> rho_required(r)=F^-1(epsilon_target)`
 
-`-> h(r) = H^-1(rho_required)`
+`-> technological clamp from T3`
 
-`-> S(x,y,z)`
+`-> h(r)=H^-1(rho_used)`
 
-`-> mesh / voxel field`
+`-> implicit geometry`
+
+`-> mesh`
 
 `-> MSLA/DLP slicing`.
 
-Здесь `H(h)` — численно вычисленная зависимость объёмной доли sheet-gyroid от threshold `h`.
+`H(h)` — численно рассчитанная зависимость sheet-gyroid volume fraction от threshold.
 
 ## 6. Почему sheet-gyroid
 
-Предварительные преимущества:
+Основные причины:
 
-- одна связная структура;
-- сообщающиеся пустоты — лучше для washing;
-- TPMS имеет более изотропную геометрию, чем простые концентрические оболочки или ориентированная решётка;
-- локальная плотность задаётся одним скалярным параметром `h(r)`;
-- обычный MSLA/DLP принтер может печатать эту 3D-геометрию обычными плоскими слоями;
-- нет необходимости в non-planar toolpath.
+- одна связная 3D structure;
+- open communicating channels полезны для washing;
+- более изотропная topology, чем oriented line/grid infill;
+- `rho` управляется одним scalar threshold;
+- обычный planar MSLA/DLP может изготовить заранее рассчитанную radial 3D geometry;
+- удобно отдельно моделировать unit-cell physics.
 
-Это пока гипотеза-кандидат. Изотропность и effective-medium approximation должны быть подтверждены полно-волновой моделью и измерениями.
+Изотропность и homogenization должны быть подтверждены T4/M7.
 
-## 7. Генератор V0.1
+## 7. Генератор
 
-Файл: `tools/continuous_luneburg_gyroid.py`.
+Файл:
 
-Функции:
+`tools/continuous_luneburg_gyroid.py`.
 
-- ideal Luneburg `epsilon(r)`;
-- Bruggeman как временная `epsilon <-> rho` модель;
-- поддержка будущего measured CSV `rho,epsilon_eff`;
-- численная калибровка `sheet-gyroid h <-> rho`;
+Поддерживает:
+
+- ideal Luneburg profile;
+- provisional Bruggeman;
+- measured calibration CSV `rho,epsilon_eff`;
+- numerical `h <-> rho` calibration;
 - continuous radial `h(r)`;
 - upper/lower/full geometry;
-- marching cubes -> STL;
-- CSV радиального профиля с `epsilon_target`, `rho_required`, `rho_used`, `h` и ошибкой после технологического clamp.
+- STL + radial profile CSV.
 
-## 8. Стартовые параметры для исследования
+После T4 финальный workflow обязан использовать `--calibration-csv`.
 
-Не считать финальными:
+## 8. Current nominal parameters
 
-- `a = 7.5 mm` как первая гипотеза;
-- sweep `a = 5 / 7.5 / 10 mm`;
-- `eps_solid = 2.19` — значение из опубликованной печати N3D-DIELEC731, не наша измеренная константа;
-- отдельно проверить вариант с `eps_solid ~2.59` из TDS;
-- `rho_min` и `rho_max` должны определяться реальной печатью, washing и механической целостностью.
+5-GHz MVP:
 
-## 9. Что сравнить в Meep
+- `a=7.5 mm` nominal;
+- `5/7.5/10 mm` — sensitivity sweep only;
+- provisional `eps_solid=2.30318` from DE-10 @10 GHz;
+- provisional `rho_min/rho_max` не считать process truth.
 
-Минимум:
+T3 determines:
 
-1. ideal continuous material function `epsilon(r)`;
-2. continuous sheet-gyroid explicit geometry;
-3. same gyroid represented by homogenized `epsilon_eff(r)`;
-4. 11-zone benchmark;
-5. sensitivity to `tan(delta)`;
-6. cell-size sweep 5/7.5/10 mm;
-7. technological clamp near outer radius;
-8. reflector variants.
+- `rho_min_print`;
+- `rho_max_print`;
+- `h -> rho_actual`.
 
-Если explicit gyroid близок к homogenized model и continuous ideal, значит effective-medium premise работает для выбранной ячейки.
+T4 determines:
 
-## 10. Главная оговорка
+- `rho_actual -> epsilon_eff(rho,f)`;
+- effective loss;
+- repeatability;
+- anisotropy.
 
-`Continuous` относится к математическому закону геометрии. Реальная деталь всё равно дискретизируется:
+## 9. Meep comparison
+
+Minimum:
+
+1. M3 ideal continuous material function;
+2. M6 homogenized manufacturable GRIN;
+3. M7 explicit periodic gyroid/coupon;
+4. M8 reduced explicit finite geometry;
+5. 11-zone benchmark;
+6. loss sensitivity;
+7. cell-size sensitivity;
+8. reflector M9.
+
+Acceptance of homogenized model requires reasonable agreement with T4/M7 and no unacceptable lattice scattering/anisotropy.
+
+## 10. Scaling 5 ->24 GHz
+
+Ideal geometric scale:
+
+`k=5/24=0.2083333`.
+
+Nominal period:
+
+`7.5 mm -> 1.5625 mm`.
+
+The mathematical gyroid and normalized `rho(r/R)` remain the same under ideal scaling.
+
+But physical manufacturability does NOT automatically scale:
+
+- wall thickness also shrinks 4.8×;
+- cure blur does not scale automatically;
+- printer pixel/layer size does not scale;
+- resin dispersion/loss changes with frequency.
+
+Therefore `FINAL_LENS_24G` is a calculated prediction plus manufacturability sensitivity until physically manufactured/measured.
+
+## 11. Главная оговорка
+
+`Continuous` describes the mathematical field. The printed object is discretized by:
 
 - mesh/voxel resolution;
-- пикселями DLP/LCD;
+- LCD/DLP pixel size;
 - layer height;
 - cure blur;
-- минимальной толщиной стенки.
+- minimum wall;
+- washing/post-cure distortion.
 
-Поэтому финальный вопрос не «непрерывна ли формула», а насколько производственная дискретизация мала относительно RF-длины волны и не создаёт заметных паразитных эффектов.
+The engineering question is whether these errors are small enough relative to the RF scale and whether measured `epsilon_eff(rho)` remains close to the designed radial law.
