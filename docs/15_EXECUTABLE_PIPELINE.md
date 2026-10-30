@@ -1,248 +1,297 @@
-# Executable pipeline — LINZA
+# Минимальная практическая часть — LINZA
 
 Дата: 2026-10-31
 
-Этот файл связывает расчёт, изготовление и эксперимент в одну последовательность команд.
+Этот файл — **короткий обязательный маршрут проекта**. Всё, что не указано здесь, считается дополнительным исследованием и не должно тормозить изготовление и защиту.
 
-## 1. Material / geometry calibration
+# 1. Что нужно доказать практикой
 
-### T1
+Нужно показать только четыре вещи:
 
-Protocol:
+1. материал DE-10 имеет подходящую диэлектрическую проницаемость около 5 ГГц;
+2. изменением плотности sheet-gyroid можно менять эффективную диэлектрическую проницаемость;
+3. линза Ø120 мм с радиальным градиентом действительно увеличивает обратное рассеяние относительно reflector-only;
+4. проверенную 5-ГГц конструкцию можно геометрически пересчитать на 24 ГГц.
 
-`docs/08_DE10_SPDR_T1_PROTOCOL.md`
+Главный экспериментальный результат:
 
-Output:
+`Delta_sigma_dB = 20 log10(|S21_lens+reflector / S21_reflector|)`
 
-- own `epsilon_solid(f)`;
-- `tan_delta(f)` around 5 GHz.
+после одинаковой background subtraction.
 
-### T2/T3
+Цель проекта:
 
-Protocol:
+`Delta_sigma_dB >= +10 dB`.
 
-`docs/09_DE10_GYROID_T2_T3_PROTOCOL.md`
+# 2. Материал DE-10 — минимум
 
-Generate T3 coupons:
+## 2.1 Solid material
 
-```bash
-python tools/uniform_sheet_gyroid_coupon.py \
-  --size-x 30 --size-y 30 --size-z 15 \
-  --cell 7.5 \
-  --rho 0.10 0.15 0.20 0.30 0.40 0.50 0.65 0.81 0.90 \
-  --voxel 0.075 \
-  --out-dir artifacts/T3_gyroid_coupons
-```
+Изготовить **3 пластины**:
 
-Outputs:
+- `80 × 80 × 1.50 mm`;
+- один принтер;
+- один профиль;
+- одна ориентация;
+- одинаковая мойка и засветка.
 
-- `rho_min_print`;
-- `rho_max_print`;
-- cured solid density;
-- shrinkage;
-- measured `rho_actual`.
+Измерить около 5 ГГц:
 
-### Clamp impact
+- `epsilon_solid`;
+- `tan_delta`.
 
-After T3:
+Если лаборатория требует другой размер образца — использовать размер реальной оснастки.
 
-```bash
-python tools/analyze_profile_clamp.py \
-  --rho-min <T3_RHO_MIN> \
-  --rho-max <T3_RHO_MAX> \
-  --out-prefix simulation/results/clamp/CLAMP_120
-```
+Не делать расширенную статистику, если три образца дают согласованный результат.
 
-After T4 add:
+## 2.2 Плотность материала
 
-```bash
-  --calibration-csv data/materials/de10/DE10_GYROID_EPS_CAL_5GHz.csv
-```
+Изготовить **3 сплошных кубоида**:
 
-Outputs include:
+- `20 × 20 × 10 mm`.
 
-- clipped volume fraction;
-- max `epsilon` error;
-- volume-weighted RMS `epsilon` error;
-- ideal vs manufacturable average rho.
+После полного post-cure:
 
-## 2. T4 effective dielectric calibration
+- измерить X/Y/Z;
+- взвесить;
+- вычислить cured density.
 
-Protocol:
+Этого достаточно для расчёта массы gyroid и линзы.
 
-`docs/12_T4_RF_GYROID_PROTOCOL.md`
+# 3. Gyroid-калибровка — 5 образцов
 
-Mandatory fixture gate:
+Nominal unit cell:
 
-`data/materials/de10/T4_FIXTURE_CARD.md`
+`a = 7.5 mm`.
 
-Final output:
+Базовый coupon:
 
-`data/materials/de10/DE10_GYROID_EPS_CAL_5GHz.csv`
+`30 × 30 × 15 mm`.
 
-Do not generate T4 RF coupon CAD before exact fixture geometry is known.
+Печатать только пять плотностей:
 
-## 3. Material budget
+| ID | rho_target |
+|---|---:|
+| G1 | 0.15 |
+| G2 | 0.30 |
+| G3 | 0.50 |
+| G4 | 0.65 |
+| G5 | 0.80 |
 
-```bash
-python tools/material_budget.py \
-  --diameters 120 150 180 240
-```
+Для каждого:
 
-After T2/T3 replace provisional density/clamps with measured values.
+1. напечатать;
+2. промыть;
+3. полностью засветить;
+4. проверить, что каналы открыты и внутри нет жидкой смолы;
+5. взвесить;
+6. вычислить фактическую volume fraction;
+7. измерить `epsilon_eff` около 5 ГГц в доступной RF-оснастке.
 
-## 4. Ideal diameter gate
+Итог — простая таблица:
 
-Meep environment:
+`rho_actual -> epsilon_eff`.
 
-```bash
-conda env create -f environment-meep.yml
-conda activate linza-meep
-```
+Пять точек достаточно для интерполяции рабочего профиля MVP.
 
-Ideal sweep:
+Если крайний G1 или G5 физически не печатается — граница рабочего диапазона просто сдвигается к ближайшему успешному образцу.
 
-```bash
-python simulation/run_diameter_gate.py \
-  --diameters 120 150 180 240 \
-  --ppl 12 16 20
-```
+Необязательные вещи для основной практики:
 
-Analyze:
+- отдельная anisotropy campaign;
+- 2a/3a/4a finite-length study;
+- много физических дубликатов;
+- 9 плотностей;
+- отдельное topology comparison.
 
-```bash
-python simulation/analyze_diameter_gate.py
-```
+Их выполнять только если основной результат вызывает сомнение.
 
-Select the smallest diameter that passes numerical + RF + material + stand gates.
+# 4. Расчёт линзы Ø120 мм
 
-## 5. Focus map
+Рабочий физический образец:
 
-For the current Ø120 candidate:
+- `f = 5.0 GHz`;
+- `D = 120 mm`;
+- `R = 60 mm`;
+- `a = 7.5 mm`.
 
-```bash
-python simulation/run_luneburg_focus_map.py \
-  --diameter-mm 120 \
-  --frequency-ghz 5 \
-  --pixels-per-lambda 16
-```
+Идеальный профиль:
 
-Outputs:
+`epsilon_target(r) = 2 - (r/R)^2`.
 
-- `focus_x_mm`;
-- focus offset from +surface;
-- `peak_normalized_E2`;
-- transverse FWHM;
-- `.npz` field map.
+По экспериментальной таблице `rho_actual -> epsilon_eff` определить требуемую плотность как функцию радиуса:
 
-This is the physical explanation layer for the defense: the lens reshapes phase and focuses the incident wave near the opposite surface.
+`epsilon_target(r) -> rho(r)`.
 
-## 6. Reflector sweep
+Далее:
 
-```bash
-python simulation/run_reflector_sweep.py \
-  --diameter-mm 120 \
-  --cap-half-angle-deg 15 30 45 60 90 \
-  --cap-thickness-mm 1.0 \
-  --pixels-per-lambda 16
-```
+`rho(r) -> h(r)`
 
-For each cap:
+для sheet-gyroid:
 
-- `BASELINE = reflector-only`;
-- `TEST = ideal lens + identical reflector`;
-- calculate `K_sigma`;
-- calculate `Delta_sigma_dB`.
+`|G(x,y,z)| <= h(r)`.
 
-Do not lock reflector geometry from this ideal sweep alone. Repeat after T4/clamp/loss implementation.
-
-## 7. Final gyroid geometry
-
-After T1/T2/T3/T4:
+Генератор:
 
 ```bash
 python tools/continuous_luneburg_gyroid.py \
   --radius 60 \
   --cell 7.5 \
-  --eps-solid <T1_EPS> \
-  --rho-min <T3_RHO_MIN> \
-  --rho-max <T3_RHO_MAX> \
+  --eps-solid <MEASURED_EPS_SOLID> \
+  --rho-min <MIN_SUCCESSFUL_RHO> \
+  --rho-max <MAX_SUCCESSFUL_RHO> \
   --calibration-csv data/materials/de10/DE10_GYROID_EPS_CAL_5GHz.csv \
-  --solid-density <T2_DENSITY> \
+  --solid-density <MEASURED_DENSITY> \
   --out artifacts/TEST_LENS_5G_V1_upper.stl
 ```
 
-Generate both hemispheres separately as required by the manufacturing plan.
+Линзу изготовить как две открытые полусферы, если это удобнее для мойки и post-cure.
 
-## 8. Calibration sphere
+# 5. Численное моделирование — только необходимое
 
-Measure actual sphere diameter, then:
+Для основной работы нужны три расчёта.
 
-```bash
-python tools/pec_sphere_rcs.py \
-  --diameter-mm <MEASURED_SPHERE_DIAMETER> \
-  --start-ghz 4 \
-  --stop-ghz 6 \
-  --points 1601 \
-  --out data/experiment/5ghz/REFERENCE_RCS.csv
-```
+## M1 — идеальная линза Ø120
 
-Protocol:
+Показать:
 
-`docs/14_PEC_SPHERE_REFERENCE.md`
+- распределение `|E|^2`;
+- фокус около противоположной поверхности;
+- backscatter/RCS.
 
-## 9. Physical RCS processing
+## M2 — реальная manufacturable линза
 
-Protocol:
+Использовать измеренную таблицу `rho -> epsilon_eff` и реальные ограничения по `rho_min/rho_max`.
 
-`docs/13_RCS_S21_PROCESSING.md`
+Сравнить с ideal.
 
-Relative:
+## M3 — reflector sweep
 
-```bash
-python tools/process_rcs_s21.py \
-  --background BACKGROUND.s2p \
-  --baseline BASELINE.s2p \
-  --test LENS_REFLECTOR.s2p \
-  --gate-center-ns <MEASURED> \
-  --gate-width-ns <MEASURED> \
-  --out RCS_RELATIVE.csv
-```
+Только три варианта:
 
-Absolute adds:
+- `30°`;
+- `60°`;
+- `90°`.
 
-```bash
-  --reference REFERENCE.s2p \
-  --reference-rcs data/experiment/5ghz/REFERENCE_RCS.csv
-```
+Для каждого считать:
 
-## 10. 24-GHz strict scaling
+- reflector-only;
+- lens + identical reflector.
 
-```bash
-python tools/scale_5_to_24.py \
-  --diameter-5-mm <SELECTED_D5> \
-  --cell-5-mm 7.5 \
-  --mass-5-g <FINAL_MASS_5> \
-  --min-wall-5-mm <MEASURED_OR_CAD_MIN_WALL> \
-  --printer-min-wall-mm <24G_PROCESS_LIMIT>
-```
+Выбрать вариант с лучшим/почти максимальным `Delta_sigma_dB`, отдавая предпочтение меньшему reflector, если разница мала.
 
-Checks:
+Полный sweep `15/30/45/60/90` оставить optional.
 
-- final diameter <=80 mm;
-- strict-scaled mass <=300 g;
-- strict-scaled minimum wall against manufacturing capability.
+# 6. Печать линзы
 
-Material similarity is explicitly marked as NOT PROVEN and requires separate 24-GHz dispersion/loss sensitivity.
+До full print проверить:
 
-## 11. Quality control
+- расчётную массу;
+- fit в build volume;
+- минимальную стенку;
+- наличие открытых каналов для мойки.
 
-```bash
-python -m pytest -q
-```
+Затем:
 
-GitHub Actions:
+1. напечатать полусферы;
+2. промыть;
+3. post-cure;
+4. взвесить;
+5. измерить общий диаметр;
+6. собрать;
+7. установить выбранный металлический reflector.
 
-`.github/workflows/python-tests.yml`
+Не выполнять дополнительную серию технологических образцов, если калибровочные gyroid coupons уже доказали печатаемость тех же стенок.
 
-Do not call the repo current if CI is red.
+# 7. Эксперимент 5 ГГц
+
+Минимальный стенд:
+
+`VNA Port 1 -> TX -> target -> RX -> VNA Port 2`.
+
+Для Ø120 стартовая дистанция:
+
+`1.0–1.5 m`.
+
+Обязательные четыре состояния:
+
+1. `BACKGROUND`;
+2. `REFERENCE` — металлическая sphere для абсолютной проверки;
+3. `BASELINE` — reflector only;
+4. `TEST` — lens + reflector.
+
+Для `BASELINE` и `TEST` сделать по **3 независимых установки**.
+
+Сохранять complex `.s2p`.
+
+Основной результат:
+
+`Delta_sigma_dB(5 GHz)`.
+
+Абсолютный `dBsm` — дополнительный, но полезный результат через reference sphere.
+
+Angular sweep для основной защиты можно ограничить:
+
+`-30...+30°`, шаг `5°`.
+
+Если времени мало — сначала получить качественную центральную точку `0°` и только потом angular sweep.
+
+# 8. Масштабирование на 24 ГГц
+
+После физической проверки на 5 ГГц:
+
+`k = 5/24 = 0.2083333`.
+
+Если Ø120 сохранён:
+
+- `D_24 = 25.0 mm`;
+- `R_24 = 12.5 mm`;
+- `a_24 = 1.5625 mm`.
+
+В расчётной части показать:
+
+- геометрически масштабированную модель;
+- расчёт на 24 ГГц;
+- отдельно отметить, что свойства материала на 24 ГГц не измерялись и учитываются как расчётное допущение/sensitivity.
+
+# 9. Что НЕ является обязательной практикой
+
+В основной маршрут не входят:
+
+- diameter sweep 120/150/180/240, если Ø120 в первом расчёте показывает работоспособность;
+- uncertainty-budget уровня метрологической статьи;
+- полный PEC-cap sweep из 5+ углов;
+- anisotropy matrix;
+- topology comparison Gyroid/Diamond/Schwarz-P;
+- 9+ gyroid densities;
+- сложный автоматический report generator;
+- отдельная experimental campaign на 24 ГГц;
+- физическое изготовление 24-GHz версии.
+
+Все эти инструменты могут оставаться в репозитории как **OPTIONAL / research appendix**.
+
+# 10. Итоговая практическая цепочка
+
+`3 solid plates`
+
+→ `3 density coupons`
+
+→ `5 gyroid RF coupons`
+
+→ `rho -> epsilon_eff`
+
+→ `Ø120 continuous gyroid lens`
+
+→ `3 reflector simulations`
+
+→ `print`
+
+→ `BACKGROUND / REFERENCE / BASELINE / TEST @5 GHz`
+
+→ `Delta_sigma_dB`
+
+→ `scale ×5/24`
+
+→ `24-GHz calculated result`.
+
+Это и есть основной MVP проекта.
