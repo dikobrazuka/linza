@@ -122,6 +122,7 @@ python tools/material_budget.py
 - `docs/08_DE10_SPDR_T1_PROTOCOL.md` — T1;
 - `docs/09_DE10_GYROID_T2_T3_PROTOCOL.md` — T2/T3;
 - `docs/12_T4_RF_GYROID_PROTOCOL.md` — полный T4;
+- `docs/13_RCS_S21_PROCESSING.md` — VNA S21 -> relative/absolute RCS processing;
 - `docs/10_SCALING_5_TO_24.md` — scaling;
 - `simulation/DIAMETER_GATE.md` — diameter selection gate;
 - `simulation/configs/DIAMETER_GATE_5G.yaml` — machine-readable diameter gate;
@@ -133,7 +134,9 @@ python tools/material_budget.py
 
 - `tools/continuous_luneburg_gyroid.py` — final radial gyroid generator;
 - `tools/uniform_sheet_gyroid_coupon.py` — T3 uniform coupons;
-- `tools/material_budget.py` — resin mass/material gate.
+- `tools/material_budget.py` — resin mass/material gate;
+- `tools/process_rcs_s21.py` — complex background subtraction, optional time gate, relative/absolute RCS;
+- `simulation/analyze_diameter_gate.py` — convergence + smallest acceptable ideal-size candidate.
 
 ## Meep / diameter gate
 
@@ -162,11 +165,42 @@ python simulation/run_diameter_gate.py \
 python simulation/run_diameter_gate.py --dry-run
 ```
 
+После sweep:
+
+```bash
+python simulation/analyze_diameter_gate.py
+```
+
 Runner использует официальный Meep scattered-field workflow:
 
 `empty normalization -> incident near2far -> load_minus_near2far_data -> far field -> RCS`.
 
 DG-A — только **ideal lossless Luneburg**. Он не заменяет M9 и не доказывает проектный `+10 dB` относительно formal baseline.
+
+## Physical RCS processing
+
+Relative result from Touchstone files:
+
+```bash
+python tools/process_rcs_s21.py \
+  --background BACKGROUND.s2p \
+  --baseline BASELINE.s2p \
+  --test LENS_REFLECTOR.s2p \
+  --gate-center-ns <MEASURED> \
+  --gate-width-ns <MEASURED> \
+  --out RCS_RELATIVE.csv
+```
+
+Rules:
+
+- background subtraction only in complex form;
+- no dB/magnitude subtraction;
+- same frequency grid required;
+- `K_sigma=|S_test/S_baseline|^2`;
+- `Delta_sigma_dB=20log10|S_test/S_baseline|`;
+- absolute dBsm only with valid `REFERENCE_RCS.csv`.
+
+Do not substitute `pi*r^2` as an exact sphere calibration value unless the optical-limit approximation has been justified for that sphere/frequency.
 
 ## Quality gates
 
@@ -187,7 +221,11 @@ Tests cover:
 - gyroid coupon box clipping/watertight mesh;
 - material budget reference values;
 - canonical project dimensions across code/docs;
-- ideal Luneburg profile math.
+- ideal Luneburg profile math;
+- Touchstone S21 ordering;
+- complex background subtraction;
+- relative/absolute RCS equations;
+- diameter-gate convergence rejection.
 
 ## Главное правило
 
