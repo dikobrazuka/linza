@@ -1,17 +1,18 @@
-# План разработки — TEST_LENS_5G_V1
+# План разработки — TEST_LENS_5G_V1 -> FINAL_LENS_24G
 
-## Этап 1. Масштабная модель
+## Этап 1. Физический масштабный демонстратор
 
-- `f = 5.0 GHz`;
-- `D = 240 mm`;
-- `R = 120 mm`;
-- масштаб `3:1` относительно Ø80 мм;
-- подобная конечная точка: `Ø80 mm @15 GHz`;
-- `Ø80 mm @24 GHz` — отдельный расчёт.
+Зафиксировано:
 
-## Этап 2. Meep по фиксированной лестнице
+- `f_test = 5.0 GHz`;
+- `D_test = 240 mm`;
+- `R_test = 120 mm`;
+- `a_test = 7.5 mm` nominal;
+- доступный измерительный тракт до ~6 GHz.
 
-Не выбирать модель вручную. Использовать `docs/07_CALCULATION_WORKFLOW.md`.
+Цель этого образца — физически проверить GRIN/reflector концепцию, material law и Meep около 5 GHz.
+
+## Этап 2. Meep ladder на 5 GHz
 
 Порядок:
 
@@ -22,52 +23,53 @@
 5. M4 loss sensitivity;
 6. M5 11-zone benchmark + один раз 6/8-zone comparison;
 7. M6 homogenized manufacturable continuous GRIN;
-8. M7 explicit periodic gyroid unit cell;
+8. M7 explicit periodic gyroid unit cell/coupon;
 9. M8 reduced explicit gyroid validation;
-10. M9 final lens + reflector;
-11. M10 Ø80 @15 GHz и отдельно @24 GHz.
+10. M9 final 5-GHz lens + reflector;
+11. M10 scaled `Ø50 mm @24 GHz`.
 
-Для каждого run использовать config на основе `simulation/INPUTS_TEMPLATE.yaml`.
+Использовать `docs/07_CALCULATION_WORKFLOW.md` и config на основе `simulation/INPUTS_TEMPLATE.yaml`.
 
 ## Этап 3. Материал — HARZ DE-10
 
-Текущий primary local material candidate:
+Primary MVP material.
 
-- mean `epsilon_r≈2.30318 @10 GHz`;
-- mean `tan(delta)≈0.0024227 @10 GHz`;
-- 11 измеренных образцов;
+Manufacturer @10 GHz:
+
+- mean `epsilon_r=2.30318`;
+- mean `tan(delta)=0.0024227`;
+- 11 samples;
 - 405 nm compatible.
-
-Действия:
-
-1. получить материал;
-2. зафиксировать printer/wash/post-cure process;
-3. напечатать solid coupons;
-4. измерить `epsilon_r/tan(delta)` около 5 GHz;
-5. напечатать gyroid coupons;
-6. получить measured `epsilon_eff(rho)`;
-7. заменить provisional Bruggeman measured interpolation.
-
-## Этап 4. Photopolymer continuous gyroid
-
-Основной manufacturing route MVP:
-
-**continuous radial sheet-gyroid / TPMS**.
-
-Стартовый period:
-
-`a=7.5 mm`.
-
-Comparison:
-
-`5 / 7.5 / 10 mm`.
-
-Сделать две открытые полусферы для washing/post-cure.
 
 До full lens закрыть:
 
+1. T1 — solid `epsilon_r/tan(delta)` около 5 GHz;
+2. T2 — cured density/shrinkage;
+3. T3 — `rho_min_print/rho_max_print`, `h -> rho_actual`;
+4. T4 — measured `epsilon_eff(rho,f)` около 5 GHz;
+5. replace provisional Bruggeman by measured interpolation.
+
+## Этап 4. Continuous sheet-gyroid
+
+Основной manufacturing route:
+
+**photopolymer continuous radial sheet-gyroid / TPMS**.
+
+Nominal:
+
+`a=7.5 mm` @5 GHz.
+
+Research sweep:
+
+`5 / 7.5 / 10 mm`.
+
+Две открытые полусферы — основной manufacturing concept для washing/post-cure.
+
+До full lens проверить:
+
 - min wall;
-- rho_min/rho_max;
+- rho range;
+- washability;
 - shrinkage;
 - mass-based volume fraction;
 - anisotropy;
@@ -75,69 +77,85 @@ Comparison:
 
 ## Этап 5. Reflector
 
-Сначала:
+M9:
 
-`full sphere + PEC cap`.
+- сначала `full sphere + PEC cap`;
+- cap sweep `15/30/45/60/90°`;
+- затем comparison с `hemisphere + PEC ground plane`.
 
-Sweep:
+## Этап 6. Физический стенд 5 GHz
 
-`15/30/45/60/90°`.
-
-После выбора сравнить с:
-
-`hemisphere + PEC ground plane`.
-
-## Этап 6. NanoVNA-стенд
-
-- NanoVNA-F V3;
-- две одинаковые направленные антенны около 5 ГГц;
+- VNA/measurement setup до ~6 GHz;
+- 2 одинаковые направленные антенны около 5 GHz;
 - общая жёсткая база TX/RX;
 - диэлектрическая стойка;
-- поворотная платформа;
-- distance 2.5–3 m;
+- distance `2.5–3.0 m`;
 - 2-port calibration;
-- complex S21;
-- background subtraction;
-- reference target;
-- baseline;
-- angle sweep.
+- complex `S21/.s2p`;
+- BACKGROUND;
+- HOLDER;
+- REFERENCE;
+- BASELINE;
+- LENS_NO_REFLECTOR;
+- LENS+REFLECTOR;
+- минимум 3 repeat ключевых measurements.
 
-## Этап 7. Физический эксперимент
+## Этап 7. Сопоставление experiment vs Meep
 
-Минимальный набор:
+Сравнить:
 
-1. BACKGROUND;
-2. HOLDER;
-3. REFERENCE target;
-4. BASELINE;
-5. LENS without reflector;
-6. LENS + reflector.
+- focus;
+- relative RCS/backscatter gain;
+- angular response;
+- frequency response around 5 GHz;
+- repeatability;
+- discrepancy model vs experiment.
 
-Основная метрика:
+M9 считается подтверждённым только после сравнения с физикой.
 
-`K_sigma = sigma_test/sigma_baseline`.
+## Этап 8. Масштабирование на 24 GHz
 
-`Delta_sigma_dB = 10*log10(K_sigma)`.
+После 5-GHz validation:
 
-Цель:
+`k = 5/24 = 0.2083333`.
 
-`Delta_sigma_dB >= +10 dB`.
+Все линейные размеры:
 
-## Этап 8. Масштабирование
+`L_24 = L_5 * 5/24`.
 
-После согласования 5-GHz experiment и Meep:
+Итого:
 
-1. геометрия `1:3`;
-2. Ø80 @15 GHz;
-3. отдельно Ø80 @24 GHz;
-4. учесть material dispersion.
+- `D_24 = 50.0 mm`;
+- `R_24 = 25.0 mm`;
+- `a_24 = 1.5625 mm`.
 
-## R&D после/параллельно MVP, если не мешает срокам
+В M10 выполнить 24-GHz Meep prediction с:
 
-- PLA Aero / LW-PLA thermal-gradient;
+- scaled geometry;
+- material-dispersion sensitivity;
+- tan(delta) sensitivity;
+- technological-resolution sensitivity.
+
+Не заявлять, что 24-GHz конструкция физически измерена.
+
+## Этап 9. Пакет для защиты
+
+Должно быть:
+
+1. theory + ideal Luneburg;
+2. material characterization;
+3. measured gyroid calibration;
+4. 5-GHz physical experiment;
+5. Meep reproduction of 5-GHz trend;
+6. scaling proof `5 ->24 GHz`;
+7. Ø50-mm 24-GHz calculation;
+8. explicit limitations: dispersion, printability, scaled feature size;
+9. фотофиксация и raw data.
+
+## R&D, не тормозящий MVP
+
+- PLA Aero / LW-PLA;
 - Orca continuous FDM;
-- TiO2/SrTiO3 filled photopolymer;
-- non-planar / multi-axis FDM;
+- TiO2/SrTiO3 filled resin;
+- non-planar/multi-axis FDM;
 - volumetric photopolymerization.
-
-Эти ветки не должны задерживать первый photopolymer MVP.
