@@ -1,6 +1,20 @@
 project: TEST_LENS_5G_V1
 run_id: CHANGE_ME
 
+validation:
+  physical_frequency_ghz: 5.0
+  physical_diameter_mm: 240.0
+  physical_radius_mm: 120.0
+  measurement_upper_limit_ghz_approx: 6.0
+
+final_target:
+  frequency_ghz: 24.0
+  linear_scale_from_5ghz: 0.2083333333   # 5/24
+  diameter_mm: 50.0
+  radius_mm: 25.0
+  nominal_gyroid_cell_mm: 1.5625
+  status: CALCULATED_PREDICTION
+
 frequency:
   f_ghz: 5.0
   sweep_ghz: [4.8, 5.0, 5.2]
@@ -10,8 +24,8 @@ geometry:
   radius_mm: 120.0
   architecture: full_sphere_cap   # full_sphere_cap | hemisphere_ground_plane
   gyroid_cell_mm: 7.5
-  rho_min: 0.12
-  rho_max: 0.90
+  rho_min: null                    # replace after T3
+  rho_max: null                    # replace after T3
   hemisphere_split: true
   seam_mm: null
 
@@ -20,9 +34,10 @@ material:
   epsilon_solid: 2.30318
   tan_delta: 0.0024227
   measured_at_ghz: 10.0
-  density_g_cm3: null
+  calibration_csv: null            # set after T4: rho,epsilon_eff
+  density_g_cm3: null              # set after T2
   post_cure: UNKNOWN
-  source_note: "11 HARZ DE-10 samples, measured at 10 GHz; replace with our 5 GHz coupon data before final MVP"
+  source_note: "11 HARZ DE-10 manufacturer samples measured at 10 GHz; replace with own T1/T4 data for final 5 GHz model"
 
 reflector:
   type: PEC_cap
@@ -45,11 +60,21 @@ meep:
 experiment:
   baseline_definition: TODO
   distance_m: 2.5
-  vna: NanoVNA-F_V3
+  setup_upper_limit_ghz_approx: 6.0
+  vna_or_setup: TODO
   tx_antenna: TODO
   rx_antenna: TODO
   reference_target: TODO
   holder: TODO
+  repeat_count_min: 3
+
+scaling_5_to_24:
+  enabled: false                 # true only for M10 config
+  scale_all_linear_dimensions: 0.2083333333
+  require_material_dispersion_sensitivity: true
+  require_loss_sensitivity: true
+  require_manufacturability_sensitivity: true
+  physical_validation_at_24ghz: false
 
 outputs:
   save_field_map: true
