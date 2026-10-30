@@ -1,0 +1,32 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Local environments
+.venv/
+venv/
+
+# Generated geometry / simulation heavy outputs
+artifacts/
+gyroid_coupons/
+simulation/results/**/fields/
+simulation/results/**/*.h5
+simulation/results/**/*.hdf5
+simulation/results/**/*.npy
+simulation/results/**/*.npz
+*.stl
+*.obj
+*.ply
+
+# Meep runtime outputs
+*.h5
+*.hdf5
+
+# OS/editor
+.DS_Store
+Thumbs.db
+*.swp
+*.tmp
+
+# Keep raw RF measurement data (.s2p/.csv) trackable by default.
