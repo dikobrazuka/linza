@@ -6,192 +6,91 @@
   <meta name="color-scheme" content="dark" />
   <title>LINZA — Project Hub</title>
   <style>
-    :root{
-      --bg:#090b10;--panel:#11151d;--panel2:#161b25;--line:#273042;
-      --text:#eef2f7;--muted:#98a2b3;--accent:#7dd3fc;--accent2:#a7f3d0;
-      --warn:#fde68a;--danger:#fca5a5;--shadow:0 14px 40px rgba(0,0,0,.32);
-      --radius:18px;
-    }
-    *{box-sizing:border-box}html{scroll-behavior:smooth}
-    body{margin:0;background:radial-gradient(circle at 20% 0%,#111a2a 0,#090b10 36%),var(--bg);color:var(--text);font:15px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-    a{color:inherit;text-decoration:none}code,.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
-    .wrap{max-width:1180px;margin:auto;padding:24px}
-    .top{position:sticky;top:0;z-index:10;background:rgba(9,11,16,.86);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.06)}
-    .topin{max-width:1180px;margin:auto;padding:11px 24px;display:flex;gap:10px;align-items:center;overflow:auto;white-space:nowrap}
-    .brand{font-weight:800;margin-right:auto}.brand span{color:var(--accent)}
-    .nav{padding:7px 10px;border-radius:10px;color:var(--muted)}.nav:hover{background:#171d29;color:var(--text)}
-    .hero{padding:62px 0 28px}.eyebrow{color:var(--accent);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:12px}
-    h1{font-size:clamp(36px,7vw,72px);line-height:.98;margin:12px 0 18px;letter-spacing:-.055em;max-width:900px}
-    .lead{font-size:18px;color:#cbd5e1;max-width:820px;margin:0 0 25px}
-    .actions{display:flex;gap:10px;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);font-weight:700}.btn.primary{background:var(--text);color:#0b0d12;border-color:var(--text)}.btn:hover{transform:translateY(-1px)}
-    .grid{display:grid;gap:14px}.stats{grid-template-columns:repeat(6,1fr);margin:18px 0 34px}.card{background:linear-gradient(180deg,rgba(22,27,37,.96),rgba(15,19,27,.96));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
-    .stat{padding:17px}.stat b{display:block;font-size:25px;letter-spacing:-.04em}.stat span{display:block;color:var(--muted);font-size:12px;margin-top:2px}
-    section{padding:34px 0 12px;scroll-margin-top:68px}.section-title{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:14px}.section-title h2{font-size:28px;margin:0;letter-spacing:-.03em}.section-title p{margin:0;color:var(--muted)}
-    .two{grid-template-columns:1.25fr .75fr}.three{grid-template-columns:repeat(3,1fr)}
-    .box{padding:20px}.box h3{margin:0 0 10px;font-size:17px}.box p{margin:7px 0;color:#cbd5e1}.box ul{padding-left:19px;margin:9px 0}.box li{margin:5px 0}
-    .formula{font:600 17px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;background:#0b0f16;border:1px solid #20293a;padding:14px;border-radius:13px;overflow:auto;color:#d9f3ff}
-    .tag{display:inline-flex;padding:4px 8px;border:1px solid #334056;border-radius:999px;color:#cbd5e1;font-size:12px;margin:2px 3px 2px 0}.tag.ok{border-color:#245d50;color:#a7f3d0}.tag.warn{border-color:#695c28;color:#fde68a}
+    :root{--bg:#090b10;--panel:#11151d;--panel2:#161b25;--line:#273042;--text:#eef2f7;--muted:#98a2b3;--accent:#7dd3fc;--accent2:#a7f3d0;--warn:#fde68a;--danger:#fca5a5;--shadow:0 14px 40px rgba(0,0,0,.32);--radius:18px}
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:radial-gradient(circle at 20% 0%,#111a2a 0,#090b10 36%),var(--bg);color:var(--text);font:15px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    a{color:inherit;text-decoration:none}code,.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}.wrap{max-width:1180px;margin:auto;padding:24px}
+    .top{position:sticky;top:0;z-index:10;background:rgba(9,11,16,.88);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.06)}.topin{max-width:1180px;margin:auto;padding:11px 24px;display:flex;gap:8px;align-items:center;overflow:auto;white-space:nowrap}.brand{font-weight:800;margin-right:auto}.brand span{color:var(--accent)}.nav{padding:7px 9px;border-radius:10px;color:var(--muted)}.nav:hover{background:#171d29;color:var(--text)}
+    .hero{padding:62px 0 28px}.eyebrow{color:var(--accent);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:12px}h1{font-size:clamp(36px,7vw,72px);line-height:.98;margin:12px 0 18px;letter-spacing:-.055em;max-width:900px}.lead{font-size:18px;color:#cbd5e1;max-width:850px;margin:0 0 25px}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}.btn{border:1px solid var(--line);color:var(--text);display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border-radius:12px;background:var(--panel);font:700 14px inherit;cursor:pointer}.btn.primary{background:var(--text);color:#0b0d12;border-color:var(--text)}.btn.danger{color:var(--danger)}.btn:hover{transform:translateY(-1px)}
+    .grid{display:grid;gap:14px}.stats{grid-template-columns:repeat(6,1fr);margin:18px 0 34px}.card{background:linear-gradient(180deg,rgba(22,27,37,.96),rgba(15,19,27,.96));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}.stat{padding:17px}.stat b{display:block;font-size:25px;letter-spacing:-.04em}.stat span{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+    section{padding:34px 0 12px;scroll-margin-top:68px}.section-title{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:14px}.section-title h2{font-size:28px;margin:0;letter-spacing:-.03em}.section-title p{margin:0;color:var(--muted)}.two{grid-template-columns:1.25fr .75fr}.three{grid-template-columns:repeat(3,1fr)}
+    .box{padding:20px}.box h3{margin:0 0 10px;font-size:17px}.box p{margin:7px 0;color:#cbd5e1}.box ul{padding-left:19px;margin:9px 0}.box li{margin:5px 0}.formula{font:600 17px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;background:#0b0f16;border:1px solid #20293a;padding:14px;border-radius:13px;overflow:auto;color:#d9f3ff}
     .steps{counter-reset:step}.step{position:relative;padding:18px 18px 18px 58px;border-bottom:1px solid var(--line)}.step:last-child{border-bottom:0}.step:before{counter-increment:step;content:counter(step);position:absolute;left:18px;top:18px;width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:#20283a;color:var(--accent);font-weight:800}.step b{display:block}.step small{color:var(--muted)}
-    .files{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.file{padding:14px;border:1px solid var(--line);border-radius:13px;background:#10141d}.file:hover{border-color:#4a5b78}.file b{display:block}.file span{color:var(--muted);font-size:12px}
-    details{border:1px solid var(--line);border-radius:14px;background:#10141d;margin:9px 0}summary{cursor:pointer;padding:14px 16px;font-weight:750}details>div{padding:0 16px 16px;color:#cbd5e1}
-    .statusline{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.pill{padding:7px 10px;border-radius:999px;background:#141a25;border:1px solid var(--line);font-size:12px}.pill strong{color:var(--accent2)}
-    .note{border-left:3px solid var(--accent);padding:12px 14px;background:#0f1722;border-radius:0 12px 12px 0;color:#cbd5e1}.note.warn{border-left-color:#fbbf24;background:#1a160d}
-    .search{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#0d1118;color:var(--text);outline:none;margin:0 0 14px}.search:focus{border-color:#52739d}
-    pre{background:#0a0d12;border:1px solid #20283a;border-radius:13px;padding:14px;overflow:auto;color:#d8e2f0}
-    footer{padding:50px 0;color:var(--muted);font-size:13px}
-    @media(max-width:980px){.stats{grid-template-columns:repeat(3,1fr)}.two,.three{grid-template-columns:1fr}.files{grid-template-columns:1fr}}
-    @media(max-width:560px){.wrap{padding:18px}.topin{padding:10px 18px}.stats{grid-template-columns:repeat(2,1fr)}.hero{padding-top:42px}.lead{font-size:16px}}
+    .statusline{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.pill{padding:7px 10px;border-radius:999px;background:#141a25;border:1px solid var(--line);font-size:12px}.pill strong{color:var(--accent2)}.note{border-left:3px solid var(--accent);padding:12px 14px;background:#0f1722;border-radius:0 12px 12px 0;color:#cbd5e1}.note.warn{border-left-color:#fbbf24;background:#1a160d}
+    .budget-toolbar{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 12px}.budget-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}.budget-table{width:100%;border-collapse:collapse;min-width:900px;background:#0d1118}.budget-table th,.budget-table td{padding:10px;border-bottom:1px solid #20293a;text-align:left;vertical-align:middle}.budget-table th{font-size:12px;color:var(--muted);background:#111722;position:sticky;top:0}.budget-table tr:last-child td{border-bottom:0}.budget-table input,.budget-table select{width:100%;border:1px solid #2d374a;border-radius:8px;padding:8px;background:#0b0f16;color:var(--text);font:inherit}.budget-table input[type=number]{text-align:right}.money{text-align:right!important;font-variant-numeric:tabular-nums;white-space:nowrap}.row-del{border:0;background:transparent;color:#8994a5;cursor:pointer;font-size:18px}.row-del:hover{color:var(--danger)}
+    .budget-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:12px}.sum{padding:15px}.sum span{display:block;color:var(--muted);font-size:12px}.sum b{display:block;font-size:22px;margin-top:3px}.reserve-input{display:flex;align-items:center;gap:6px}.reserve-input input{width:72px;border:1px solid #2d374a;border-radius:8px;padding:6px 8px;background:#0b0f16;color:var(--text);font:inherit}
+    .files{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.file{padding:14px;border:1px solid var(--line);border-radius:13px;background:#10141d}.file:hover{border-color:#4a5b78}.file b{display:block}.file span{color:var(--muted);font-size:12px}.search{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#0d1118;color:var(--text);outline:none;margin:0 0 14px}
+    details{border:1px solid var(--line);border-radius:14px;background:#10141d;margin:9px 0}summary{cursor:pointer;padding:14px 16px;font-weight:750}details>div{padding:0 16px 16px;color:#cbd5e1}pre{background:#0a0d12;border:1px solid #20283a;border-radius:13px;padding:14px;overflow:auto;color:#d8e2f0}footer{padding:50px 0;color:var(--muted);font-size:13px}
+    @media(max-width:980px){.stats{grid-template-columns:repeat(3,1fr)}.two,.three{grid-template-columns:1fr}.files{grid-template-columns:1fr}.budget-summary{grid-template-columns:repeat(2,1fr)}}@media(max-width:560px){.wrap{padding:18px}.topin{padding:10px 18px}.stats{grid-template-columns:repeat(2,1fr)}.hero{padding-top:42px}.lead{font-size:16px}.budget-summary{grid-template-columns:1fr}}
   </style>
 </head>
 <body>
-  <div class="top"><div class="topin">
-    <div class="brand">LINZA <span>/ HUB</span></div>
-    <a class="nav" href="#now">Сейчас</a><a class="nav" href="#practice">Практика</a><a class="nav" href="#theory">Теория</a><a class="nav" href="#metal">Металл</a><a class="nav" href="#experiment">Эксперимент</a><a class="nav" href="#files">Файлы</a>
-  </div></div>
+  <div class="top"><div class="topin"><div class="brand">LINZA <span>/ HUB</span></div><a class="nav" href="#now">Сейчас</a><a class="nav" href="#practice">Практика</a><a class="nav" href="#budget">Смета</a><a class="nav" href="#theory">Теория</a><a class="nav" href="#metal">Металл</a><a class="nav" href="#experiment">Эксперимент</a><a class="nav" href="#files">Файлы</a></div></div>
 
   <main class="wrap">
-    <header class="hero">
-      <div class="eyebrow">Project Gradient · current source-of-truth view</div>
-      <h1>Линза Люнеберга.<br>Весь проект на одной странице.</h1>
-      <p class="lead">Физическая верификация на 5 ГГц, continuous radial sheet-gyroid из HARZ Labs DE-10, металлический reflector с обратной стороны полного шара и расчётное масштабирование на 24 ГГц.</p>
-      <div class="actions">
-        <a class="btn primary" href="https://github.com/dikobrazuka/linza" target="_blank">Открыть GitHub ↗</a>
-        <a class="btn" href="https://github.com/dikobrazuka/linza/blob/main/docs/15_EXECUTABLE_PIPELINE.md" target="_blank">Минимальная практика</a>
-        <a class="btn" href="https://github.com/dikobrazuka/linza/blob/main/docs/16_THEORY_FOR_REPORT.md" target="_blank">Теория для отчёта</a>
-      </div>
-    </header>
+    <header class="hero"><div class="eyebrow">Project Gradient · current source-of-truth view</div><h1>Линза Люнеберга.<br>Весь проект на одной странице.</h1><p class="lead">Физическая верификация на 5 ГГц, continuous radial sheet-gyroid из HARZ Labs DE-10, металлический reflector с обратной стороны полного шара и расчётное масштабирование на 24 ГГц.</p><div class="actions"><a class="btn primary" href="https://github.com/dikobrazuka/linza" target="_blank">Открыть GitHub ↗</a><a class="btn" href="https://github.com/dikobrazuka/linza/blob/main/docs/15_EXECUTABLE_PIPELINE.md" target="_blank">Минимальная практика</a><a class="btn" href="https://github.com/dikobrazuka/linza/blob/main/docs/16_THEORY_FOR_REPORT.md" target="_blank">Теория для отчёта</a></div></header>
 
-    <div class="grid stats">
-      <div class="card stat"><b>5.0 GHz</b><span>физический эксперимент</span></div>
-      <div class="card stat"><b>Ø120 mm</b><span>полный шар V1</span></div>
-      <div class="card stat"><b>7.5 mm</b><span>gyroid period a</span></div>
-      <div class="card stat"><b>+10 dB</b><span>цель = ×10 по RCS</span></div>
-      <div class="card stat"><b>60°</b><span>первый reflector cap</span></div>
-      <div class="card stat"><b>Ø25 mm</b><span>strict scale @24 GHz</span></div>
-    </div>
+    <div class="grid stats"><div class="card stat"><b>5.0 GHz</b><span>физический эксперимент</span></div><div class="card stat"><b>Ø120 mm</b><span>полный шар V1</span></div><div class="card stat"><b>7.5 mm</b><span>gyroid period a</span></div><div class="card stat"><b>+10 dB</b><span>цель = ×10 по RCS</span></div><div class="card stat"><b>60°</b><span>первый reflector cap</span></div><div class="card stat"><b>Ø25 mm</b><span>strict scale @24 GHz</span></div></div>
 
-    <section id="now">
-      <div class="section-title"><div><h2>Что у нас сейчас</h2><p>Короткая версия без исследовательского перегруза.</p></div></div>
-      <div class="grid two">
-        <div class="card box">
-          <h3>Каноническая конструкция</h3>
-          <p><b>Полный диэлектрический шар Ø120 мм.</b> Две полусферы допускаются только как способ печати/мойки/засветки, после чего собираются в полный шар.</p>
-          <div class="formula">ε(r) = 2 − (r/R)², &nbsp; R = 60 mm</div>
-          <p>На задней области поверхности — проводящий сферический cap. Первый практический кандидат: <b>60°</b>.</p>
-          <div class="statusline"><span class="pill"><strong>Материал:</strong> DE-10</span><span class="pill"><strong>Структура:</strong> sheet gyroid</span><span class="pill"><strong>Reflector:</strong> Cu foil V1</span></div>
-        </div>
-        <div class="card box">
-          <h3>Главная метрика</h3>
-          <p>Сравниваем не с пустым местом, а с тем же металлическим отражателем без линзы.</p>
-          <div class="formula">Kσ = σ(lens+reflector) / σ(reflector)</div>
-          <div class="formula">Δσ[dB] = 10 log₁₀(Kσ)</div>
-          <p><b>×10 = +10 dB</b>. Stretch-result: <b>×30 ≈ +14.77 dB</b>. ×10 — цель, а не гарантия.</p>
-        </div>
-      </div>
+    <section id="now"><div class="section-title"><div><h2>Что у нас сейчас</h2><p>Короткая версия без исследовательского перегруза.</p></div></div><div class="grid two"><div class="card box"><h3>Каноническая конструкция</h3><p><b>Полный диэлектрический шар Ø120 мм.</b> Две полусферы допускаются только как способ печати/мойки/засветки, после чего собираются в полный шар.</p><div class="formula">ε(r) = 2 − (r/R)², &nbsp; R = 60 mm</div><p>На задней области поверхности — проводящий spherical cap. Первый практический кандидат: <b>60°</b>.</p><div class="statusline"><span class="pill"><strong>Материал:</strong> DE-10</span><span class="pill"><strong>Структура:</strong> sheet gyroid</span><span class="pill"><strong>Reflector:</strong> Cu foil V1</span></div></div><div class="card box"><h3>Главная метрика</h3><p>Сравниваем с тем же металлическим отражателем без линзы.</p><div class="formula">Kσ = σ(lens+reflector) / σ(reflector)</div><div class="formula">Δσ[dB] = 10 log₁₀(Kσ)</div><p><b>×10 = +10 dB</b>. Stretch-result: <b>×30 ≈ +14.77 dB</b>. ×10 — цель, не гарантия.</p></div></div></section>
+
+    <section id="practice"><div class="section-title"><div><h2>Практическая часть</h2><p>Только то, что реально нужно сделать.</p></div></div><div class="card steps"><div class="step"><b>Материал DE-10</b><small>3 solid RF-пластины → εsolid и tanδ около 5 ГГц.</small></div><div class="step"><b>Плотность cured resin</b><small>3 кубоида 20×20×10 мм → масса, плотность, shrinkage.</small></div><div class="step"><b>5 gyroid RF-coupons</b><small>ρ = 0.15 / 0.30 / 0.50 / 0.65 / 0.80 → таблица ρactual → εeff.</small></div><div class="step"><b>Сгенерировать Ø120 sphere</b><small>ε(r) → ρ(r) → threshold h(r) → continuous sheet-gyroid.</small></div><div class="step"><b>Reflector — 3 варианта</b><small>30° / 60° / 90°. 60° — первый практический кандидат.</small></div><div class="step"><b>Напечатать и собрать полный шар</b><small>Две открытые полусферы — только технологический разъём.</small></div><div class="step"><b>Измерить 4 состояния</b><small>BACKGROUND / REFERENCE / BASELINE reflector-only / TEST lens+reflector.</small></div><div class="step"><b>Масштабировать на 24 ГГц</b><small>Все линейные размеры ×5/24. Для Ø120: Ø25 мм, a=1.5625 мм.</small></div></div><div class="note warn" style="margin-top:14px"><b>Не тормозим проект:</b> большие sweep'ы, 9 плотностей, anisotropy campaign и полный uncertainty budget — optional.</div></section>
+
+    <section id="budget">
+      <div class="section-title"><div><h2>Смета V1</h2><p>Редактируется прямо здесь. Изменения автоматически сохраняются в этом браузере.</p></div></div>
+      <div class="budget-toolbar"><button class="btn primary" id="addBudgetRow">+ Добавить позицию</button><button class="btn" id="exportBudgetCsv">Экспорт CSV</button><button class="btn" id="exportBudgetJson">Экспорт JSON</button><button class="btn" id="importBudgetBtn">Импорт JSON</button><input type="file" id="importBudgetFile" accept="application/json,.json" hidden><button class="btn danger" id="resetBudget">Сбросить к исходной</button></div>
+      <div class="note" style="margin-bottom:12px"><b>Логика:</b> 14 000 ₽ за DE-10 — известная цена из текущего проекта. Остальные стартовые цены — рабочие ориентиры и должны быть заменены на фактические после покупки/КП. Позиции с 0 ₽ означают: оборудование/услуга уже есть или цена пока не определена.</div>
+      <div class="budget-wrap"><table class="budget-table"><thead><tr><th style="width:15%">Категория</th><th style="width:25%">Позиция</th><th style="width:9%">Кол-во</th><th style="width:10%">Ед.</th><th style="width:13%">Цена/ед., ₽</th><th style="width:13%">Итого, ₽</th><th>Комментарий</th><th></th></tr></thead><tbody id="budgetBody"></tbody></table></div>
+      <div class="budget-summary"><div class="card sum"><span>Подытог</span><b id="budgetSubtotal">0 ₽</b></div><div class="card sum"><span>Резерв</span><div class="reserve-input"><input id="budgetReserve" type="number" min="0" max="100" step="1" value="15"><b>%</b></div></div><div class="card sum"><span>Резерв, ₽</span><b id="budgetReserveValue">0 ₽</b></div><div class="card sum"><span>Итого с резервом</span><b id="budgetTotal">0 ₽</b></div></div>
+      <div class="statusline"><span class="pill"><strong>Auto-save:</strong> localStorage</span><span class="pill"><strong>Версия:</strong> рабочая V1</span><span class="pill"><strong>Валюта:</strong> RUB</span></div>
     </section>
 
-    <section id="practice">
-      <div class="section-title"><div><h2>Практическая часть</h2><p>Только то, что реально нужно сделать.</p></div></div>
-      <div class="card steps">
-        <div class="step"><b>Материал DE-10</b><small>3 solid RF-пластины → εsolid и tanδ около 5 ГГц.</small></div>
-        <div class="step"><b>Плотность cured resin</b><small>3 кубоида 20×20×10 мм → масса, плотность, shrinkage.</small></div>
-        <div class="step"><b>5 gyroid RF-coupons</b><small>ρ = 0.15 / 0.30 / 0.50 / 0.65 / 0.80 → получить таблицу ρactual → εeff.</small></div>
-        <div class="step"><b>Сгенерировать Ø120 sphere</b><small>Радиальный ε(r) → ρ(r) → threshold h(r) → continuous sheet-gyroid.</small></div>
-        <div class="step"><b>Reflector — только 3 варианта</b><small>30° / 60° / 90°. Выбрать лучший или почти лучший; 60° — первый практический кандидат.</small></div>
-        <div class="step"><b>Напечатать и собрать полный шар</b><small>Две открытые полусферы — только технологический разъём.</small></div>
-        <div class="step"><b>Измерить 4 состояния</b><small>BACKGROUND / REFERENCE / BASELINE reflector-only / TEST lens+reflector.</small></div>
-        <div class="step"><b>Масштабировать на 24 ГГц</b><small>Все линейные размеры ×5/24. Для Ø120: Ø25 мм, a=1.5625 мм.</small></div>
-      </div>
-      <div class="note warn" style="margin-top:14px"><b>Не тормозим проект:</b> diameter sweep 120/150/180/240, 9 плотностей, anisotropy campaign, полный uncertainty budget и большие parameter sweeps — optional, только если основной результат вызывает сомнение.</div>
-    </section>
+    <section id="theory"><div class="section-title"><div><h2>Теория в 2 минутах</h2><p>То, что надо понимать и уметь объяснить.</p></div></div><div class="grid three"><div class="card box"><h3>1. Почему фокусируется</h3><p>Показатель преломления меняется с радиусом. Центр электрически «медленнее» края, поэтому разные участки фронта набирают разную фазу и волна сходится к противоположной поверхности.</p><div class="formula">n(r)=√ε(r)</div></div><div class="card box"><h3>2. Зачем gyroid</h3><p>Меняем долю полимера и воздуха, а не химсостав. Это меняет эффективную ε и позволяет реализовать плавный профиль внутри одной детали.</p><div class="formula">ρ ↑ ⇒ εeff ↑</div></div><div class="card box"><h3>3. Откуда растёт RCS</h3><p>Волна фокусируется на задней поверхности, попадает на металл, отражается и второй раз проходит через линзу, формируя обратный направленный пучок.</p><div class="formula">focus → reflector → retroreflection</div></div></div><details><summary>Почему 5 ГГц, если финальная идея 24 ГГц?</summary><div>Доступный измерительный тракт работает примерно до 6 ГГц. На 5 ГГц физически проверяем принцип и модель, затем валидированную геометрию масштабируем по частоте. Свойства материала на 24 ГГц автоматически не переносятся.</div></details><details><summary>Масштабирование 5 → 24 ГГц</summary><div><div class="formula">k = 5/24 = 0.208333</div><p>Ø120 → Ø25 мм; R60 → R12.5 мм; a7.5 → a1.5625 мм.</p></div></details></section>
 
-    <section id="theory">
-      <div class="section-title"><div><h2>Теория в 2 минутах</h2><p>То, что надо понимать и уметь объяснить.</p></div></div>
-      <div class="grid three">
-        <div class="card box"><h3>1. Почему фокусируется</h3><p>Показатель преломления меняется с радиусом. Центр электрически «медленнее» края, поэтому разные участки фронта набирают разную фазу и волна сходится к противоположной поверхности.</p><div class="formula">n(r)=√ε(r)</div></div>
-        <div class="card box"><h3>2. Зачем gyroid</h3><p>Мы не меняем химсостав по радиусу. Меняем долю полимера и воздуха. Это меняет эффективную ε. Continuous gyroid позволяет делать это плавно внутри одной детали.</p><div class="formula">ρ ↑ ⇒ εeff ↑</div></div>
-        <div class="card box"><h3>3. Откуда растёт RCS</h3><p>Волна фокусируется на задней поверхности, попадает на металл, отражается и второй раз проходит через линзу. Линза превращает отражённое поле в направленный обратный пучок.</p><div class="formula">focus → reflector → retroreflection</div></div>
-      </div>
-      <details><summary>Что такое ЭПР / RCS?</summary><div>ЭПР — эффективная площадь рассеяния. Она характеризует, насколько сильным выглядит объект для радиолокатора в выбранном направлении. В проекте основной показатель — относительное увеличение относительно reflector-only, потому что это честно показывает вклад самой линзы.</div></details>
-      <details><summary>Почему 5 ГГц, если финальная идея 24 ГГц?</summary><div>Потому что доступный измерительный тракт работает примерно до 6 ГГц. На 5 ГГц делаем физическую проверку принципа и модели. Затем валидированную геометрию масштабируем по частоте. Свойства материала на 24 ГГц автоматически не переносятся — это отдельное расчётное допущение.</div></details>
-      <details><summary>Масштабирование 5 → 24 ГГц</summary><div><div class="formula">k = 5/24 = 0.208333</div><p>Ø120 → Ø25 мм; R60 → R12.5 мм; a7.5 → a1.5625 мм. Сохраняются нормированные геометрические отношения, но не гарантируются ε(f), tanδ(f), roughness и технологическая минимальная стенка.</p></div></details>
-    </section>
+    <section id="metal"><div class="section-title"><div><h2>Металлическая часть</h2><p>Без ненужной гальваники на первом образце.</p></div></div><div class="grid two"><div class="card box"><h3>V1: медная фольга</h3><p>Для первого образца достаточно тонкой непрерывной медной фольги с проводящим клеем.</p><ul><li>первый cap: 60°;</li><li>наклеивать лепестками/полосами по сфере;</li><li>небольшой нахлёст;</li><li>проверить электрическую непрерывность мультиметром;</li><li>оптическая полировка не нужна.</li></ul></div><div class="card box"><h3>Гальваника — позже</h3><p>Проводящий лак → Cu plating возможны, но для porous gyroid создают лишнюю проблему с электролитом в каналах.</p><div class="note"><b>Важно:</b> металл наносится только на задний spherical cap полного шара.</div></div></div></section>
 
-    <section id="metal">
-      <div class="section-title"><div><h2>Металлическая часть</h2><p>Без ненужной гальваники на первом образце.</p></div></div>
-      <div class="grid two">
-        <div class="card box">
-          <h3>V1: медная фольга</h3>
-          <p>Для первого физического образца достаточно тонкой непрерывной медной фольги с проводящим клеем. Толщина металла на порядки больше skin depth на 5 ГГц, поэтому наращивать толстую медь ради RF-свойств не нужно.</p>
-          <ul><li>первый cap: 60°;</li><li>наклеивать лепестками/полосами по сфере;</li><li>небольшой нахлёст;</li><li>проверить электрическую непрерывность мультиметром;</li><li>оптическая полировка не нужна.</li></ul>
-        </div>
-        <div class="card box">
-          <h3>Гальваника — позже</h3>
-          <p>Графит/проводящий лак → медная гальваника технически возможны, но для porous gyroid создают лишнюю проблему с электролитом в каналах. Для доказательства принципа фольга проще и надёжнее.</p>
-          <div class="note"><b>Важно:</b> металл наносится только на задний spherical cap полного шара. Не заменяем линзу одной полусферой.</div>
-        </div>
-      </div>
-    </section>
+    <section id="experiment"><div class="section-title"><div><h2>Эксперимент</h2><p>Минимум измерений, который даёт доказательный результат.</p></div></div><div class="grid two"><div class="card box"><h3>Стенд</h3><div class="formula">VNA Port 1 → TX → target → RX → VNA Port 2</div><p>Для Ø120 мм стартовая дистанция: <b>1.0–1.5 м</b>. Complex S21 сохраняем в `.s2p`.</p></div><div class="card box"><h3>4 состояния</h3><ul><li><b>BACKGROUND</b> — без target;</li><li><b>REFERENCE</b> — металлическая сфера;</li><li><b>BASELINE</b> — reflector only;</li><li><b>TEST</b> — lens + reflector.</li></ul><p>BASELINE и TEST — по 3 независимых установки.</p></div></div><div class="card box" style="margin-top:14px"><h3>Обработка</h3><div class="formula">Sbaseline,corr = Sbaseline − Sbackground<br>Stest,corr = Stest − Sbackground<br><br>Δσ[dB] = 20 log₁₀ |Stest,corr / Sbaseline,corr|</div></div></section>
 
-    <section id="experiment">
-      <div class="section-title"><div><h2>Эксперимент</h2><p>Минимум измерений, который даёт доказательный результат.</p></div></div>
-      <div class="grid two">
-        <div class="card box"><h3>Стенд</h3><div class="formula">VNA Port 1 → TX → target → RX → VNA Port 2</div><p>Для Ø120 мм стартовая дистанция: <b>1.0–1.5 м</b>. Complex S21 сохраняем в Touchstone `.s2p`.</p></div>
-        <div class="card box"><h3>4 состояния</h3><ul><li><b>BACKGROUND</b> — без target;</li><li><b>REFERENCE</b> — металлическая сфера;</li><li><b>BASELINE</b> — reflector only;</li><li><b>TEST</b> — lens + reflector.</li></ul><p>BASELINE и TEST — по 3 независимых установки.</p></div>
-      </div>
-      <div class="card box" style="margin-top:14px"><h3>Обработка</h3><div class="formula">Sbaseline,corr = Sbaseline − Sbackground<br>Stest,corr = Stest − Sbackground<br><br>Δσ[dB] = 20 log₁₀ |Stest,corr / Sbaseline,corr|</div><p>Вычитание только комплексное. Не вычитать dB и не вычитать модули.</p></div>
-    </section>
+    <section id="files"><div class="section-title"><div><h2>Все нужные файлы</h2><p>Поиск по названию/назначению.</p></div></div><input id="fileSearch" class="search" placeholder="Например: теория, T4, RCS, gyroid, практика…"><div class="files" id="fileList"><a class="file" data-k="source truth memory project" href="https://github.com/dikobrazuka/linza/blob/main/PROJECT_MEMORY.md" target="_blank"><b>PROJECT_MEMORY.md</b><span>Source of truth проекта</span></a><a class="file" data-k="практика mvp pipeline шаги" href="https://github.com/dikobrazuka/linza/blob/main/docs/15_EXECUTABLE_PIPELINE.md" target="_blank"><b>15_EXECUTABLE_PIPELINE.md</b><span>Минимальная практическая часть</span></a><a class="file" data-k="теория отчет защита физика" href="https://github.com/dikobrazuka/linza/blob/main/docs/16_THEORY_FOR_REPORT.md" target="_blank"><b>16_THEORY_FOR_REPORT.md</b><span>Теория для пояснительной записки</span></a><a class="file" data-k="next actions задачи" href="https://github.com/dikobrazuka/linza/blob/main/docs/04_NEXT_ACTIONS.md" target="_blank"><b>04_NEXT_ACTIONS.md</b><span>Ближайшие действия</span></a><a class="file" data-k="t1 de10 material dielectric" href="https://github.com/dikobrazuka/linza/blob/main/docs/08_DE10_SPDR_T1_PROTOCOL.md" target="_blank"><b>08_DE10_SPDR_T1_PROTOCOL.md</b><span>Измерение solid DE-10</span></a><a class="file" data-k="t2 t3 gyroid density print" href="https://github.com/dikobrazuka/linza/blob/main/docs/09_DE10_GYROID_T2_T3_PROTOCOL.md" target="_blank"><b>09_DE10_GYROID_T2_T3_PROTOCOL.md</b><span>Плотность / shrinkage / gyroid coupons</span></a><a class="file" data-k="t4 epsilon effective" href="https://github.com/dikobrazuka/linza/blob/main/docs/12_T4_RF_GYROID_PROTOCOL.md" target="_blank"><b>12_T4_RF_GYROID_PROTOCOL.md</b><span>εeff(ρ) около 5 ГГц</span></a><a class="file" data-k="rcs s21 vna" href="https://github.com/dikobrazuka/linza/blob/main/docs/13_RCS_S21_PROCESSING.md" target="_blank"><b>13_RCS_S21_PROCESSING.md</b><span>S21 → relative/absolute RCS</span></a><a class="file" data-k="sphere reference pec calibration" href="https://github.com/dikobrazuka/linza/blob/main/docs/14_PEC_SPHERE_REFERENCE.md" target="_blank"><b>14_PEC_SPHERE_REFERENCE.md</b><span>Калибровочная металлическая сфера</span></a><a class="file" data-k="scaling 24 ghz" href="https://github.com/dikobrazuka/linza/blob/main/docs/10_SCALING_5_TO_24.md" target="_blank"><b>10_SCALING_5_TO_24.md</b><span>Масштабирование 5 → 24 ГГц</span></a><a class="file" data-k="generator gyroid stl" href="https://github.com/dikobrazuka/linza/blob/main/tools/continuous_luneburg_gyroid.py" target="_blank"><b>continuous_luneburg_gyroid.py</b><span>Генератор геометрии линзы</span></a><a class="file" data-k="process rcs s21" href="https://github.com/dikobrazuka/linza/blob/main/tools/process_rcs_s21.py" target="_blank"><b>process_rcs_s21.py</b><span>Обработка измеренного S21</span></a></div></section>
 
-    <section id="files">
-      <div class="section-title"><div><h2>Все нужные файлы</h2><p>Поиск по названию/назначению.</p></div></div>
-      <input id="fileSearch" class="search" placeholder="Например: теория, T4, RCS, gyroid, практика…" />
-      <div class="files" id="fileList">
-        <a class="file" data-k="source truth memory project" href="https://github.com/dikobrazuka/linza/blob/main/PROJECT_MEMORY.md" target="_blank"><b>PROJECT_MEMORY.md</b><span>Source of truth проекта</span></a>
-        <a class="file" data-k="практика mvp pipeline шаги" href="https://github.com/dikobrazuka/linza/blob/main/docs/15_EXECUTABLE_PIPELINE.md" target="_blank"><b>15_EXECUTABLE_PIPELINE.md</b><span>Минимальная практическая часть</span></a>
-        <a class="file" data-k="теория отчет защита физика" href="https://github.com/dikobrazuka/linza/blob/main/docs/16_THEORY_FOR_REPORT.md" target="_blank"><b>16_THEORY_FOR_REPORT.md</b><span>Теория для пояснительной записки и защиты</span></a>
-        <a class="file" data-k="next actions задачи что делать" href="https://github.com/dikobrazuka/linza/blob/main/docs/04_NEXT_ACTIONS.md" target="_blank"><b>04_NEXT_ACTIONS.md</b><span>Ближайшие действия</span></a>
-        <a class="file" data-k="t1 de10 material dielectric" href="https://github.com/dikobrazuka/linza/blob/main/docs/08_DE10_SPDR_T1_PROTOCOL.md" target="_blank"><b>08_DE10_SPDR_T1_PROTOCOL.md</b><span>Измерение solid DE-10</span></a>
-        <a class="file" data-k="t2 t3 gyroid density print" href="https://github.com/dikobrazuka/linza/blob/main/docs/09_DE10_GYROID_T2_T3_PROTOCOL.md" target="_blank"><b>09_DE10_GYROID_T2_T3_PROTOCOL.md</b><span>Плотность / shrinkage / gyroid coupons</span></a>
-        <a class="file" data-k="t4 epsilon effective rf coupons" href="https://github.com/dikobrazuka/linza/blob/main/docs/12_T4_RF_GYROID_PROTOCOL.md" target="_blank"><b>12_T4_RF_GYROID_PROTOCOL.md</b><span>εeff(ρ) около 5 ГГц</span></a>
-        <a class="file" data-k="rcs s21 vna обработка experiment" href="https://github.com/dikobrazuka/linza/blob/main/docs/13_RCS_S21_PROCESSING.md" target="_blank"><b>13_RCS_S21_PROCESSING.md</b><span>S21 → relative/absolute RCS</span></a>
-        <a class="file" data-k="sphere reference pec calibration mie" href="https://github.com/dikobrazuka/linza/blob/main/docs/14_PEC_SPHERE_REFERENCE.md" target="_blank"><b>14_PEC_SPHERE_REFERENCE.md</b><span>Калибровочная металлическая сфера</span></a>
-        <a class="file" data-k="scaling 24 ghz масштабирование" href="https://github.com/dikobrazuka/linza/blob/main/docs/10_SCALING_5_TO_24.md" target="_blank"><b>10_SCALING_5_TO_24.md</b><span>Масштабирование 5 → 24 ГГц</span></a>
-        <a class="file" data-k="generator continuous gyroid stl code" href="https://github.com/dikobrazuka/linza/blob/main/tools/continuous_luneburg_gyroid.py" target="_blank"><b>continuous_luneburg_gyroid.py</b><span>Генератор геометрии линзы</span></a>
-        <a class="file" data-k="process rcs s21 tool" href="https://github.com/dikobrazuka/linza/blob/main/tools/process_rcs_s21.py" target="_blank"><b>process_rcs_s21.py</b><span>Обработка измеренного S21</span></a>
-      </div>
-    </section>
-
-    <section>
-      <div class="section-title"><div><h2>Команды</h2><p>То, что понадобится чаще всего.</p></div></div>
-      <details><summary>Сгенерировать финальную gyroid-линзу после T1–T4</summary><div><pre>python tools/continuous_luneburg_gyroid.py \
-  --radius 60 \
-  --cell 7.5 \
-  --eps-solid &lt;MEASURED_EPS&gt; \
-  --rho-min &lt;MIN_RHO&gt; \
-  --rho-max &lt;MAX_RHO&gt; \
-  --calibration-csv data/materials/de10/DE10_GYROID_EPS_CAL_5GHz.csv \
-  --solid-density &lt;MEASURED_DENSITY&gt; \
-  --out artifacts/TEST_LENS_5G_V1_upper.stl</pre></div></details>
-      <details><summary>Обработать физический RCS</summary><div><pre>python tools/process_rcs_s21.py \
-  --background BACKGROUND.s2p \
-  --baseline BASELINE.s2p \
-  --test LENS_REFLECTOR.s2p \
-  --out RCS_RELATIVE.csv</pre></div></details>
-      <details><summary>Проверить код</summary><div><pre>python -m pytest -q</pre></div></details>
-    </section>
-
-    <footer>LINZA Project Hub · репозиторий <span class="mono">dikobrazuka/linza</span> · страница публикуется GitHub Pages автоматически из <span class="mono">main</span>.</footer>
+    <footer>LINZA Project Hub · <span class="mono">dikobrazuka/linza</span> · GitHub Pages из <span class="mono">main</span>.</footer>
   </main>
 
   <script>
-    const input=document.getElementById('fileSearch');
-    input?.addEventListener('input',()=>{
-      const q=input.value.trim().toLowerCase();
-      document.querySelectorAll('#fileList .file').forEach(el=>{
-        const hay=(el.textContent+' '+(el.dataset.k||'')).toLowerCase();
-        el.style.display=!q||hay.includes(q)?'block':'none';
-      });
-    });
+    const input=document.getElementById('fileSearch');input?.addEventListener('input',()=>{const q=input.value.trim().toLowerCase();document.querySelectorAll('#fileList .file').forEach(el=>{const hay=(el.textContent+' '+(el.dataset.k||'')).toLowerCase();el.style.display=!q||hay.includes(q)?'block':'none'})});
+
+    const BUDGET_KEY='linza-budget-v1';
+    const RESERVE_KEY='linza-budget-reserve-v1';
+    const defaultBudget=[
+      {category:'Материал',item:'HARZ Labs DE-10, 0.5 кг',qty:2,unit:'уп.',price:7000,note:'Известная цена поставщика; всего 1 кг'},
+      {category:'Мойка',item:'IPA / растворитель для промывки',qty:1,unit:'5 л',price:1500,note:'Ориентир — заменить фактической ценой'},
+      {category:'Reflector',item:'Медная фольга с проводящим клеем',qty:1,unit:'рулон',price:2000,note:'Ориентир; V1 без гальваники'},
+      {category:'Расходники',item:'Перчатки, фильтры, маскировка, салфетки',qty:1,unit:'компл.',price:1000,note:'Ориентир'},
+      {category:'Сборка',item:'Клей / крепёж / центрирующие элементы',qty:1,unit:'компл.',price:500,note:'Ориентир'},
+      {category:'Калибровка',item:'Металлическая reference sphere',qty:1,unit:'шт.',price:0,note:'0 ₽ если есть в лаборатории; иначе вписать цену'},
+      {category:'RF',item:'Измерение ε и tanδ / RF-оснастка',qty:1,unit:'услуга',price:0,note:'0 ₽ если выполняется на доступном оборудовании'},
+      {category:'RF',item:'VNA + TX/RX антенны + стенд',qty:1,unit:'компл.',price:0,note:'Оборудование лаборатории / уже доступно'},
+      {category:'Печать',item:'Принтер + wash/post-cure',qty:1,unit:'компл.',price:0,note:'Считаем доступным; материал учтён отдельно'}
+    ];
+    const money=n=>new Intl.NumberFormat('ru-RU',{maximumFractionDigits:0}).format(Number(n)||0)+' ₽';
+    let budget=[];
+    try{budget=JSON.parse(localStorage.getItem(BUDGET_KEY))||structuredClone(defaultBudget)}catch(e){budget=structuredClone(defaultBudget)}
+    let reserve=Number(localStorage.getItem(RESERVE_KEY));if(!Number.isFinite(reserve))reserve=15;
+    const body=document.getElementById('budgetBody'),reserveInput=document.getElementById('budgetReserve');reserveInput.value=reserve;
+    function saveBudget(){localStorage.setItem(BUDGET_KEY,JSON.stringify(budget));localStorage.setItem(RESERVE_KEY,String(reserve))}
+    function esc(s){return String(s??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;')}
+    function recalc(){let subtotal=0;budget.forEach(r=>subtotal+=(Number(r.qty)||0)*(Number(r.price)||0));const rv=subtotal*(reserve/100);document.getElementById('budgetSubtotal').textContent=money(subtotal);document.getElementById('budgetReserveValue').textContent=money(rv);document.getElementById('budgetTotal').textContent=money(subtotal+rv);saveBudget()}
+    function updateRow(i,k,v){if(k==='qty'||k==='price')v=Number(v)||0;budget[i][k]=v;recalc()}
+    function renderBudget(){body.innerHTML=budget.map((r,i)=>`<tr><td><input value="${esc(r.category)}" data-i="${i}" data-k="category"></td><td><input value="${esc(r.item)}" data-i="${i}" data-k="item"></td><td><input type="number" min="0" step="0.01" value="${r.qty}" data-i="${i}" data-k="qty"></td><td><input value="${esc(r.unit)}" data-i="${i}" data-k="unit"></td><td><input type="number" min="0" step="1" value="${r.price}" data-i="${i}" data-k="price"></td><td class="money">${money((Number(r.qty)||0)*(Number(r.price)||0))}</td><td><input value="${esc(r.note)}" data-i="${i}" data-k="note"></td><td><button class="row-del" data-del="${i}" title="Удалить">×</button></td></tr>`).join('');body.querySelectorAll('input').forEach(el=>el.addEventListener('input',e=>{updateRow(Number(e.target.dataset.i),e.target.dataset.k,e.target.value);renderBudget()}));body.querySelectorAll('[data-del]').forEach(el=>el.addEventListener('click',()=>{budget.splice(Number(el.dataset.del),1);renderBudget();recalc()}));recalc()}
+    document.getElementById('addBudgetRow').addEventListener('click',()=>{budget.push({category:'Новое',item:'Новая позиция',qty:1,unit:'шт.',price:0,note:''});renderBudget()});
+    reserveInput.addEventListener('input',()=>{reserve=Math.max(0,Number(reserveInput.value)||0);recalc()});
+    document.getElementById('resetBudget').addEventListener('click',()=>{if(confirm('Сбросить смету к исходной V1?')){budget=structuredClone(defaultBudget);reserve=15;reserveInput.value=15;renderBudget()}});
+    function download(name,text,type){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+    document.getElementById('exportBudgetJson').addEventListener('click',()=>download('linza_budget.json',JSON.stringify({currency:'RUB',reserve_percent:reserve,items:budget},null,2),'application/json'));
+    document.getElementById('exportBudgetCsv').addEventListener('click',()=>{const rows=[['Категория','Позиция','Количество','Ед.','Цена за ед., RUB','Итого, RUB','Комментарий'],...budget.map(r=>[r.category,r.item,r.qty,r.unit,r.price,(Number(r.qty)||0)*(Number(r.price)||0),r.note]),[],['Резерв, %',reserve],['Итого с резервом',(budget.reduce((s,r)=>s+(Number(r.qty)||0)*(Number(r.price)||0),0))*(1+reserve/100)]];const csv='\ufeff'+rows.map(row=>row.map(v=>'"'+String(v??'').replaceAll('"','""')+'"').join(';')).join('\n');download('linza_budget.csv',csv,'text/csv;charset=utf-8')});
+    document.getElementById('importBudgetBtn').addEventListener('click',()=>document.getElementById('importBudgetFile').click());
+    document.getElementById('importBudgetFile').addEventListener('change',async e=>{const f=e.target.files?.[0];if(!f)return;try{const data=JSON.parse(await f.text());if(!Array.isArray(data.items))throw new Error('Нет items');budget=data.items;reserve=Number(data.reserve_percent)||0;reserveInput.value=reserve;renderBudget()}catch(err){alert('Не удалось импортировать JSON: '+err.message)}e.target.value=''});
+    renderBudget();
   </script>
 </body>
 </html>
