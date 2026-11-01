@@ -1,0 +1,197 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="color-scheme" content="dark" />
+  <title>LINZA — Project Hub</title>
+  <style>
+    :root{
+      --bg:#090b10;--panel:#11151d;--panel2:#161b25;--line:#273042;
+      --text:#eef2f7;--muted:#98a2b3;--accent:#7dd3fc;--accent2:#a7f3d0;
+      --warn:#fde68a;--danger:#fca5a5;--shadow:0 14px 40px rgba(0,0,0,.32);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}html{scroll-behavior:smooth}
+    body{margin:0;background:radial-gradient(circle at 20% 0%,#111a2a 0,#090b10 36%),var(--bg);color:var(--text);font:15px/1.55 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    a{color:inherit;text-decoration:none}code,.mono{font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+    .wrap{max-width:1180px;margin:auto;padding:24px}
+    .top{position:sticky;top:0;z-index:10;background:rgba(9,11,16,.86);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.06)}
+    .topin{max-width:1180px;margin:auto;padding:11px 24px;display:flex;gap:10px;align-items:center;overflow:auto;white-space:nowrap}
+    .brand{font-weight:800;margin-right:auto}.brand span{color:var(--accent)}
+    .nav{padding:7px 10px;border-radius:10px;color:var(--muted)}.nav:hover{background:#171d29;color:var(--text)}
+    .hero{padding:62px 0 28px}.eyebrow{color:var(--accent);font-weight:700;letter-spacing:.12em;text-transform:uppercase;font-size:12px}
+    h1{font-size:clamp(36px,7vw,72px);line-height:.98;margin:12px 0 18px;letter-spacing:-.055em;max-width:900px}
+    .lead{font-size:18px;color:#cbd5e1;max-width:820px;margin:0 0 25px}
+    .actions{display:flex;gap:10px;flex-wrap:wrap}.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 14px;border:1px solid var(--line);border-radius:12px;background:var(--panel);font-weight:700}.btn.primary{background:var(--text);color:#0b0d12;border-color:var(--text)}.btn:hover{transform:translateY(-1px)}
+    .grid{display:grid;gap:14px}.stats{grid-template-columns:repeat(6,1fr);margin:18px 0 34px}.card{background:linear-gradient(180deg,rgba(22,27,37,.96),rgba(15,19,27,.96));border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .stat{padding:17px}.stat b{display:block;font-size:25px;letter-spacing:-.04em}.stat span{display:block;color:var(--muted);font-size:12px;margin-top:2px}
+    section{padding:34px 0 12px;scroll-margin-top:68px}.section-title{display:flex;align-items:end;justify-content:space-between;gap:16px;margin-bottom:14px}.section-title h2{font-size:28px;margin:0;letter-spacing:-.03em}.section-title p{margin:0;color:var(--muted)}
+    .two{grid-template-columns:1.25fr .75fr}.three{grid-template-columns:repeat(3,1fr)}
+    .box{padding:20px}.box h3{margin:0 0 10px;font-size:17px}.box p{margin:7px 0;color:#cbd5e1}.box ul{padding-left:19px;margin:9px 0}.box li{margin:5px 0}
+    .formula{font:600 17px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace;background:#0b0f16;border:1px solid #20293a;padding:14px;border-radius:13px;overflow:auto;color:#d9f3ff}
+    .tag{display:inline-flex;padding:4px 8px;border:1px solid #334056;border-radius:999px;color:#cbd5e1;font-size:12px;margin:2px 3px 2px 0}.tag.ok{border-color:#245d50;color:#a7f3d0}.tag.warn{border-color:#695c28;color:#fde68a}
+    .steps{counter-reset:step}.step{position:relative;padding:18px 18px 18px 58px;border-bottom:1px solid var(--line)}.step:last-child{border-bottom:0}.step:before{counter-increment:step;content:counter(step);position:absolute;left:18px;top:18px;width:25px;height:25px;border-radius:50%;display:grid;place-items:center;background:#20283a;color:var(--accent);font-weight:800}.step b{display:block}.step small{color:var(--muted)}
+    .files{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.file{padding:14px;border:1px solid var(--line);border-radius:13px;background:#10141d}.file:hover{border-color:#4a5b78}.file b{display:block}.file span{color:var(--muted);font-size:12px}
+    details{border:1px solid var(--line);border-radius:14px;background:#10141d;margin:9px 0}summary{cursor:pointer;padding:14px 16px;font-weight:750}details>div{padding:0 16px 16px;color:#cbd5e1}
+    .statusline{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}.pill{padding:7px 10px;border-radius:999px;background:#141a25;border:1px solid var(--line);font-size:12px}.pill strong{color:var(--accent2)}
+    .note{border-left:3px solid var(--accent);padding:12px 14px;background:#0f1722;border-radius:0 12px 12px 0;color:#cbd5e1}.note.warn{border-left-color:#fbbf24;background:#1a160d}
+    .search{width:100%;padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#0d1118;color:var(--text);outline:none;margin:0 0 14px}.search:focus{border-color:#52739d}
+    pre{background:#0a0d12;border:1px solid #20283a;border-radius:13px;padding:14px;overflow:auto;color:#d8e2f0}
+    footer{padding:50px 0;color:var(--muted);font-size:13px}
+    @media(max-width:980px){.stats{grid-template-columns:repeat(3,1fr)}.two,.three{grid-template-columns:1fr}.files{grid-template-columns:1fr}}
+    @media(max-width:560px){.wrap{padding:18px}.topin{padding:10px 18px}.stats{grid-template-columns:repeat(2,1fr)}.hero{padding-top:42px}.lead{font-size:16px}}
+  </style>
+</head>
+<body>
+  <div class="top"><div class="topin">
+    <div class="brand">LINZA <span>/ HUB</span></div>
+    <a class="nav" href="#now">Сейчас</a><a class="nav" href="#practice">Практика</a><a class="nav" href="#theory">Теория</a><a class="nav" href="#metal">Металл</a><a class="nav" href="#experiment">Эксперимент</a><a class="nav" href="#files">Файлы</a>
+  </div></div>
+
+  <main class="wrap">
+    <header class="hero">
+      <div class="eyebrow">Project Gradient · current source-of-truth view</div>
+      <h1>Линза Люнеберга.<br>Весь проект на одной странице.</h1>
+      <p class="lead">Физическая верификация на 5 ГГц, continuous radial sheet-gyroid из HARZ Labs DE-10, металлический reflector с обратной стороны полного шара и расчётное масштабирование на 24 ГГц.</p>
+      <div class="actions">
+        <a class="btn primary" href="https://github.com/dikobrazuka/linza" target="_blank">Открыть GitHub ↗</a>
+        <a class="btn" href="https://github.com/dikobrazuka/linza/blob/main/docs/15_EXECUTABLE_PIPELINE.md" target="_blank">Минимальная практика</a>
+        <a class="btn" href="https://github.com/dikobrazuka/linza/blob/main/docs/16_THEORY_FOR_REPORT.md" target="_blank">Теория для отчёта</a>
+      </div>
+    </header>
+
+    <div class="grid stats">
+      <div class="card stat"><b>5.0 GHz</b><span>физический эксперимент</span></div>
+      <div class="card stat"><b>Ø120 mm</b><span>полный шар V1</span></div>
+      <div class="card stat"><b>7.5 mm</b><span>gyroid period a</span></div>
+      <div class="card stat"><b>+10 dB</b><span>цель = ×10 по RCS</span></div>
+      <div class="card stat"><b>60°</b><span>первый reflector cap</span></div>
+      <div class="card stat"><b>Ø25 mm</b><span>strict scale @24 GHz</span></div>
+    </div>
+
+    <section id="now">
+      <div class="section-title"><div><h2>Что у нас сейчас</h2><p>Короткая версия без исследовательского перегруза.</p></div></div>
+      <div class="grid two">
+        <div class="card box">
+          <h3>Каноническая конструкция</h3>
+          <p><b>Полный диэлектрический шар Ø120 мм.</b> Две полусферы допускаются только как способ печати/мойки/засветки, после чего собираются в полный шар.</p>
+          <div class="formula">ε(r) = 2 − (r/R)², &nbsp; R = 60 mm</div>
+          <p>На задней области поверхности — проводящий сферический cap. Первый практический кандидат: <b>60°</b>.</p>
+          <div class="statusline"><span class="pill"><strong>Материал:</strong> DE-10</span><span class="pill"><strong>Структура:</strong> sheet gyroid</span><span class="pill"><strong>Reflector:</strong> Cu foil V1</span></div>
+        </div>
+        <div class="card box">
+          <h3>Главная метрика</h3>
+          <p>Сравниваем не с пустым местом, а с тем же металлическим отражателем без линзы.</p>
+          <div class="formula">Kσ = σ(lens+reflector) / σ(reflector)</div>
+          <div class="formula">Δσ[dB] = 10 log₁₀(Kσ)</div>
+          <p><b>×10 = +10 dB</b>. Stretch-result: <b>×30 ≈ +14.77 dB</b>. ×10 — цель, а не гарантия.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="practice">
+      <div class="section-title"><div><h2>Практическая часть</h2><p>Только то, что реально нужно сделать.</p></div></div>
+      <div class="card steps">
+        <div class="step"><b>Материал DE-10</b><small>3 solid RF-пластины → εsolid и tanδ около 5 ГГц.</small></div>
+        <div class="step"><b>Плотность cured resin</b><small>3 кубоида 20×20×10 мм → масса, плотность, shrinkage.</small></div>
+        <div class="step"><b>5 gyroid RF-coupons</b><small>ρ = 0.15 / 0.30 / 0.50 / 0.65 / 0.80 → получить таблицу ρactual → εeff.</small></div>
+        <div class="step"><b>Сгенерировать Ø120 sphere</b><small>Радиальный ε(r) → ρ(r) → threshold h(r) → continuous sheet-gyroid.</small></div>
+        <div class="step"><b>Reflector — только 3 варианта</b><small>30° / 60° / 90°. Выбрать лучший или почти лучший; 60° — первый практический кандидат.</small></div>
+        <div class="step"><b>Напечатать и собрать полный шар</b><small>Две открытые полусферы — только технологический разъём.</small></div>
+        <div class="step"><b>Измерить 4 состояния</b><small>BACKGROUND / REFERENCE / BASELINE reflector-only / TEST lens+reflector.</small></div>
+        <div class="step"><b>Масштабировать на 24 ГГц</b><small>Все линейные размеры ×5/24. Для Ø120: Ø25 мм, a=1.5625 мм.</small></div>
+      </div>
+      <div class="note warn" style="margin-top:14px"><b>Не тормозим проект:</b> diameter sweep 120/150/180/240, 9 плотностей, anisotropy campaign, полный uncertainty budget и большие parameter sweeps — optional, только если основной результат вызывает сомнение.</div>
+    </section>
+
+    <section id="theory">
+      <div class="section-title"><div><h2>Теория в 2 минутах</h2><p>То, что надо понимать и уметь объяснить.</p></div></div>
+      <div class="grid three">
+        <div class="card box"><h3>1. Почему фокусируется</h3><p>Показатель преломления меняется с радиусом. Центр электрически «медленнее» края, поэтому разные участки фронта набирают разную фазу и волна сходится к противоположной поверхности.</p><div class="formula">n(r)=√ε(r)</div></div>
+        <div class="card box"><h3>2. Зачем gyroid</h3><p>Мы не меняем химсостав по радиусу. Меняем долю полимера и воздуха. Это меняет эффективную ε. Continuous gyroid позволяет делать это плавно внутри одной детали.</p><div class="formula">ρ ↑ ⇒ εeff ↑</div></div>
+        <div class="card box"><h3>3. Откуда растёт RCS</h3><p>Волна фокусируется на задней поверхности, попадает на металл, отражается и второй раз проходит через линзу. Линза превращает отражённое поле в направленный обратный пучок.</p><div class="formula">focus → reflector → retroreflection</div></div>
+      </div>
+      <details><summary>Что такое ЭПР / RCS?</summary><div>ЭПР — эффективная площадь рассеяния. Она характеризует, насколько сильным выглядит объект для радиолокатора в выбранном направлении. В проекте основной показатель — относительное увеличение относительно reflector-only, потому что это честно показывает вклад самой линзы.</div></details>
+      <details><summary>Почему 5 ГГц, если финальная идея 24 ГГц?</summary><div>Потому что доступный измерительный тракт работает примерно до 6 ГГц. На 5 ГГц делаем физическую проверку принципа и модели. Затем валидированную геометрию масштабируем по частоте. Свойства материала на 24 ГГц автоматически не переносятся — это отдельное расчётное допущение.</div></details>
+      <details><summary>Масштабирование 5 → 24 ГГц</summary><div><div class="formula">k = 5/24 = 0.208333</div><p>Ø120 → Ø25 мм; R60 → R12.5 мм; a7.5 → a1.5625 мм. Сохраняются нормированные геометрические отношения, но не гарантируются ε(f), tanδ(f), roughness и технологическая минимальная стенка.</p></div></details>
+    </section>
+
+    <section id="metal">
+      <div class="section-title"><div><h2>Металлическая часть</h2><p>Без ненужной гальваники на первом образце.</p></div></div>
+      <div class="grid two">
+        <div class="card box">
+          <h3>V1: медная фольга</h3>
+          <p>Для первого физического образца достаточно тонкой непрерывной медной фольги с проводящим клеем. Толщина металла на порядки больше skin depth на 5 ГГц, поэтому наращивать толстую медь ради RF-свойств не нужно.</p>
+          <ul><li>первый cap: 60°;</li><li>наклеивать лепестками/полосами по сфере;</li><li>небольшой нахлёст;</li><li>проверить электрическую непрерывность мультиметром;</li><li>оптическая полировка не нужна.</li></ul>
+        </div>
+        <div class="card box">
+          <h3>Гальваника — позже</h3>
+          <p>Графит/проводящий лак → медная гальваника технически возможны, но для porous gyroid создают лишнюю проблему с электролитом в каналах. Для доказательства принципа фольга проще и надёжнее.</p>
+          <div class="note"><b>Важно:</b> металл наносится только на задний spherical cap полного шара. Не заменяем линзу одной полусферой.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="experiment">
+      <div class="section-title"><div><h2>Эксперимент</h2><p>Минимум измерений, который даёт доказательный результат.</p></div></div>
+      <div class="grid two">
+        <div class="card box"><h3>Стенд</h3><div class="formula">VNA Port 1 → TX → target → RX → VNA Port 2</div><p>Для Ø120 мм стартовая дистанция: <b>1.0–1.5 м</b>. Complex S21 сохраняем в Touchstone `.s2p`.</p></div>
+        <div class="card box"><h3>4 состояния</h3><ul><li><b>BACKGROUND</b> — без target;</li><li><b>REFERENCE</b> — металлическая сфера;</li><li><b>BASELINE</b> — reflector only;</li><li><b>TEST</b> — lens + reflector.</li></ul><p>BASELINE и TEST — по 3 независимых установки.</p></div>
+      </div>
+      <div class="card box" style="margin-top:14px"><h3>Обработка</h3><div class="formula">Sbaseline,corr = Sbaseline − Sbackground<br>Stest,corr = Stest − Sbackground<br><br>Δσ[dB] = 20 log₁₀ |Stest,corr / Sbaseline,corr|</div><p>Вычитание только комплексное. Не вычитать dB и не вычитать модули.</p></div>
+    </section>
+
+    <section id="files">
+      <div class="section-title"><div><h2>Все нужные файлы</h2><p>Поиск по названию/назначению.</p></div></div>
+      <input id="fileSearch" class="search" placeholder="Например: теория, T4, RCS, gyroid, практика…" />
+      <div class="files" id="fileList">
+        <a class="file" data-k="source truth memory project" href="https://github.com/dikobrazuka/linza/blob/main/PROJECT_MEMORY.md" target="_blank"><b>PROJECT_MEMORY.md</b><span>Source of truth проекта</span></a>
+        <a class="file" data-k="практика mvp pipeline шаги" href="https://github.com/dikobrazuka/linza/blob/main/docs/15_EXECUTABLE_PIPELINE.md" target="_blank"><b>15_EXECUTABLE_PIPELINE.md</b><span>Минимальная практическая часть</span></a>
+        <a class="file" data-k="теория отчет защита физика" href="https://github.com/dikobrazuka/linza/blob/main/docs/16_THEORY_FOR_REPORT.md" target="_blank"><b>16_THEORY_FOR_REPORT.md</b><span>Теория для пояснительной записки и защиты</span></a>
+        <a class="file" data-k="next actions задачи что делать" href="https://github.com/dikobrazuka/linza/blob/main/docs/04_NEXT_ACTIONS.md" target="_blank"><b>04_NEXT_ACTIONS.md</b><span>Ближайшие действия</span></a>
+        <a class="file" data-k="t1 de10 material dielectric" href="https://github.com/dikobrazuka/linza/blob/main/docs/08_DE10_SPDR_T1_PROTOCOL.md" target="_blank"><b>08_DE10_SPDR_T1_PROTOCOL.md</b><span>Измерение solid DE-10</span></a>
+        <a class="file" data-k="t2 t3 gyroid density print" href="https://github.com/dikobrazuka/linza/blob/main/docs/09_DE10_GYROID_T2_T3_PROTOCOL.md" target="_blank"><b>09_DE10_GYROID_T2_T3_PROTOCOL.md</b><span>Плотность / shrinkage / gyroid coupons</span></a>
+        <a class="file" data-k="t4 epsilon effective rf coupons" href="https://github.com/dikobrazuka/linza/blob/main/docs/12_T4_RF_GYROID_PROTOCOL.md" target="_blank"><b>12_T4_RF_GYROID_PROTOCOL.md</b><span>εeff(ρ) около 5 ГГц</span></a>
+        <a class="file" data-k="rcs s21 vna обработка experiment" href="https://github.com/dikobrazuka/linza/blob/main/docs/13_RCS_S21_PROCESSING.md" target="_blank"><b>13_RCS_S21_PROCESSING.md</b><span>S21 → relative/absolute RCS</span></a>
+        <a class="file" data-k="sphere reference pec calibration mie" href="https://github.com/dikobrazuka/linza/blob/main/docs/14_PEC_SPHERE_REFERENCE.md" target="_blank"><b>14_PEC_SPHERE_REFERENCE.md</b><span>Калибровочная металлическая сфера</span></a>
+        <a class="file" data-k="scaling 24 ghz масштабирование" href="https://github.com/dikobrazuka/linza/blob/main/docs/10_SCALING_5_TO_24.md" target="_blank"><b>10_SCALING_5_TO_24.md</b><span>Масштабирование 5 → 24 ГГц</span></a>
+        <a class="file" data-k="generator continuous gyroid stl code" href="https://github.com/dikobrazuka/linza/blob/main/tools/continuous_luneburg_gyroid.py" target="_blank"><b>continuous_luneburg_gyroid.py</b><span>Генератор геометрии линзы</span></a>
+        <a class="file" data-k="process rcs s21 tool" href="https://github.com/dikobrazuka/linza/blob/main/tools/process_rcs_s21.py" target="_blank"><b>process_rcs_s21.py</b><span>Обработка измеренного S21</span></a>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title"><div><h2>Команды</h2><p>То, что понадобится чаще всего.</p></div></div>
+      <details><summary>Сгенерировать финальную gyroid-линзу после T1–T4</summary><div><pre>python tools/continuous_luneburg_gyroid.py \
+  --radius 60 \
+  --cell 7.5 \
+  --eps-solid &lt;MEASURED_EPS&gt; \
+  --rho-min &lt;MIN_RHO&gt; \
+  --rho-max &lt;MAX_RHO&gt; \
+  --calibration-csv data/materials/de10/DE10_GYROID_EPS_CAL_5GHz.csv \
+  --solid-density &lt;MEASURED_DENSITY&gt; \
+  --out artifacts/TEST_LENS_5G_V1_upper.stl</pre></div></details>
+      <details><summary>Обработать физический RCS</summary><div><pre>python tools/process_rcs_s21.py \
+  --background BACKGROUND.s2p \
+  --baseline BASELINE.s2p \
+  --test LENS_REFLECTOR.s2p \
+  --out RCS_RELATIVE.csv</pre></div></details>
+      <details><summary>Проверить код</summary><div><pre>python -m pytest -q</pre></div></details>
+    </section>
+
+    <footer>LINZA Project Hub · репозиторий <span class="mono">dikobrazuka/linza</span> · страница публикуется GitHub Pages автоматически из <span class="mono">main</span>.</footer>
+  </main>
+
+  <script>
+    const input=document.getElementById('fileSearch');
+    input?.addEventListener('input',()=>{
+      const q=input.value.trim().toLowerCase();
+      document.querySelectorAll('#fileList .file').forEach(el=>{
+        const hay=(el.textContent+' '+(el.dataset.k||'')).toLowerCase();
+        el.style.display=!q||hay.includes(q)?'block':'none';
+      });
+    });
+  </script>
+</body>
+</html>
