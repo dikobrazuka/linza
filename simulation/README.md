@@ -12,7 +12,7 @@
 - `a=7.5 mm`;
 - `D/lambda0≈2.0`.
 
-Strict-scaled reference @24 GHz:
+Customer target: Ø80 mm @24 GHz, modeled separately (D-027). The following is only the strict-scaled reference from the experimental Ø120 mm, not the customer lens:
 
 - `D=25 mm`;
 - `R=12.5 mm`;

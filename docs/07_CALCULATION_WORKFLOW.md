@@ -120,7 +120,9 @@ Reflector sweep:
 
 Outputs: K_sigma(f,theta), loss/seam/reflector sensitivity.
 
-### M10 — strict-scaled 24-GHz prediction
+### M10 — заказная Ø80 мм / 24 ГГц и вспомогательная модель подобия
+
+По D-027 отдельно моделировать заказную линзу Ø80 мм / 24 ГГц с учётом обоснованной применимости модели. Пара ниже — только строгое масштабирование опытной Ø120 мм / 5 ГГц, а не заказная линза.
 
 After experiment-vs-Meep validation:
 

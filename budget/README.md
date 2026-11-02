@@ -71,4 +71,6 @@ Strict-scaled current V1:
 - `R=12.5 mm`;
 - `a=1.5625 mm`.
 
+This Ø25 reference is not the customer lens: the customer target is Ø80 mm / 24 GHz and requires a separate model and manufacturing budget (D-027).
+
 24-GHz stage is calculation/prediction for current MVP; do not budget a separate 24-GHz stand unless requirements change.

@@ -21,8 +21,9 @@ def test_root_readme_contains_current_canonical_sizes():
     text = read("README.md")
     assert "D_test = 120 mm" in text
     assert "R_test = 60 mm" in text
-    assert "D_final = 25.0 mm" in text
-    assert "R_final = 12.5 mm" in text
+    assert "Заказная линза: Ø80 мм / 24 ГГц" in text
+    assert "D_scaled = 25.0 mm" in text
+    assert "R_scaled = 12.5 mm" in text
 
 
 def test_input_template_contains_current_canonical_sizes():

@@ -7,7 +7,7 @@ Current physical V1:
 - `R=60 mm`;
 - nominal `a=7.5 mm`.
 
-Strict-scaled 24-GHz reference:
+Customer target: Ø80 mm @24 GHz. Its unit-cell period and geometry must be selected separately (D-027). The following values are only the strict-scaled 24-GHz reference from the experimental Ø120 mm:
 
 - `D=25 mm`;
 - `R=12.5 mm`;

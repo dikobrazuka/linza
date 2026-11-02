@@ -6,7 +6,7 @@
 
 ## Ограничения конечной конструкции
 
-- final design `<=80 mm`;
+- customer lens diameter `80 mm` (D-027);
 - final mass `<=300 g`;
 - target calculation frequency `24 GHz`;
 - project objective `K_sigma>=10`;
@@ -83,4 +83,4 @@ Choose the smallest diameter that still passes the RF objective with margin.
 10. Full physical print.
 11. 5-GHz experiment.
 12. Meep validation.
-13. M10 strict 5/24 scaling.
+13. M10 customer Ø80 / 24 GHz; strict 5/24 scaling is a separate similarity reference.

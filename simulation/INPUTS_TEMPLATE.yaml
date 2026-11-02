@@ -10,6 +10,10 @@ validation:
 
 final_target:
   frequency_ghz: 24.0
+  customer_diameter_mm: 80.0
+  customer_radius_mm: 40.0
+  customer_model_requires_separate_simulation: true
+  # The strict-scaled dimensions below are a reference, not the customer lens.
   linear_scale_from_5ghz: 0.2083333333
   diameter_mm_strict_scaled: 25.0
   radius_mm_strict_scaled: 12.5

@@ -93,4 +93,6 @@ Physical evidence: Ø120 @5 GHz.
 
 Strict-scaled prediction after model validation: Ø25 @24 GHz.
 
+По D-027 это вспомогательная модель подобия. Заказная линза — Ø80 мм / 24 ГГц; её рассчитывают отдельно на основе проверенной модели и с анализом ограничений переноса.
+
 Do not claim physical validation at 24 GHz.

@@ -3,13 +3,15 @@
 ## 1. Конечная конструкция для защиты
 
 - расчётная частота: `24 GHz`;
-- габарит `<=80 mm`;
+- целевой диаметр заказной линзы `80 mm` (D-027 от 2026-11-02);
 - масса `<=300 g`;
 - пассивная конструкция;
 - primary manufacturing route: photopolymer continuous radial sheet-gyroid;
 - Meep — основной full-wave solver.
 
-Current strict-scaled reference from physical V1:
+Заказная модель Ø80 мм / 24 ГГц рассчитывается отдельно после верификации материала и модели на выбранном командой экспериментальном образце. Строгий аналог заказной линзы на 5 ГГц — Ø384 мм, но такой опыт не обязателен.
+
+Вспомогательная strict-scaled reference from physical V1, **не заказная конструкция**:
 
 - `D=25.0 mm`;
 - `R=12.5 mm`;
@@ -76,5 +78,5 @@ Current provisional Ø120 mass estimate: about `356–366 g` cured resin dependi
 6. Physical 5-GHz lens printed and measured.
 7. Experimental `K_sigma` quantified.
 8. Meep reproduces physical trend.
-9. M10 strict 5/24 scaling calculated.
+9. M10 заказная Ø80 мм / 24 ГГц рассчитана отдельно; strict 5/24 scaling — вспомогательная проверка подобия.
 10. Defense package clearly separates measured 5-GHz evidence from calculated 24-GHz prediction.

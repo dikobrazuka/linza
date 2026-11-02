@@ -225,7 +225,8 @@ data/simulations/M10_FINAL_LENS_24G/
 Минимум:
 
 - scaled geometry/config;
-- `D=50 mm`, `R=25 mm`, nominal `a=1.5625 mm`;
+- заказная модель `D=80 mm`, `R=40 mm`; период ячейки выбирается отдельно (D-027);
+- отдельно вспомогательная strict-scaled reference от Ø120 / 5 ГГц: `D=25 mm`, `R=12.5 mm`, `a=1.5625 mm`;
 - material scenario source;
 - dispersion/loss sensitivity;
 - manufacturability sensitivity;

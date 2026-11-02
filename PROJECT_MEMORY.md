@@ -2,7 +2,7 @@
 
 Актуальное состояние проекта. При конфликте приоритет: newest non-superseded decision -> этот файл -> root README -> stage protocol.
 
-**Срез:** 2026-10-31
+**Срез:** 2026-11-02
 
 ## 1. Цель
 
@@ -11,7 +11,7 @@
 Конечные требования:
 
 - частота расчёта для защиты: `24 GHz`;
-- габарит конечной конструкции `<=80 mm`;
+- целевой диаметр заказной линзы `D_customer=80 mm` (D-027);
 - масса конечной конструкции `<=300 g`;
 - целевой `K_sigma>=10` (`+10 dB` относительно формально выбранного baseline);
 - основной full-wave инструмент: Meep.
@@ -33,15 +33,21 @@ Current preferred `TEST_LENS_5G_V1`:
 
 Ø120 ещё не RF-locked. Перед full print обязателен diameter gate `120/150/180/240 mm`.
 
-### Strict-scaled 24-GHz reference
+### Заказная линза и вспомогательная модель подобия (D-027)
+
+Заказная линза: **Ø80 мм / 24 ГГц**. Экспериментальную геометрию и частоту выбирает команда. После проверки модели на доступном 5-ГГц образце выполняется отдельный расчёт Ø80 мм / 24 ГГц. Период ячейки и отражатель для неё выбираются отдельно; значения ниже относятся только к модели строгого подобия.
+
+Точный масштабный аналог заказной линзы на 5 ГГц имел бы Ø384 мм; его изготовление не назначено.
+
+### Strict-scaled 24-GHz reference — не заказная конструкция
 
 Если Ø120 выигрывает diameter gate:
 
 `k=5/24=0.2083333`.
 
-- `D_final=25.0 mm`;
-- `R_final=12.5 mm`;
-- `a_final=1.5625 mm`;
+- `D_scaled=25.0 mm`;
+- `R_scaled=12.5 mm`;
+- `a_scaled=1.5625 mm`;
 - `L_24=L_5*(5/24)`.
 
 Если выбран другой D, scaled 24-GHz dimensions пересчитываются от него.
@@ -156,7 +162,7 @@ T4 series:
 
 ## 7. Meep ladder
 
-`M0 background -> M1 reference -> M2 homogeneous control -> M3 ideal continuous -> M4 loss -> M5 zoned benchmark -> M6 homogenized manufacturable GRIN -> M7 explicit unit cell/coupon -> M8 reduced explicit validation -> M9 selected-D @5 GHz + reflector -> M10 strict-scaled @24 GHz`.
+`M0 background -> M1 reference -> M2 homogeneous control -> M3 ideal continuous -> M4 loss -> M5 zoned benchmark -> M6 homogenized manufacturable GRIN -> M7 explicit unit cell/coupon -> M8 reduced explicit validation -> M9 selected-D @5 GHz + reflector -> M10 customer Ø80 @24 GHz`; strict scaling provides a separate similarity reference.
 
 Diameter gate:
 
@@ -261,7 +267,7 @@ CI must be green before calling code changes complete.
 12. Print technological segment.
 13. Full physical V1 only after GO.
 14. 5-GHz experiment and Meep comparison.
-15. M10 strict scaling to 24 GHz.
+15. M10: отдельная заказная модель Ø80 мм / 24 ГГц; strict scaling Ø120 -> Ø25 сохраняется как вспомогательная проверка подобия.
 16. Defense package: measured 5-GHz evidence + validated model + 24-GHz prediction + limitations.
 
 ## 12. Governance
