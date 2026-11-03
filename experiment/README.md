@@ -43,6 +43,8 @@ Check at minimum 1.0 / 1.25 / 1.5 m before final series to ensure result is not 
 
 ## Configurations
 
+T5 / D-028: дополнительно сохранять lens+reflector без защитного корпуса PLA-Aero Pro, с временно установленным корпусом и с финальным швом; не изменять расположение отражателя. Основной baseline остаётся reflector-only. Подробно: `docs/18_PLA_AERO_SHELL_T5_PROTOCOL.md`.
+
 1. BACKGROUND;
 2. HOLDER;
 3. REFERENCE;

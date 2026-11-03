@@ -15,6 +15,8 @@
 
 ## Physical validation
 
+Protective shell (D-028): FusRock PLA-Aero Pro FDM, two hemispheres; initial 245–250 °C / flow 0.30 / two walls, target ~1.2 mm subject to T5 verification. DE-10 remains the inner gyroid material, with air in pores. Ø80 is the outside assembly diameter.
+
 Available measurement setup works to about 6 GHz, therefore physical validation is at 5 GHz.
 
 Current physical V1:

@@ -119,7 +119,9 @@
     reference: ['REFERENCE', 'Сфера с известной ЭПР', 'Проверяем уровень сигнала и калибруем абсолютную ЭПР. Для сферы на выбранной частоте используем рассчитанную ЭПР, а не автоматически площадь πr².', 'REFERENCE_000_R01.s2p'],
     baseline: ['BASELINE', 'Тот же колпачок без линзы', 'Сохраняем положение, форму и ориентацию металлического отражателя. Воспроизводимое крепление нужно заранее: иначе вместе с линзой изменится и база сравнения.', 'BASELINE_000_R01.s2p'],
     lens: ['LENS_NO_REFLECTOR', 'Линза без металлического колпачка', 'Дополнительный контроль показывает рассеяние самого диэлектрика. Он помогает отделить работу полной сборки от отклика линзы без отражателя.', 'LENS_NO_REFLECTOR_000_R01.s2p'],
-    test: ['TEST', 'Линза + тот же отражатель', 'Полная сборка в той же позиции и ориентации. Колпачок не меняем: измеряем вклад линзы в обратное рассеяние.', 'LENS_REFLECTOR_000_R01.s2p'],
+    test: ['NO_SHELL', 'Линза + отражатель без корпуса', 'Сначала измеряем линзу без защитного корпуса. Отражатель, центр линзы и держатель должны сохранять своё положение при следующем сравнении.', 'LENS_REFLECTOR_NO_SHELL_000_R01.s2p'],
+    shell: ['SHELL_OPEN', 'Линза + отражатель + корпус', 'Тот же объект с временно установленной оболочкой PLA-Aero Pro. Сравниваем комплексный отклик с измерением без корпуса и отдельно с базовым отражателем.', 'LENS_REFLECTOR_SHELL_OPEN_000_R01.s2p'],
+    joined: ['SHELL_JOINED', 'Корпус с окончательным швом', 'Повторяем ту же геометрию после окончательного соединения. Сравнение с временной сборкой показывает влияние шва и клея при контроле переустановки.', 'LENS_REFLECTOR_SHELL_JOINED_000_R01.s2p'],
     repeat: ['DRIFT CHECK', 'Повторяем эталон и фон', 'После серии снова измеряем сферу и пустой держатель. Изменение амплитуды и фазы покажет дрейф стенда. Это дополняет ≥3 независимые установки базы и теста.', 'REFERENCE_REPEAT.s2p + BACKGROUND_REPEAT.s2p']
   };
   function objectMarkup(state, cx, cy, r) {
@@ -128,7 +130,8 @@
     if (state === 'background') return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#586c7c" stroke-dasharray="4 6"/><text x="${cx}" y="${cy + 5}" text-anchor="middle" class="svg-small">Пусто</text>`;
     if (state === 'reference' || state === 'repeat') return `<circle cx="${cx}" cy="${cy}" r="${r * .75}" fill="#617582" stroke="#bdcdd6" stroke-width="2"/><ellipse cx="${cx - r * .22}" cy="${cy - r * .25}" rx="${r * .2}" ry="${r * .14}" fill="#d1e0e7" opacity=".6"/>`;
     if (state === 'baseline') return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#536274" stroke-dasharray="3 7"/>${cap}`;
-    return sphere + (state === 'test' ? cap : '');
+    const outer = state === 'shell' || state === 'joined' ? `<circle cx="${cx}" cy="${cy}" r="${r * 1.04}" fill="none" stroke="#d0b9ee" stroke-width="4"/><path d="M${cx-r} ${cy}H${cx+r}" stroke="#d0b9ee" stroke-width="${state === 'joined' ? 2 : 1}" stroke-dasharray="${state === 'joined' ? '0' : '4 5'}"/>` : '';
+    return sphere + outer + (['test','shell','joined'].includes(state) ? cap : '');
   }
   function setState(state) {
     const [code, title, description, file] = stateData[state];

@@ -44,6 +44,21 @@ material:
   post_cure: UNKNOWN
   source_note: "Manufacturer 10-GHz values are provisional; replace with T1/T4 measured values before final manufacturing model"
 
+protective_shell:
+  material: FUSROCK_PLA_AERO_PRO
+  manufacturing: FDM
+  parts: two_hemispheres
+  nominal_wall_count: 2
+  target_thickness_mm_unverified: 1.2
+  print_temperature_c_start: [245, 250]
+  flow_ratio_start: 0.30
+  epsilon_24ghz_measured: null
+  loss_tangent_24ghz_measured: null
+  epsilon_illustrative_only: 1.4
+  process_and_fixture_status: PLANNED_T5
+  outside_diameter_includes_shell: true
+  core_internal_diameter_mm_before_clearance_if_80mm: 77.6
+
 material_budget:
   planned_purchase_g: 1000.0
   provisional_full_lens_cured_mass_g_unclamped: 356.5

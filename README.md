@@ -63,6 +63,8 @@
 
 ## Материал
 
+**Защитный корпус (D-028):** FusRock PLA-Aero Pro, две полусферы FDM; пользовательский старт 245–250 °C, flow 0.30, две стенки около 1.2 мм. Эта толщина и RF-свойства требуют T5 проверки. DE-10 остаётся материалом внутреннего гироида, его поры заполняет воздух. В Ø80 мм входит оболочка; при 1.2 мм внутренний Ø77.6 мм без зазора. `epsilon=1.4` — пример сценария, не измерение.
+
 Primary MVP: **HARZ Labs DE-10**.
 
 Manufacturer data по 11 образцам @10 GHz:
@@ -98,6 +100,7 @@ python tools/material_budget.py
 2. T2 — cured density + shrinkage.
 3. T3 — gyroid printability + `rho_actual`.
 4. T4 — measured `epsilon_eff(rho,f)` около 5 GHz.
+4a. T5 — PLA-Aero Pro: контроль печати/толщины/плотности, RF-образцы после согласования оснастки и сравнение сборки с корпусом/без него.
 5. M0-M8 — numerical validation.
 6. Diameter gate 120/150/180/240.
 7. M9 — выбранный 5-GHz diameter + reflector.
@@ -129,6 +132,7 @@ python tools/material_budget.py
 - `docs/09_DE10_GYROID_T2_T3_PROTOCOL.md` — T2/T3;
 - `docs/12_T4_RF_GYROID_PROTOCOL.md` — полный T4;
 - `docs/13_RCS_S21_PROCESSING.md` — VNA S21 -> relative/absolute RCS processing;
+- `docs/18_PLA_AERO_SHELL_T5_PROTOCOL.md` — корпус PLA-Aero Pro, реальные тесты и sensitivity оболочки;
 - `docs/10_SCALING_5_TO_24.md` — scaling;
 - `simulation/DIAMETER_GATE.md` — diameter selection gate;
 - `simulation/configs/DIAMETER_GATE_5G.yaml` — machine-readable diameter gate;

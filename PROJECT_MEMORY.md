@@ -2,7 +2,7 @@
 
 Актуальное состояние проекта. При конфликте приоритет: newest non-superseded decision -> этот файл -> root README -> stage protocol.
 
-**Срез:** 2026-11-02
+**Срез:** 2026-11-03
 
 ## 1. Цель
 
@@ -74,7 +74,9 @@ Primary MVP:
 - continuous `h(r)`;
 - open hemispheres/sections preferred for washing/post-cure;
 - exact split must respect real printer build volume;
-- FDM/PLA Aero/LW-PLA/fillers — R&D/backup.
+- D-028: отдельная защитная оболочка — **FusRock PLA-Aero Pro, FDM**, две полусферы, две стенки; старт `245–250 °C`, flow `0.30`, целевая толщина `≈1.2 mm` до T5 измерения. Наружный Ø80 мм включает корпус; при 1.2 мм внутренний Ø77.6 мм до зазора. Гироида из DE-10 это не заменяет.
+- Поры заполнены воздухом; герметичная заливка не утверждена. ρ, ε, tanδ, шов, glue и технология оболочки — измерить/выбрать. ε=1.4 — только сценарий, не измерение.
+- FDM/PLA Aero/LW-PLA для всей градиентной линзы и fillers — R&D/backup.
 
 ## 5. DE-10
 
@@ -160,6 +162,12 @@ T4 series:
 - repeatability + sample-to-sample reproducibility + anisotropy;
 - final `DE10_GYROID_EPS_CAL_5GHz.csv`.
 
+### T5 — PLA-Aero Pro shell
+
+`docs/18_PLA_AERO_SHELL_T5_PROTOCOL.md`; `data/materials/pla_aero_pro/`.
+
+Отдельные образцы и полусферы: размеры, масса, кажущаяся плотность, качество стенок, fit и стык; после согласования fixture — комплексные RF-данные около 5 GHz и повторяемость. Сравнить reflector-only и lens+reflector с оболочкой/без неё/с окончательным швом. На 24 GHz — расчёт по сценариям и ограничениями до независимых измерений. Статус **PLANNED**.
+
 ## 7. Meep ladder
 
 `M0 background -> M1 reference -> M2 homogeneous control -> M3 ideal continuous -> M4 loss -> M5 zoned benchmark -> M6 homogenized manufacturable GRIN -> M7 explicit unit cell/coupon -> M8 reduced explicit validation -> M9 selected-D @5 GHz + reflector -> M10 customer Ø80 @24 GHz`; strict scaling provides a separate similarity reference.
@@ -222,6 +230,7 @@ Generators:
 - `tools/continuous_luneburg_gyroid.py`;
 - `tools/uniform_sheet_gyroid_coupon.py`;
 - `tools/material_budget.py`.
+- `simulation/run_reflector_sweep.py` supports an optional assumed lossless dielectric shell inside the fixed lens diameter; it is an ideal screening model, not a measured 24-GHz material model.
 
 Known bugs already fixed:
 
@@ -248,6 +257,7 @@ CI must be green before calling code changes complete.
 - whether Ø120 / D≈2λ is electromagnetically sufficient;
 - formal baseline for final K_sigma;
 - final reflector geometry;
+- PLA-Aero Pro actual wall thickness/density and epsilon/loss at 5/24 GHz, shell seam, fit and strength;
 - 24-GHz dispersion;
 - physical manufacturability of a=1.5625 mm scaled geometry.
 
@@ -258,11 +268,11 @@ CI must be green before calling code changes complete.
 3. T1.
 4. T2/T3.
 5. M0-M5 in parallel.
-6. T4.
+6. T4 + T5 shell coupons and fixture validation.
 7. M6/M7 measured-law validation.
 8. DG-A/DG-B diameter gate.
 9. Select physical D.
-10. M8/M9 + reflector.
+10. M8/M9 + reflector; T5 shell effect and seam comparison.
 11. Material-budget gate with measured data.
 12. Print technological segment.
 13. Full physical V1 only after GO.

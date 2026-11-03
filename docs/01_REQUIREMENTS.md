@@ -7,6 +7,7 @@
 - масса `<=300 g`;
 - пассивная конструкция;
 - primary manufacturing route: photopolymer continuous radial sheet-gyroid;
+- protective shell: FusRock PLA-Aero Pro, two FDM hemispheres, provisional target 1.2 mm/two walls; T5 measured thickness, RF response, fit and seam required (D-028);
 - Meep — основной full-wave solver.
 
 Заказная модель Ø80 мм / 24 ГГц рассчитывается отдельно после верификации материала и модели на выбранном командой экспериментальном образце. Строгий аналог заказной линзы на 5 ГГц — Ø384 мм, но такой опыт не обязателен.

@@ -50,7 +50,18 @@
     "gyroid_cell_mm": 7.5,
     "reflector_id": "",
     "reflector_cap_half_angle_deg": null,
-    "orientation_notes": ""
+    "orientation_notes": "",
+    "protective_shell": {
+      "material": "FusRock PLA-Aero Pro",
+      "assembly_state": "NOT_RECORDED",
+      "measured_thickness_mm": null,
+      "measured_mass_g": null,
+      "nominal_walls": 2,
+      "user_start_nozzle_temperature_c": [245, 250],
+      "user_start_flow_ratio": 0.3,
+      "shell_lot_color_and_print_profile": "",
+      "seam_glue_and_fit_notes": ""
+    }
   },
   "files": {
     "background": "BACKGROUND.s2p",
@@ -61,6 +72,9 @@
     "baseline": "BASELINE.s2p",
     "lens_no_reflector": "LENS_NO_REFLECTOR.s2p",
     "lens_reflector": "LENS_REFLECTOR.s2p",
+    "lens_reflector_no_shell": "LENS_REFLECTOR_NO_SHELL.s2p",
+    "lens_reflector_shell_open": "LENS_REFLECTOR_SHELL_OPEN.s2p",
+    "lens_reflector_shell_joined": "LENS_REFLECTOR_SHELL_JOINED.s2p",
     "reference_rcs_csv": "REFERENCE_RCS.csv"
   },
   "processing": {

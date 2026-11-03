@@ -13,8 +13,10 @@ project metric is:
     K_sigma = sigma_TEST / sigma_BASELINE
     Delta_sigma_dB = sigma_TEST_dBsm - sigma_BASELINE_dBsm
 
-This is an ideal M9 precursor. Measured T4 law, loss, clamp, seam and physical
-support are not included here.
+This is an ideal M9 precursor. An optional uniform, lossless dielectric shell
+replaces the outer radial layer inside the specified sphere diameter. It is a
+sensitivity model only: measured T4 law, loss, clamp, seam and physical
+support are not included. Baseline always remains the bare reflector.
 """
 
 from __future__ import annotations
@@ -23,6 +25,7 @@ import argparse
 import csv
 import json
 import math
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -54,7 +57,23 @@ def luneburg_eps(x: float, y: float, z: float, radius_mm: float) -> float:
     return 2.0 - r2/(radius_mm*radius_mm)
 
 
-def make_simulation(mp, radius_mm, lambda_mm, resolution, fcen, fwidth, cap_angle_deg, cap_thickness_mm, include_lens):
+def lens_eps_with_shell(x, y, z, radius_mm, shell_thickness_mm=0.0, shell_epsilon=None):
+    """Ideal lens with a shell inside its outer radius; air outside unchanged."""
+    if not math.isfinite(radius_mm) or radius_mm <= 0:
+        raise ValueError("radius must be positive and finite")
+    if not math.isfinite(shell_thickness_mm) or not 0 <= shell_thickness_mm < radius_mm:
+        raise ValueError("shell thickness must be nonnegative and less than radius")
+    if shell_thickness_mm > 0 and (shell_epsilon is None or not math.isfinite(shell_epsilon) or shell_epsilon < 1):
+        raise ValueError("a shell requires finite shell epsilon >= 1")
+    r = math.sqrt(x*x + y*y + z*z)
+    if r > radius_mm:
+        return 1.0
+    if shell_thickness_mm > 0 and r >= radius_mm - shell_thickness_mm:
+        return float(shell_epsilon)
+    return luneburg_eps(x, y, z, radius_mm)
+
+
+def make_simulation(mp, radius_mm, lambda_mm, resolution, fcen, fwidth, cap_angle_deg, cap_thickness_mm, include_lens, shell_thickness_mm=0.0, shell_epsilon=None):
     pml = 0.50 * lambda_mm
     air_gap = 0.35 * lambda_mm
     near_gap = 0.20 * lambda_mm
@@ -77,7 +96,7 @@ def make_simulation(mp, radius_mm, lambda_mm, resolution, fcen, fwidth, cap_angl
         if is_in_cap_shell(p.x, p.y, p.z, radius_mm, cap_thickness_mm, cap_angle_deg):
             return mp.metal
         if include_lens:
-            eps = luneburg_eps(p.x, p.y, p.z, radius_mm)
+            eps = lens_eps_with_shell(p.x, p.y, p.z, radius_mm, shell_thickness_mm, shell_epsilon)
             if eps > 1.0:
                 return mp.Medium(epsilon=eps)
         return mp.air
@@ -135,10 +154,10 @@ def run_empty(mp, radius_mm, cap_thickness_mm, lam, resolution, fcen, fwidth, ru
     return incident, input_flux, near_half
 
 
-def run_state(mp, radius_mm, cap_angle_deg, cap_thickness_mm, lam, resolution, fcen, fwidth, run_periods, incident, input_flux, include_lens, farfield_radius_lambda):
+def run_state(mp, radius_mm, cap_angle_deg, cap_thickness_mm, lam, resolution, fcen, fwidth, run_periods, incident, input_flux, include_lens, farfield_radius_lambda, shell_thickness_mm=0.0, shell_epsilon=None):
     sim, near_half, _ = make_simulation(
         mp, radius_mm, lam, resolution, fcen, fwidth,
-        cap_angle_deg, cap_thickness_mm, include_lens,
+        cap_angle_deg, cap_thickness_mm, include_lens, shell_thickness_mm, shell_epsilon,
     )
     n2f = sim.add_near2far(fcen, 0, 1, *make_near2far_regions(mp, near_half))
     sim.load_minus_near2far_data(n2f, incident)
@@ -163,6 +182,8 @@ def main():
     p.add_argument("--frequency-ghz", type=float, default=5.0)
     p.add_argument("--cap-half-angle-deg", nargs="+", type=float, default=DEFAULT_ANGLES)
     p.add_argument("--cap-thickness-mm", type=float, default=1.0)
+    p.add_argument("--shell-thickness-mm", type=float, default=0.0, help="lossless shell replacing outer layer inside lens diameter")
+    p.add_argument("--shell-epsilon", type=float, default=None, help="explicit assumed real epsilon, not a measured material value")
     p.add_argument("--pixels-per-lambda", type=float, default=16.0)
     p.add_argument("--fwidth-fraction", type=float, default=0.20)
     p.add_argument("--run-periods", type=float, default=10.0)
@@ -170,6 +191,14 @@ def main():
     p.add_argument("--out", type=Path, default=Path("simulation/results/reflector/REFLECTOR_SWEEP.csv"))
     args = p.parse_args()
 
+    if not math.isfinite(args.diameter_mm) or not math.isfinite(args.frequency_ghz) or args.diameter_mm <= 0 or args.frequency_ghz <= 0:
+        raise SystemExit("diameter/frequency must be positive and finite")
+    if not math.isfinite(args.pixels_per_lambda) or args.pixels_per_lambda <= 0:
+        raise SystemExit("pixels-per-lambda must be positive and finite")
+    try:
+        lens_eps_with_shell(0, 0, 0, args.diameter_mm / 2, args.shell_thickness_mm, args.shell_epsilon)
+    except ValueError as exc:
+        raise SystemExit(str(exc)) from exc
     if args.cap_thickness_mm <= 0:
         raise SystemExit("cap thickness must be positive")
     if any(a <= 0 or a > 180 for a in args.cap_half_angle_deg):
@@ -186,6 +215,9 @@ def main():
     resolution = args.pixels_per_lambda/lam
     radius = args.diameter_mm/2.0
 
+    if args.shell_thickness_mm and args.shell_thickness_mm * resolution < 4:
+        print("WARNING: shell has fewer than four pixels across; increase resolution and verify convergence", file=sys.stderr)
+
     incident, input_flux, _ = run_empty(
         mp, radius, args.cap_thickness_mm, lam, resolution, fcen, fwidth, args.run_periods
     )
@@ -199,6 +231,7 @@ def main():
         test = run_state(
             mp, radius, angle, args.cap_thickness_mm, lam, resolution, fcen, fwidth,
             args.run_periods, incident, input_flux, True, args.farfield_radius_lambda,
+            args.shell_thickness_mm, args.shell_epsilon,
         )
         k_sigma = test/baseline
         rows.append({
@@ -207,6 +240,10 @@ def main():
             "cap_half_angle_deg": angle,
             "cap_thickness_mm": args.cap_thickness_mm,
             "pixels_per_lambda": args.pixels_per_lambda,
+            "shell_thickness_mm": args.shell_thickness_mm,
+            "shell_epsilon_assumed": args.shell_epsilon if args.shell_thickness_mm else None,
+            "shell_pixels": args.shell_thickness_mm * resolution,
+            "model_scope": "ideal_lens_lossless_shell_no_seam_no_measured_material",
             "baseline_reflector_only_rcs_mm2": baseline,
             "test_lens_plus_reflector_rcs_mm2": test,
             "K_sigma": k_sigma,

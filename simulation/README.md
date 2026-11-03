@@ -1,5 +1,7 @@
 # Расчёты и моделирование — Meep
 
+D-028/T5: отдельная защитная оболочка PLA-Aero Pro. `run_reflector_sweep.py` поддерживает опциональную однородную оболочку без потерь внутри заданного диаметра: только sensitivity, без измеренной ε, шва и полноценной модели реального гироида. Baseline остаётся голым reflector-only. Подробно: `docs/18_PLA_AERO_SHELL_T5_PROTOCOL.md`.
+
 Основной solver: **Meep**.
 
 ## Current physical candidate

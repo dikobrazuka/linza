@@ -11,6 +11,8 @@
 
 ## Material / process
 
+- T5: PLA-Aero Pro shell print profile, measured density/thickness, fit, seam and RF sample/fixture; ε24 not measured.
+
 - DE-10 process lock.
 - T1 solid epsilon/tan(delta).
 - T2 density/shrinkage.

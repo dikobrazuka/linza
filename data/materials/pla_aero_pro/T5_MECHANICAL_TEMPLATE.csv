@@ -1,0 +1,4 @@
+sample_id,date_local,filament_batch,color,printer,nozzle_mm,temp_c,flow_ratio,layer_height_mm,line_width_mm,speed_mm_s,walls,length_mm,width_mm,thickness_1_mm,thickness_2_mm,thickness_3_mm,mass_g,apparent_density_g_cm3,orientation,comments,status
+PLA_SHELL_01,,,,,,,,,,,,,,,,,,,,,PLANNED
+PLA_SHELL_02,,,,,,,,,,,,,,,,,,,,,PLANNED
+PLA_SHELL_03,,,,,,,,,,,,,,,,,,,,,PLANNED
