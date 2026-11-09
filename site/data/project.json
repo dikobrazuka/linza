@@ -1,0 +1,105 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-11-09",
+  "repository": "dikobrazuka/linza",
+  "project": "LINZA",
+  "organization": "Градиент",
+  "deadline_target": "2026-11-18",
+  "not_a_report_of_completed_work": true,
+  "target": {
+    "id": "customer80",
+    "diameter_mm": 80,
+    "frequency_ghz": 24,
+    "mass_limit_g": 300,
+    "status": "planned",
+    "source": "decisions/README.md",
+    "experiment": "experiment/FINAL_80_24GHZ_TEST_PROCEDURE.md",
+    "rf_gate": "24GHz-calibrated-required",
+    "notes": "Ø80/24 не подтверждён измерениями; CDM324 IF не равен ЭПР"
+  },
+  "specimens": [
+    {
+      "id": "pla200",
+      "label": "PLA / FDM Ø200",
+      "diameter_mm": 200,
+      "radius_mm": 100,
+      "frequency_ghz": 5,
+      "material": "PLA (конкретная марка не зафиксирована)",
+      "route": "FDM две полусферы",
+      "status": "planned",
+      "document": "experiment/PLA_200_TEST_PROCEDURE.md",
+      "config": "simulation/configs/PLA_200_5G.yaml",
+      "validation": "NanoVNA 5GHz complex S21",
+      "reference_distance_checks_m": [
+        2,
+        2.5,
+        3
+      ],
+      "target_far_field_estimate_m": 1.334,
+      "mass_g": null
+    },
+    {
+      "id": "de10_120",
+      "label": "HARZ DE-10 Ø120",
+      "diameter_mm": 120,
+      "radius_mm": 60,
+      "frequency_ghz": 5,
+      "material": "HARZ Labs DE-10",
+      "route": "MSLA/DLP radial sheet gyroid",
+      "status": "planned",
+      "document": "experiment/DE10_120_TEST_PROCEDURE.md",
+      "config": "simulation/INPUTS_TEMPLATE.yaml",
+      "validation": "NanoVNA 5GHz complex S21 after T1-T4",
+      "reference_distance_checks_m": [
+        1,
+        1.25,
+        1.5
+      ],
+      "target_far_field_estimate_m": 0.48,
+      "mass_g": null
+    },
+    {
+      "id": "customer80",
+      "label": "Заказная Ø80",
+      "diameter_mm": 80,
+      "radius_mm": 40,
+      "frequency_ghz": 24,
+      "material": "DE-10 внутренний кандидат; PLA-Aero Pro оболочка; нуждается в проверке",
+      "route": "T5 shell + M10 final candidate",
+      "status": "planned",
+      "document": "experiment/FINAL_80_24GHZ_TEST_PROCEDURE.md",
+      "config": null,
+      "validation": "24GHz calibrated laboratory RF required; CDM324 only Doppler demo",
+      "reference_distance_checks_m": [],
+      "mass_limit_g": 300,
+      "mass_g": null
+    }
+  ],
+  "systems": [
+    {
+      "id": "stand5",
+      "name": "5 GHz NanoVNA + two horns",
+      "document": "experiment/05GHZ_STAND_BUILD_AND_CALIBRATION.md",
+      "status": "planned"
+    },
+    {
+      "id": "cdm24",
+      "name": "24.125 GHz CDM324 + OPA2365 + Pico",
+      "document": "electronics/01_CDM324_OPA2365_PICO_SCHEMATIC.md",
+      "software": "electronics/04_PICO_RECORDING_AND_ANALYSIS.md",
+      "status": "planned",
+      "warning": "Not calibrated RCS"
+    }
+  ],
+  "procurement_source": "./procurement.json",
+  "actions_source": "./actions.json",
+  "sources": {
+    "authority": "docs/SITE_SOURCE_OF_TRUTH.md",
+    "tasks": "docs/24_MASTER_BUILD_AND_TEST_ORDER.md",
+    "bom": "budget/MASTER_BOM_AND_COST_2026-11-09.md",
+    "bom_rows": "budget/PROCUREMENT_2026-11-09.md",
+    "decisions": "decisions/README.md",
+    "memory": "PROJECT_MEMORY.md"
+  },
+  "status_explanation": "planned is a documented plan, not a confirmed purchase/manufacture/measurement. Page localStorage state not shared with GitHub."
+}
