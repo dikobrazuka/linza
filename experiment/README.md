@@ -98,3 +98,12 @@ Strict-scaled prediction after model validation: Ø25 @24 GHz.
 По D-027 это вспомогательная модель подобия. Заказная линза — Ø80 мм / 24 ГГц; её рассчитывают отдельно на основе проверенной модели и с анализом ограничений переноса.
 
 Do not claim physical validation at 24 GHz.
+
+
+## Единый операционный пакет, не смешивать образцы
+
+- PLA Ø200 мм / 5 ГГц — **отдельный FDM опыт**, experiment/PLA_200_TEST_PROCEDURE.md.
+- HARZ DE-10 Ø120 мм / 5 ГГц — **отдельный фотополимерный опыт**, текущий V1 из основного текста, experiment/DE10_120_TEST_PROCEDURE.md.
+- Заказная Ø80 мм / 24 ГГц — отдельный модельный и затем физический план, experiment/FINAL_80_24GHZ_TEST_PROCEDURE.md.
+- Общий двухрупорный 5-ГГц стенд: experiment/05GHZ_STAND_BUILD_AND_CALIBRATION.md.
+- Дневник/смета/очерёдность: docs/24_MASTER_BUILD_AND_TEST_ORDER.md и budget/MASTER_BOM_AND_COST_2026-11-09.md.
