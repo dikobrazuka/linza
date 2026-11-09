@@ -76,3 +76,8 @@ Strict-scaled current V1:
 This Ø25 reference is not the customer lens: the customer target is Ø80 mm / 24 GHz and requires a separate model and manufacturing budget (D-027).
 
 24-GHz stage is calculation/prediction for current MVP; do not budget a separate 24-GHz stand unless requirements change.
+
+
+## Сводная закупка и три независимые ветки (09.11.2026)
+
+Данный файл выше описывает старый фотополимерный **DE-10 Ø120** MVP. Новая PLA/FDM конструкция **Ø200 мм** — отдельная ветка; её нельзя использовать как основание увеличения массы/заказа смолы DE-10. Актуальная общая корзина 32 позиций **24 267 ₽** (без DE-10); план DE-10 1 кг по ранее названной цене **14 000 ₽**, суммарно условно 38 267 ₽ **плюс неопределённые статьи**. Детальная расшифровка: [MASTER_BOM_AND_COST_2026-11-09.md](MASTER_BOM_AND_COST_2026-11-09.md).
