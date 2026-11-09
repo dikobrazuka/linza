@@ -1,0 +1,374 @@
+{
+  "schema_version": 1,
+  "as_of": "2026-11-09",
+  "source": "docs/24_MASTER_BUILD_AND_TEST_ORDER.md",
+  "status_meanings": {
+    "planned": "задача по плану, не доказано выполнение",
+    "doing": "в работе, назначено ответственному",
+    "blocked": "требует внешнего подтверждения или оборудования",
+    "done": "только по фактическим результатам и с доказательством"
+  },
+  "note": "Statuses are default editorial states only; user's browser-local WBS modifications are not shared with GitHub.",
+  "actions": [
+    {
+      "id": "inventory",
+      "track": "Общее",
+      "title": "Сверить наличие и сроки поставки 32 строк корзины",
+      "document": "budget/MASTER_BOM_AND_COST_2026-11-09.md",
+      "status": "planned",
+      "steps": [
+        "Подтвердить цены и состав",
+        "Отдельно отметить заказано / получено / нет",
+        "Не считать корзину фактом покупки"
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null
+    },
+    {
+      "id": "source_horns",
+      "track": "5 ГГц стенд",
+      "title": "Проверить ByTechLab STEP и SMA-7814-16",
+      "document": "docs/20_5GHZ_HORNS_NANOVNA.md",
+      "status": "planned",
+      "steps": [
+        "Сверить разъём с CAD",
+        "Проверить центральный контакт, фланец, размер PTFE",
+        "Зафиксировать ревизию рупора"
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null
+    },
+    {
+      "id": "fabricate_horns",
+      "track": "5 ГГц стенд",
+      "title": "Напечатать и металлизировать два рупора",
+      "document": "experiment/05GHZ_STAND_BUILD_AND_CALIBRATION.md",
+      "status": "planned",
+      "steps": [
+        "Два корпуса и задние стенки",
+        "Фольга, непрерывность соединений, фото",
+        "Проверка S11 отдельно на каждом"
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null
+    },
+    {
+      "id": "assemble_stand",
+      "track": "5 ГГц стенд",
+      "title": "Собрать держатели и стенд с двумя рупорами",
+      "document": "experiment/05GHZ_STAND_BUILD_AND_CALIBRATION.md",
+      "status": "planned",
+      "steps": [
+        "Две стойки и держатель линзы",
+        "Фиксация кабелей/поляризации",
+        "Зафиксировать TX/RX geometry"
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null
+    },
+    {
+      "id": "calibrate_vna",
+      "track": "5 ГГц стенд",
+      "title": "Повторно откалибровать NanoVNA-F V3 около 5 ГГц",
+      "document": "experiment/05GHZ_STAND_BUILD_AND_CALIBRATION.md",
+      "status": "planned",
+      "steps": [
+        "Не применять калибровку 383–483 МГц",
+        "OPEN SHORT LOAD THRU на плоскостях кабелей",
+        "Снять S11 рупоров, S21 пары, фон и эталон"
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null
+    },
+    {
+      "id": "pla_design",
+      "track": "PLA Ø200",
+      "title": "Подготовить CAD двух PLA полусфер Ø200",
+      "document": "experiment/PLA_200_TEST_PROCEDURE.md",
+      "status": "planned",
+      "steps": [
+        "Уточнить какой PLA и структуру",
+        "Проверить XY 200 мм и высоту 100 мм",
+        "Рассчитать массу по слайсеру"
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null
+    },
+    {
+      "id": "pla_coupons",
+      "track": "PLA Ø200",
+      "title": "Напечатать и проверить диэлектрические купоны PLA",
+      "document": "experiment/PLA_200_TEST_PROCEDURE.md",
+      "status": "planned",
+      "steps": [
+        "Контроль реального infill и массы",
+        "Согласовать RF fixture",
+        "Измерить ε_eff при 5 ГГц"
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null
+    },
+    {
+      "id": "pla_meep",
+      "track": "PLA Ø200",
+      "title": "Рассчитать отдельный PLA Ø200 в Meep",
+      "document": "simulation/configs/PLA_200_5G.yaml",
+      "status": "planned",
+      "steps": [
+        "Ideal Ø200 как бенчмарк",
+        "Реальный ε_eff PLA после измерений",
+        "Выполнить baseline/reflection и проверку сходимости"
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null
+    },
+    {
+      "id": "pla_print",
+      "track": "PLA Ø200",
+      "title": "Напечатать и собрать PLA Ø200, отражатель",
+      "document": "experiment/PLA_200_TEST_PROCEDURE.md",
+      "status": "planned",
+      "steps": [
+        "Две половины",
+        "Шов и крепление отражателя",
+        "Фото, диаметр и фактическая масса"
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null
+    },
+    {
+      "id": "pla_test",
+      "track": "PLA Ø200",
+      "title": "Испытать PLA Ø200 при 5 ГГц, P0–P5",
+      "document": "experiment/PLA_200_TEST_PROCEDURE.md",
+      "status": "planned",
+      "steps": [
+        "Проверочные дистанции 2/2.5/3 м",
+        "Фон/держатель/эталон/reflector-only/линза",
+        "Три переустановки и complex S21"
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null
+    },
+    {
+      "id": "de10_buy",
+      "track": "DE-10 Ø120",
+      "title": "Подтвердить 1 кг DE-10 и доступную фотополимерную печать",
+      "document": "budget/README.md",
+      "status": "planned",
+      "steps": [
+        "Цена 14000 ₽ — прежняя оценка",
+        "Проверить получение и дату материала",
+        "Проверить принтер, wash/cure и форму"
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null
+    },
+    {
+      "id": "de10_T1",
+      "track": "DE-10 Ø120",
+      "title": "T1: измерить ε и потери сплошной смолы",
+      "document": "docs/08_DE10_SPDR_T1_PROTOCOL.md",
+      "status": "planned",
+      "steps": [
+        "Утвердить оснастку",
+        "Изготовить купоны",
+        "Снять complex S-параметры и вычислить ε"
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null
+    },
+    {
+      "id": "de10_T2T3",
+      "track": "DE-10 Ø120",
+      "title": "T2/T3: измерить плотность и gyroid printability",
+      "document": "docs/09_DE10_GYROID_T2_T3_PROTOCOL.md",
+      "status": "planned",
+      "steps": [
+        "Плотность и усадка",
+        "Купоны для ряда плотностей",
+        "Реальные rho, мойка, post-cure"
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null
+    },
+    {
+      "id": "de10_T4",
+      "track": "DE-10 Ø120",
+      "title": "T4: калибровать ε_eff от заполнения гироида",
+      "document": "docs/12_T4_RF_GYROID_PROTOCOL.md",
+      "status": "planned",
+      "steps": [
+        "Реальная RF fixture",
+        "Ряд купонов и перестановки",
+        "Получить measured rho-to-epsilon таблицу"
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null
+    },
+    {
+      "id": "de10_sim",
+      "track": "DE-10 Ø120",
+      "title": "Рассчитать модель Ø120 и проверить material gate",
+      "document": "docs/07_CALCULATION_WORKFLOW.md",
+      "status": "planned",
+      "steps": [
+        "Meep ideal/manufacturable",
+        "Размерный gate",
+        "Масса по фактическим свойствам"
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null
+    },
+    {
+      "id": "de10_print",
+      "track": "DE-10 Ø120",
+      "title": "Напечатать/промыть/отвердить две фотополимерные половины",
+      "document": "experiment/DE10_120_TEST_PROCEDURE.md",
+      "status": "planned",
+      "steps": [
+        "Расход и допуск по смоле",
+        "Промывка каналов",
+        "Фото, масса и сборка отражателя"
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null
+    },
+    {
+      "id": "de10_test",
+      "track": "DE-10 Ø120",
+      "title": "Провести испытание DE-10 Ø120 на 5 ГГц",
+      "document": "experiment/DE10_120_TEST_PROCEDURE.md",
+      "status": "planned",
+      "steps": [
+        "Фон/эталон/reflector-only",
+        "Две версии с отражателем и без",
+        "Три переустановки, raw .s2p"
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null
+    },
+    {
+      "id": "cdm_schematic",
+      "track": "CDM324",
+      "title": "Проверить и собрать IF-AFE-R1",
+      "document": "electronics/01_CDM324_OPA2365_PICO_SCHEMATIC.md",
+      "status": "planned",
+      "steps": [
+        "Проверить CDM324 VCC/GND/IF",
+        "SOIC8/OPA2365 пайка по netlist",
+        "Прозвонка без питания, 3.3 В, VREF 1.65 В, выходы"
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null
+    },
+    {
+      "id": "cdm_capture",
+      "track": "CDM324",
+      "title": "Записать тестовый IF через Pico и USB",
+      "document": "electronics/04_PICO_RECORDING_AND_ANALYSIS.md",
+      "status": "planned",
+      "steps": [
+        "Опорная металлическая пластина",
+        "Raw ADC CSV с фактической Fs",
+        "FFT, clipping и три повтора"
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null
+    },
+    {
+      "id": "final80_model",
+      "track": "Ø80 / 24 ГГц",
+      "title": "Рассчитать M10 для заказной Ø80",
+      "document": "experiment/FINAL_80_24GHZ_TEST_PROCEDURE.md",
+      "status": "planned",
+      "steps": [
+        "Выбор материала и потерь при 24 ГГц",
+        "Модель отражателя/оболочки",
+        "Проверка массы всей конструкции ≤300 г"
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null
+    },
+    {
+      "id": "final80_shell",
+      "track": "Ø80 / 24 ГГц",
+      "title": "Проверить PLA-Aero Pro защитную оболочку",
+      "document": "docs/18_PLA_AERO_SHELL_T5_PROTOCOL.md",
+      "status": "planned",
+      "steps": [
+        "Купоны, толщина и плотность",
+        "Две полусферы и шов",
+        "Масса и влияние на RF"
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null
+    },
+    {
+      "id": "final80_rf",
+      "track": "Ø80 / 24 ГГц",
+      "title": "Найти калиброванный стенд 24 ГГц для прямой ЭПР",
+      "document": "experiment/FINAL_80_24GHZ_TEST_PROCEDURE.md",
+      "status": "blocked",
+      "steps": [
+        "Согласовать лабораторию и антенны",
+        "Калибровать комплексный канал",
+        "Не заменять CDM324 полноценным RCS стендом"
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null
+    },
+    {
+      "id": "flight_plan",
+      "track": "Динамика",
+      "title": "Проверить безопасный DJI/FPV демонстрационный опыт",
+      "document": "docs/22_DJI_FPV_24GHZ_FLIGHT_DEMO.md",
+      "status": "blocked",
+      "steps": [
+        "Уточнить модель дрона и полезную нагрузку",
+        "Контроль расстояния/скорости и безопасный участок",
+        "Пролёты только после наземной проверки"
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null
+    },
+    {
+      "id": "report",
+      "track": "Оформление",
+      "title": "Собрать отчёт, фото, реальные данные, ограничения",
+      "document": "docs/24_MASTER_BUILD_AND_TEST_ORDER.md",
+      "status": "planned",
+      "steps": [
+        "Привязать результат к raw данным",
+        "Три независимые ветки и статус каждого теста",
+        "Отдельно расчёт/эксперимент/гипотеза"
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null
+    }
+  ]
+}
