@@ -1,0 +1,1 @@
+lens_id,run_id,date_iso,state,repetition,repositioned,frequency_start_hz,frequency_stop_hz,points,calibration_slot,tx_cable_id,rx_cable_id,tx_range_m,rx_range_m,tx_rx_spacing_m,polarization,yaw_deg,pitch_deg,material,reflector_id,holder_id,raw_s2p_path,photo_path,background_ok,reference_ok,data_valid,notes
