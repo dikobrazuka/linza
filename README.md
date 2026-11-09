@@ -258,3 +258,23 @@ Tests cover:
 ## D-032 — отдельный экспериментальный PLA/FDM Ø200 мм @5 ГГц (09.11.2026)
 
 **Уточнение:** Ø200 мм относится только к PLA/FDM-образцу. **Ø120 мм / 5 ГГц HARZ DE-10** — отдельная сохранённая фотополимерная ветка, для неё прежние расчёты, смета смолы и параметры генераторов не меняются. Заказная **Ø80 мм / 24 ГГц** также без изменений. Для PLA Ø200: R=100 мм, D/λ≈3.336, ориентир дальней зоны самой мишени 1.334 м, первые пробы 2–3 м. Геометрически strict-scaled reference Ø41.667 мм / 24 ГГц, не заказная Ø80. [Протокол PLA Ø200](docs/23_PLA_200MM_FDM_EXPERIMENT.md).
+
+
+## Полный пакет сборки, пайки, сметы и испытаний — 09.11.2026
+
+**Начать отсюда: [docs/24_MASTER_BUILD_AND_TEST_ORDER.md](docs/24_MASTER_BUILD_AND_TEST_ORDER.md).**
+
+| Задача | Рабочий документ |
+|---|---|
+| Общая BOM, закупка и стоимость трёх веток | [budget/MASTER_BOM_AND_COST_2026-11-09.md](budget/MASTER_BOM_AND_COST_2026-11-09.md) |
+| Схема пайки: CDM324 → OPA2365 → Pico, номера выводов и контроль питания | [electronics/01_CDM324_OPA2365_PICO_SCHEMATIC.md](electronics/01_CDM324_OPA2365_PICO_SCHEMATIC.md) |
+| Сети платы в CSV | [electronics/02_CDM324_NETLIST.csv](electronics/02_CDM324_NETLIST.csv) |
+| Подетальная BOM электроники и количество для впайки | [electronics/03_CDM324_PICO_BOM.csv](electronics/03_CDM324_PICO_BOM.csv) |
+| Pico MicroPython, USB capture, обработка FFT на ПК | [electronics/04_PICO_RECORDING_AND_ANALYSIS.md](electronics/04_PICO_RECORDING_AND_ANALYSIS.md) |
+| 5-ГГц рупоры, стойки, кабели, NanoVNA SOLT | [experiment/05GHZ_STAND_BUILD_AND_CALIBRATION.md](experiment/05GHZ_STAND_BUILD_AND_CALIBRATION.md) |
+| **Первая** линза PLA Ø200 / 5 ГГц | [experiment/PLA_200_TEST_PROCEDURE.md](experiment/PLA_200_TEST_PROCEDURE.md) |
+| **Вторая** линза DE-10 Ø120 / 5 ГГц | [experiment/DE10_120_TEST_PROCEDURE.md](experiment/DE10_120_TEST_PROCEDURE.md) |
+| **Третья** конечная Ø80 / 24 ГГц | [experiment/FINAL_80_24GHZ_TEST_PROCEDURE.md](experiment/FINAL_80_24GHZ_TEST_PROCEDURE.md) |
+| Шаблоны протоколов, фото, измерений, QC | [experiment/RUN_LOG_TEMPLATES.md](experiment/RUN_LOG_TEMPLATES.md) |
+
+**Граница достоверности:** это подробные инженерные инструкции, но не свидетельство, что рупоры, усилитель, антенны или все три линзы уже изготовлены/проверены. CDM324 измеряет Doppler IF, не ЭПР. Оставленные TBD требуют реальных данных, их нельзя «закрыть» допущением. Ø200 назначен **только PLA**, photopolymer Ø120 остаётся самостоятельной линией.
