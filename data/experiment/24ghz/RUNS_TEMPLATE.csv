@@ -1,0 +1,1 @@
+run_id,date_iso,drone_type,configuration,lens_id,holder_id,range_source,range_m,radial_speed_mps,yaw_deg,altitude_m,adc_sample_rate_hz,gain_setting,power_supply_v,flight_log_path,raw_samples_path,photo_path,notes
