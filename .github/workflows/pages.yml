@@ -40,7 +40,7 @@ jobs:
         run: |
           python - <<'PY'
           from pathlib import Path
-          p = Path('site/index.html')
+          p = Path('site/board.html')
           s = p.read_text(encoding='utf-8')
           tag = '<script src="./drone-addon.js"></script>'
           if tag not in s:
