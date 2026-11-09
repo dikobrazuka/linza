@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "as_of": "2026-11-09",
-  "source": "docs/24_MASTER_BUILD_AND_TEST_ORDER.md",
+  "source": "docs/24_MASTER_BUILD_AND_TEST_ORDER.md + electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
   "status_meanings": {
     "planned": "задача по плану, не доказано выполнение",
     "doing": "в работе, назначено ответственному",
@@ -268,13 +268,18 @@
     {
       "id": "cdm_schematic",
       "track": "CDM324",
-      "title": "Проверить и собрать IF-AFE-R1",
-      "document": "electronics/01_CDM324_OPA2365_PICO_SCHEMATIC.md",
+      "title": "Собрать CDM324 + OPA2365 + Pico: 32 шага пайки и контроля",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
       "status": "planned",
       "steps": [
-        "Проверить CDM324 VCC/GND/IF",
-        "SOIC8/OPA2365 пайка по netlist",
-        "Прозвонка без питания, 3.3 В, VREF 1.65 В, выходы"
+        "Шаги 01–04: определить pin1 U1, припаять SOIC8→DIP8, шины +3V3/GND и C6/C7",
+        "Шаги 05–08: собрать R1/R2/C1/C2 и проверить VREF≈1,65 В",
+        "Шаги 09–12: подключить C3/R3/R4/R5 к U1 ножкам 3/2/1 — каскад A",
+        "Шаги 13–16: C4/R6/R7/R8 к U1 ножкам 5/6/7 — каскад B",
+        "Шаги 17–19: R9/C5 и отложенное соединение Pico GP26 pin31",
+        "Шаги 20–23: прозвонка без питания; DC 3,3 В, VREF и два выхода; проверка осциллографом",
+        "Шаги 24–28: только после паспорта физической распиновки CDM324 подключить VCC/GND/IF RG174",
+        "Шаги 29–32: тест металлической пластины, Pico CSV, FFT, QC и фото"
       ],
       "evidence": null,
       "assignee": null,
