@@ -26,3 +26,8 @@ jobs:
 
       - name: Run tests
         run: python -m pytest -q
+
+      - name: Check site scripts and local-state migration
+        run: |
+          for file in site/*.js; do node --check "$file"; done
+          node --test tests/test_site_state.cjs

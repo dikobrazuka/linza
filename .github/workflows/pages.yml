@@ -35,19 +35,6 @@ jobs:
         with:
           enablement: true
 
-      - name: Inject Project Control addons
-        shell: bash
-        run: |
-          python - <<'PY'
-          from pathlib import Path
-          p = Path('site/board.html')
-          s = p.read_text(encoding='utf-8')
-          tag = '<script src="./drone-addon.js"></script>'
-          if tag not in s:
-              s = s.replace('</body>', tag + '\n</body>')
-          p.write_text(s, encoding='utf-8')
-          PY
-
       - name: Upload static site
         uses: actions/upload-pages-artifact@v4
         with:

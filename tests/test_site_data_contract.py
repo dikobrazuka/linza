@@ -38,8 +38,12 @@ def test_live_pages_use_repo_json():
     work=(ROOT/"site/work.js").read_text(encoding="utf-8")
     board=(ROOT/"site/board.html").read_text(encoding="utf-8")
     dash=(ROOT/"site/data-dashboard.js").read_text(encoding="utf-8")
-    assert "fetch('./data/actions.json'" in work
-    assert "./data/procurement.json" in dash
+    state=(ROOT/"site/site-state.js").read_text(encoding="utf-8")
+    assert "app.load('actions')" in work and "app.load('project')" in work
+    assert "app.load('procurement')" in dash and "app.load('actions')" in dash
+    assert "fetch('./data/'+name+'.json'" in state
+    assert "fallbackTasks" not in work
     assert "id=\"canonicalBudgetData\"" in board
     assert "id=\"canonicalActionsData\"" in board
-    assert "data-dashboard.js" in board
+    assert "data-dashboard.js" in board and "site-state.js" in board
+    assert "linza-wbs-v1" in board and "linza-budget-v1" in board
