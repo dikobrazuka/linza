@@ -5,10 +5,10 @@
   const A2=(id,text,status='todo',scope='core')=>({id,text,status,scope});
 
   const droneTask={
-    title:'Прикладной тест на карбоновом FPV-дроне',
+    title:'Статический опыт на FPV-дроне · 5 ГГц (дополнительно)',
     subs:[
       {title:'Паспорт реального FPV',actions:[
-        A2('d1001','Взять карбоновый FPV-дрон у друга — стоимость 0 ₽'),
+        A2('d1001','Проверить доступность реального FPV-дрона и записать условия использования'),
         A2('d1002','Измерить wheelbase и максимальный габарит дрона с пропеллерами'),
         A2('d1003','Взвесить дрон в той конфигурации, в которой он будет измеряться'),
         A2('d1004','Зафиксировать материал рамы и расположение основных carbon-fiber элементов'),
@@ -65,15 +65,30 @@
     ]
   };
 
+  const isDroneTask = t => t.title === droneTask.title || t.title === 'Прикладной тест на карбоновом FPV-дроне' || t.subs?.some(s => s.actions?.some(a => a.id === 'd1001'));
+  function clarifyDroneTask(stage) {
+    const existing = stage?.tasks.find(isDroneTask);
+    if (!existing) return false;
+    let changed = false;
+    if (existing.title === 'Прикладной тест на карбоновом FPV-дроне') { existing.title = droneTask.title; changed = true; }
+    for (const sub of existing.subs || []) for (const action of sub.actions || []) {
+      if (action.id === 'd1001' && action.text === 'Взять карбоновый FPV-дрон у друга — стоимость 0 ₽') { action.text = 'Проверить доступность реального FPV-дрона и записать условия использования'; changed = true; }
+    }
+    return changed;
+  }
   // Add to the physical-experiment stage while preserving existing user plan/statuses.
   if (typeof defaultPlan !== 'undefined') {
     const ds=defaultPlan.find(s=>s.id==='S10');
-    if(ds && !ds.tasks.some(t=>t.title===droneTask.title)) ds.tasks.push(structuredClone(droneTask));
+    if(ds && !ds.tasks.some(isDroneTask)) ds.tasks.push(structuredClone(droneTask));
+    else clarifyDroneTask(ds);
   }
   if (typeof plan !== 'undefined') {
     const s=plan.find(s=>s.id==='S10');
-    if(s && !s.tasks.some(t=>t.title===droneTask.title)) {
+    if(s && !s.tasks.some(isDroneTask)) {
       s.tasks.push(structuredClone(droneTask));
+      if(typeof savePlan==='function') savePlan();
+      if(typeof renderPlan==='function') renderPlan();
+    } else if (clarifyDroneTask(s)) {
       if(typeof savePlan==='function') savePlan();
       if(typeof renderPlan==='function') renderPlan();
     }
@@ -81,7 +96,7 @@
 
   // Budget migration. Drone is borrowed = 0 RUB.
   const budgetAdds=[
-    {category:'FPV demo',item:'Карбоновый FPV-дрон',qty:1,unit:'шт.',price:0,note:'Бесплатно у друга; использовать статически, электроника OFF'},
+    {category:'FPV demo',item:'Карбоновый FPV-дрон',qty:1,unit:'шт.',price:0,note:'Доступ и стоимость уточнить; статически, электроника OFF'},
     {category:'FPV demo',item:'Диэлектрический съёмный adapter линзы к FPV',qty:1,unit:'компл.',price:500,note:'Foam/тонкий полимер/nylon; минимум металла'},
     {category:'FPV demo',item:'Поворотная разметка / угловая шкала / крепёж стенда',qty:1,unit:'компл.',price:500,note:'Ориентир; 0 ₽ если всё есть в лаборатории'}
   ];
@@ -99,7 +114,7 @@
   if(ref && !document.getElementById('drone-demo-summary')){
     const sec=document.createElement('section');
     sec.id='drone-demo-summary';
-    sec.innerHTML=`<div class="head"><div><h2>FPV-дрон — прикладной эксперимент</h2><p>Карбоновый FPV бесплатно. Не заменяет основной isolated-lens test.</p></div><a class="btn" href="https://github.com/dikobrazuka/linza/blob/main/docs/17_DRONE_DEMO_PROTOCOL.md" target="_blank">Полная методика ↗</a></div>
+    sec.innerHTML=`<div class="head"><div><h2>FPV-дрон — прикладной эксперимент</h2><p>Отдельный статический 5-ГГц опыт; доступ к FPV требуется подтвердить. Не заменяет основной тест линзы.</p></div><a class="btn" href="https://github.com/dikobrazuka/linza/blob/main/docs/17_DRONE_DEMO_PROTOCOL.md" target="_blank">Полная методика ↗</a></div>
     <div class="grid2"><div class="card box"><h3>Зачем</h3><p>Проверяем, виден ли эффект retroreflector на фоне реальной carbon-fiber рамы. Большой прирост — сильный прикладной результат; нулевой прирост — тоже допустимый вывод о маскировании собственной сигнатурой FPV.</p><div class="formula">D1 = bare FPV<br>D2 = FPV + empty adapter<br>D3 = FPV + lens + reflector</div></div><div class="card box"><h3>Главное правило</h3><p>Дрон <b>не летает</b>: motors/FC/VTX/ELRS/Wi‑Fi OFF. Положение батареи и винтов фиксировано. Сначала 0°, по 3 независимых переустановки каждого состояния.</p><div class="formula">Δdrone=20log₁₀|S̄D3,corr/S̄D1,corr|</div><p>Критерий +10 dB к drone-demo не применяется.</p></div></div>
     <div class="note warn" style="margin-top:8px"><b>Far field:</b> сначала измерить D_max всей сборки и посчитать R_ff≈2D_max²/λ. Для D=300 мм при 5 ГГц это около 3.0 м. Если помещение короче — результат честно называем relative scattering / RCS proxy, а не строгой absolute far-field RCS.</div>`;
     ref.parentNode.insertBefore(sec,ref);

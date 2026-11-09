@@ -103,14 +103,34 @@
 
   function updateStand() {
     const diameterM = Number($('stand-diameter').value) / 1000;
-    const distance = Number($('stand-range').value);
+    const slider = $('stand-range');
+    const distance = Number(slider.value);
     const farField = 2 * diameterM ** 2 / (299792458 / 5e9);
+    const lower = Number(slider.min), upper = Number(slider.max);
+    const toPercent = value => Math.max(0, Math.min(100, (value - lower) / (upper - lower) * 100));
+    // Diagram movement is illustrative: it does not claim a 1:1 distance scale.
+    const targetX = 565 + toPercent(distance) / 100 * 290;
+    const deltaX = targetX - 812;
+    $('stand-target-group').setAttribute('transform', `translate(${deltaX} 0)`);
+    $('stand-incident').setAttribute('d', `M351 112L${targetX - 58} 210`);
+    $('stand-return').setAttribute('d', `M${targetX - 58} 234L352 330`);
+    $('stand-distance-line').setAttribute('x2', targetX);
+    $('stand-distance-ticks').setAttribute('d', `M352 369V381 M${targetX} 369V381`);
+    $('stand-distance-label').setAttribute('x', (352 + targetX) / 2);
     $('stand-range-output').textContent = `${fmt(distance, 1)} м`;
     $('stand-distance-label').textContent = `R = ${fmt(distance, 1)} м`;
     $('ff-value').textContent = `≈ ${fmt(farField)} м`;
     const pass = distance >= farField;
-    $('ff-status').textContent = pass ? 'Дистанция больше оценки по объекту' : 'Дистанция меньше оценки по объекту';
-    $('ff-value').parentElement.classList.toggle('warning', !pass);
+    const difference = Math.abs(distance - farField);
+    $('ff-status').textContent = pass ? 'Расстояние больше ориентира' : 'Расстояние меньше ориентира';
+    $('distance-comparison').textContent = `R ${fmt(distance, 1)} м ${pass ? '≥' : '<'} ${fmt(farField)} м`;
+    $('distance-message').textContent = pass
+      ? `По размеру объекта ориентир пройден: запас около ${fmt(difference)} м. Проверьте также антенны, фон и повторяемость.`
+      : `По этой оценке образец слишком близко: увеличьте расстояние примерно на ${fmt(difference)} м.`;
+    const explanation = $('distance-explanation');
+    explanation.classList.toggle('warning', !pass);
+    explanation.style.setProperty('--threshold', `${toPercent(farField)}%`);
+    explanation.style.setProperty('--current', `${toPercent(distance)}%`);
   }
   $('stand-range').addEventListener('input', updateStand);
   $('stand-diameter').addEventListener('change', updateStand);
