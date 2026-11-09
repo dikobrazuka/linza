@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   const base = 'https://github.com/dikobrazuka/linza/blob/main/';
-  const tasks = [
+  const fallbackTasks = [
     {id:'stock',track:'stand',tag:'ПОДГОТОВКА',title:'Проверить материалы и оборудование',subtitle:'С чего начать всем потокам',steps:['Сверить наличие PLA, DE-10, принтеров, NanoVNA, калибровочного набора и деталей для рупоров.','Уточнить количество, сроки и доступ к лабораторной оснастке.'],done:'У каждой позиции есть статус и источник. Корзина 24 267 ₽ — план, а не подтверждение покупки.',doc:'budget/MASTER_BOM_AND_COST_2026-11-09.md',link:'Список и смета'},
     {id:'horns',track:'stand',tag:'СТЕНД',title:'Изготовить два одинаковых рупора',subtitle:'Антенны для 5-ГГц стенда',steps:['Проверить посадку SMA-7814-16 по исходному STEP и фактическому разъёму.','Напечатать корпуса, металлизировать поверхности и гребни, собрать задние стенки.','Проверить соединения по геометрии конкретного рупора.'],done:'Два собранных рупора, фото соединений и стабильное крепление.',doc:'experiment/05GHZ_STAND_BUILD_AND_CALIBRATION.md',link:'Инструкция по сборке'},
     {id:'calibrate',track:'stand',tag:'СТЕНД',title:'Откалибровать и проверить стенд',subtitle:'NanoVNA + два рупора · около 5 ГГц',steps:['Выполнить SOLT в рабочем диапазоне, измерить S11 каждого рупора и S21 пары.','Проверить фон, прямую связь и сигнал от металлического эталона.'],done:'Эталон устойчиво виден над фоном, геометрия и настройки записаны. Калибровка 383–483 МГц не подходит.',doc:'docs/20_5GHZ_HORNS_NANOVNA.md',link:'Калибровка и контроль'},
@@ -24,7 +24,9 @@
   const key = 'linza-personal-quick-checks-v1';
   let checks = {};
   try { checks = JSON.parse(localStorage.getItem(key) || '{}') || {}; } catch (_) { checks = {}; }
-  for (const task of tasks) {
+  function renderTasks(tasks) {
+    list.innerHTML = '';
+    for (const task of tasks) {
     const card = document.createElement('article');
     card.className = 'task'; card.dataset.track = task.track;
     const checkbox = document.createElement('input'); checkbox.type = 'checkbox'; checkbox.className = 'check';
@@ -51,6 +53,7 @@
       catch (_) { note.textContent = 'Отметки не удалось сохранить в этом браузере.'; }
     });
   }
+  }
   let selected = 'all', expanded = false;
   function update() {
     let count = 0;
@@ -65,5 +68,30 @@
   }
   for (const button of buttons) button.addEventListener('click', () => { selected = button.dataset.filter; update(); });
   more.addEventListener('click', () => { expanded = true; update(); });
+  renderTasks(fallbackTasks);
   update();
+  // Source of truth for all current tracks; preserve old browser-local quick checks by stable IDs.
+  const legacyIds = {
+    inventory:'stock', source_horns:'horns', calibrate_vna:'calibrate',
+    pla_design:'pla-cad', pla_coupons:'pla-coupons', pla_meep:'pla-model',
+    pla_test:'pla-test', de10_T1:'de10', de10_test:'de10-test',
+    final80_shell:'shell', final80_model:'model', cdm_schematic:'cdm',
+    flight_plan:'flight', report:'result'
+  };
+  const trackMap = { 'Общее':'stand','5 ГГц стенд':'stand',
+    'PLA Ø200':'pla','DE-10 Ø120':'de10','CDM324':'final',
+    'Ø80 / 24 ГГц':'final','Динамика':'final','Оформление':'stand' };
+  fetch('./data/actions.json', {cache:'no-cache'})
+    .then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();})
+    .then(data=>{
+      if(!Array.isArray(data.actions)||data.actions.length===0)throw new Error('Пустой список действий');
+      const tasks = data.actions.map(a=>({
+        id:legacyIds[a.id]||a.id,track:trackMap[a.track]||'stand',
+        tag:a.track,title:a.title,subtitle:a.status==='blocked'?'Ожидает подтверждения / доступа':'По основному плану проекта',
+        steps:a.steps,done:'Нужны реальные результаты и подтверждающие файлы. Статус в браузере локальный.',
+        doc:a.document,link:'Открыть рабочую инструкцию'
+      }));
+      renderTasks(tasks);update();
+    })
+    .catch(e=>{note.textContent='Не удалось загрузить актуальные задачи из GitHub Pages: '+e.message+'. Показан резервный список.';});
 })();
