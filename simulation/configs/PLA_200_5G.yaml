@@ -1,0 +1,26 @@
+# D-032: separate PLA FDM test, not a replacement for DE-10 Ø120.
+project: TEST_PLA_200_5G
+status: PLANNED
+frequency_ghz: 5.0
+diameter_mm: 200.0
+radius_mm: 100.0
+material:
+  type: null # Bambu PLA Basic vs other PLA TBD
+  epsilon_solid_5ghz: null
+  tan_delta_5ghz: null
+  effective_epsilon_calibration_csv: null
+  slicer_mass_g: null
+geometry:
+  split: two_hemispheres_planned
+  reflector: TBD
+  seam_mm: null
+experiment:
+  target_far_field_estimate_m: 1.334
+  distance_checks_m: [2.0, 2.5, 3.0]
+  repeat_count_min: 3
+simulation:
+  ideal_command: python simulation/run_ideal_luneburg_rcs.py --diameter-mm 200 --frequency-ghz 5 --pixels-per-lambda 16
+  no_claim_of_manufacturable_PLA_model: true
+strict_scale:
+  reference_diameter_24ghz_mm: 41.666667
+  customer_diameter_24ghz_mm: 80.0
