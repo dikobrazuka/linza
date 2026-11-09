@@ -1,0 +1,23 @@
+ref,value,qty_used,supply_package,subsystem,priority,unit_or_pack_price_rub,source
+U1,OPA2365AIDR SOIC8,1,2 units,amplifier,required,1040,https://www.wildberries.ru/catalog/507202795/detail.aspx
+MOD1,CDM324 24.125GHz,1,1 unit,radar,required,630,https://ozon.ru/t/Mnz0Hos
+MCU1,Raspberry Pi Pico RP2040,1,1 unit,digitizer,required,446,https://ozon.ru/t/TOg1izL
+PCB1,perforated 5x7cm PCB,1,1 unit,amplifier,required,200,https://ozon.ru/t/1f9DFrl
+ADAPT1,SOIC8 to DIP8 1.27mm,1,10 pcs,amplifier,required,180,https://ozon.ru/t/GAwuBmi
+R1 R2 R4 R7,10k 1%,4,20 pcs,amplifier,required,150,https://ozon.ru/t/gmSQrj9
+R3 R6,33k 1%,2,10 pcs,amplifier,required,150,https://ozon.ru/t/AxEe47N
+R5 R8,100k 1%,2,10 pcs,amplifier,required,150,https://ozon.ru/t/LCOsvld
+R9,3.3k 1%,1,20 pcs,amplifier,required,150,https://ozon.ru/t/9oRzuaK
+C1 C7,10uF electrolytic,2,7 pcs,amplifier,required,150,https://ozon.ru/t/QWjOwwu
+C2 C3 C4 C6,100nF ceramic,4,10 pcs,amplifier,required,202,https://ozon.ru/t/J5X7bgM
+C5,22nF ceramic,1,verify pack quantity,amplifier,required,202,https://ozon.ru/t/4KqSaWX
+W1,28AWG copper stranded,1-2m,10m,amplifier,required,700,https://ozon.ru/t/mUJEL1m
+W2,RG174 50ohm shielded cable,0.1-0.3m,1m,analog input,required,150,https://ozon.ru/t/Uu5AHEh
+CON1,PLS40 2.54mm male strips,as needed,10 strips,connectors,conditional,165,https://ozon.ru/t/7GdUMFC
+CON2,Dupont female-female 20cm,as needed,20 pcs,connectors,conditional,300,https://ozon.ru/t/5DpEwdA
+USB1,USB-A to Micro USB DATA,1,1 cable,USB,required,181,https://ozon.ru/t/v0We8FV
+SOLDER1,POS61 0.8mm 100g,as needed,1 spool,consumable,required,700,https://ozon.ru/t/QWjUdju
+FLUX1,no-clean electronics flux,as needed,not in price,consumable,required,TBD,TBD
+METER1,UNI-T UT33D+,1,1 unit,tool,required_if_unavailable,1848,https://ozon.ru/t/EI1qqdr
+SCOPE1,oscilloscope 10MHz+ borrowed or used,1,not in price,verification,highly_recommended,TBD,TBD
+R_SPARE,1k 1%,0,20 pcs,spare,not_used_in_IF_AFE_R1,150,https://ozon.ru/t/cFGCPBb
