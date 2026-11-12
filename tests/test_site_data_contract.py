@@ -47,3 +47,21 @@ def test_live_pages_use_repo_json():
     assert "id=\"canonicalActionsData\"" in board
     assert "data-dashboard.js" in board and "site-state.js" in board
     assert "linza-wbs-v1" in board and "linza-budget-v1" in board
+
+
+def test_complete_engineering_actions_are_individually_tracked():
+    data=load("actions.json")
+    ids={a["id"] for a in data["actions"]}
+    assert len(data["actions"])==102
+    for prefix,count in (("radar",32),("calc",24),("write",22)):
+        for i in range(1,count+1):
+            assert f"{prefix}_{i:02d}" in ids
+    assert all(a["status"]!="done" for a in data["actions"])
+    assert all(a["document"] and (ROOT/a["document"]).is_file() for a in data["actions"])
+    radar=[a for a in data["actions"] if a["id"].startswith("radar_")]
+    assert len(radar)==32 and len({a["id"] for a in radar})==32
+    assert next(a for a in radar if a["id"]=="radar_24")["status"]=="blocked"
+    assert (ROOT/"docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md").is_file()
+    assert (ROOT/"docs/26_REPORT_DEFENSE_DELIVERABLES.md").is_file()
+    assert (ROOT/"report/OUTLINE.md").is_file()
+    assert (ROOT/"report/RESULTS_REGISTER.md").is_file()
