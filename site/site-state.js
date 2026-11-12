@@ -28,7 +28,7 @@
     for(const k of LEGACY){const value=localStorage.getItem(k);if(value!==null&&localStorage.getItem(BACKUP+k)===null)localStorage.setItem(BACKUP+k,value)}
   }
   function write(data){backupLegacy();localStorage.setItem(KEY,JSON.stringify(data));window.dispatchEvent(new CustomEvent('linza-state-change'));}
-  function updateAction(id,patch){const s=read();s.actions[id]={...(s.actions[id]||{}),...patch};write(s)}
+  function updateAction(id,patch){const s=read();s.actions[id]={...(s.actions[id]||{}),...(Object.hasOwn(patch,'status')&&!Object.hasOwn(patch,'quick_previous_status')?{quick_previous_status:null}:{}),...patch};write(s)}
   function updatePurchase(id,patch){const s=read();s.purchases[id]={...(s.purchases[id]||{}),...patch};write(s)}
   function addCustom(title,track){const s=read();const id='local-'+(globalThis.crypto?.randomUUID?.()||Date.now()+'-'+Math.random().toString(36).slice(2));s.custom.push({id,title,track,status:'planned',steps:[],document:null,evidence:null});write(s)}
   function renameCustom(id,title){const s=read(),task=s.custom.find(x=>x.id===id);if(!task)throw new Error('Личная задача не найдена');const old=localStorage.getItem(KEY);if(old!==null)localStorage.setItem(BACKUP+'edit-'+Date.now(),old);task.title=title;write(s)}

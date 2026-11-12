@@ -9,16 +9,22 @@
   function updateFilter(){let count=0;for(const card of list.children){const match=selected==='all'||card.dataset.track===selected;card.hidden=!match||(selected==='all'&&!expanded&&count>=5);if(match)count++}more.hidden=selected!=='all'||expanded||count<=5;more.textContent=`Показать ещё ${Math.max(0,count-5)} задач ↓`;for(const b of filters.querySelectorAll('[data-filter]'))b.setAttribute('aria-pressed',String(b.dataset.filter===selected));}
   function renderTasks(){
     let state;try{state=app.read()}catch(e){failure(list,'actions',e);return}
+    const open=new Set([...list.querySelectorAll('article[data-id] details[open]')].map(detail=>detail.parentElement.dataset.id));
     list.replaceChildren();
     for(const task of [...actions,...state.custom]){
       const local=state.actions[task.id]||{},status=local.status||task.status;
-      const card=document.createElement('article');card.className='task';card.dataset.track=task.track;
+      const card=document.createElement('article');card.className='task';card.dataset.track=task.track;card.dataset.id=task.id;
       const check=document.createElement('input');check.type='checkbox';check.className='check';check.checked=status==='done';check.setAttribute('aria-label','Лично отметить: '+task.title);
-      check.addEventListener('change',()=>{try{app.updateAction(task.id,{status:check.checked?'done':task.status})}catch(e){check.checked=!check.checked;note.textContent='Не удалось сохранить: '+e.message}});
-      const detail=document.createElement('details'), summary=document.createElement('summary'),name=document.createElement('span');
+      check.addEventListener('change',()=>{try{const current=app.read().actions[task.id]||{};const previous=current.quick_previous_status;app.updateAction(task.id,check.checked?{status:'done',quick_previous_status:current.status||task.status}:{status:app.statuses.includes(previous)&&previous!=='done'?previous:(task.status==='done'?'planned':task.status),quick_previous_status:null})}catch(e){check.checked=!check.checked;note.textContent='Не удалось сохранить: '+e.message}});
+      const detail=document.createElement('details'), summary=document.createElement('summary'),name=document.createElement('span');detail.open=open.has(task.id);
       const title=document.createElement('strong');title.textContent=task.title;const small=document.createElement('small');small.textContent=task.track+' · '+(labels[status]||status);name.append(title,small);
       const tag=document.createElement('span');tag.className='tag';tag.textContent=task.track;const plus=document.createElement('span');plus.className='plus';plus.setAttribute('aria-hidden','true');plus.textContent='+';summary.append(name,tag,plus);detail.append(summary);
-      const body=document.createElement('div');body.className='taskbody';const ol=document.createElement('ol');for(const step of task.steps){const li=document.createElement('li');li.textContent=step;ol.append(li)}
+      const body=document.createElement('div');body.className='taskbody';
+      const statusLabel=document.createElement('label');statusLabel.className='task-status';statusLabel.textContent='Личный статус ';
+      const statusSelect=document.createElement('select');statusSelect.setAttribute('aria-label','Личный статус: '+task.title);
+      for(const [value,text] of Object.entries(labels)){const option=document.createElement('option');option.value=value;option.textContent=text;option.selected=value===status;statusSelect.append(option)}
+      statusSelect.addEventListener('change',()=>{try{app.updateAction(task.id,{status:statusSelect.value})}catch(e){statusSelect.value=status;note.textContent='Не удалось сохранить: '+e.message}});statusLabel.append(statusSelect);body.append(statusLabel);
+      const ol=document.createElement('ol');for(const step of task.steps){const li=document.createElement('li');li.textContent=step;ol.append(li)}
       if(task.document){const source=document.createElement('a');source.href=base+task.document;source.textContent='Открыть инструкцию ↗';source.target='_blank';source.rel='noopener noreferrer';body.append(ol,source)}else body.append(ol);
       const manage=document.createElement('p');const board=document.createElement('a');board.href='./board.html#action-'+encodeURIComponent(task.id);board.textContent='Статус, шаги и материалы на доске ↗';manage.append(board);
       body.append(manage);detail.append(body);card.append(check,detail);list.append(card);

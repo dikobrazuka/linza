@@ -50,6 +50,18 @@ test('purchase status is separate, local changes survive read and export',()=>{
   assert.equal(app.exportData().state.purchases.H002.status,'ordered');
 });
 
+test('task updates preserve notes and step marks while resetting obsolete quick status',()=>{
+  const {app}=environment();
+  app.updateAction('final80_shell',{status:'done',quick_previous_status:'blocked',steps:{0:true,2:true},evidence:'photo'});
+  app.updateAction('final80_shell',{status:'doing'});
+  const state=app.read().actions.final80_shell;
+  assert.equal(state.status,'doing');assert.equal(state.quick_previous_status,null);
+  assert.equal(state.steps[0],true);assert.equal(state.steps[2],true);assert.equal(state.evidence,'photo');
+  const steps=load('actions').actions.find(x=>x.id==='final80_shell').steps;
+  assert.deepEqual(steps.slice(0,3),['Купоны, толщина и плотность','Две полусферы и шов','Масса и влияние на RF']);
+  assert(steps.some(x=>x.includes('T5-B')));assert(steps.some(x=>x.includes('T5-C')));
+});
+
 test('import backs up current state and does not overwrite existing legacy data',()=>{
   const old='{"custom":"старое"}', existing='[{"id":"my-old-work"}]';
   const {app,values}=environment({'linza-wbs-v1':existing,'linza-budget-v1':old});
