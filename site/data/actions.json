@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
-  "as_of": "2026-11-09",
-  "source": "docs/24_MASTER_BUILD_AND_TEST_ORDER.md + electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+  "as_of": "2026-11-12",
+  "source": "docs/24_MASTER_BUILD_AND_TEST_ORDER.md; electronics/05_BUILD_CDM324_STEP_BY_STEP.md; docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md; docs/26_REPORT_DEFENSE_DELIVERABLES.md",
   "status_meanings": {
     "planned": "задача по плану, не доказано выполнение",
     "doing": "в работе, назначено ответственному",
     "blocked": "требует внешнего подтверждения или оборудования",
     "done": "только по фактическим результатам и с доказательством"
   },
-  "note": "Statuses are default editorial states only; user's browser-local WBS modifications are not shared with GitHub.",
+  "note": "32 independent soldering actions, 24 calculations, 22 writing and defense actions, plus 24 original work items. No completed status is inferred from plans.",
   "actions": [
     {
       "id": "inventory",
@@ -268,22 +268,623 @@
     {
       "id": "cdm_schematic",
       "track": "CDM324",
-      "title": "Собрать CDM324 + OPA2365 + Pico: 32 шага пайки и контроля",
+      "title": "Радар: обзор 32 отдельных действий",
       "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
       "status": "planned",
       "steps": [
-        "Шаги 01–04: определить pin1 U1, припаять SOIC8→DIP8, шины +3V3/GND и C6/C7",
-        "Шаги 05–08: собрать R1/R2/C1/C2 и проверить VREF≈1,65 В",
-        "Шаги 09–12: подключить C3/R3/R4/R5 к U1 ножкам 3/2/1 — каскад A",
-        "Шаги 13–16: C4/R6/R7/R8 к U1 ножкам 5/6/7 — каскад B",
-        "Шаги 17–19: R9/C5 и отложенное соединение Pico GP26 pin31",
-        "Шаги 20–23: прозвонка без питания; DC 3,3 В, VREF и два выхода; проверка осциллографом",
-        "Шаги 24–28: только после паспорта физической распиновки CDM324 подключить VCC/GND/IF RG174",
-        "Шаги 29–32: тест металлической пластины, Pico CSV, FFT, QC и фото"
+        "Все шаги RADAR-01…RADAR-32 находятся отдельными задачами ниже",
+        "Сверить неизвестную физическую распиновку CDM324 до подачи питания",
+        "Отмечать выполнение только после проверки электрических соединений и измерений"
       ],
       "evidence": null,
       "assignee": null,
       "due_date": null
+    },
+    {
+      "id": "radar_01",
+      "track": "Пайка радара",
+      "title": "Радар шаг 01: Отключи USB. Найди на SOIC точку/ключ pin 1. Положи OPA2365 на площадки SOIC8 (1.27 мм) адаптер",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "Отключи USB. Найди на SOIC точку/ключ **pin 1**. Положи OPA2365 на площадки SOIC8 (1.27 мм) адаптера, прихвати **pin 1** к соответствующему контакту; выровняй корпус; припаяй остальные семь. Под увеличением убрать мостики из припоя.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "radar_02",
+      "track": "Пайка радара",
+      "title": "Радар шаг 02: Припаяй переходник с U1 на монтажную плату или установи контактную панель DIP8 (при наличии). Н",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "Припаяй переходник с U1 на монтажную плату или установи контактную панель DIP8 (при наличии). Не путай `pin U1` с номером отверстия на плате. Саму микросхему больше не грей без необходимости.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_01"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_03",
+      "track": "Пайка радара",
+      "title": "Радар шаг 03: На плате отметь три узла: +3V3, GND, VREF. Физическая трасса GND и 3V3 не должна пересекаться н",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "На плате отметь **три узла**: `+3V3`, `GND`, `VREF`. Физическая трасса GND и 3V3 не должна пересекаться незачищенным проводом. Припаяй короткий провод `Pico pin36 → +3V3` и `Pico pin33 → GND`, но Pico к USB пока НЕ подключай.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_02"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_04",
+      "track": "Пайка радара",
+      "title": "Радар шаг 04: Припаяй U1 pin8 → +3V3, U1 pin4 → GND, рядом у корпуса C6 100n: один конец +3V3, другой GND. За",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "Припаяй `U1 pin8 → +3V3`, `U1 pin4 → GND`, рядом у корпуса `C6 100n: один конец +3V3, другой GND`. Затем `C7 10µF: PLUS +3V3, MINUS GND`. У электролита полоса обычно означает **минус**. При переполюсовке электролит может повредиться.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_03"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_05",
+      "track": "Пайка радара",
+      "title": "Радар шаг 05: R1 10k: конец 1 к +3V3, конец 2 к новой точке VREF. Это НЕ соединение VREF напрямую с 3V3.",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "`R1 10k`: конец 1 к `+3V3`, конец 2 к **новой точке** `VREF`. Это НЕ соединение VREF напрямую с 3V3.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_04"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_06",
+      "track": "Пайка радара",
+      "title": "Радар шаг 06: R2 10k: конец 1 к VREF, конец 2 к GND. Два резистора последовательно образуют делитель.",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "`R2 10k`: конец 1 к `VREF`, конец 2 к `GND`. Два резистора последовательно образуют делитель.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_05"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_07",
+      "track": "Пайка радара",
+      "title": "Радар шаг 07: C1 10µF: PLUS → VREF, MINUS → GND. Другой электролит C7 уже стоит между +3V3/GND.",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "`C1 10µF`: **PLUS → VREF**, **MINUS → GND**. Другой электролит C7 уже стоит между +3V3/GND.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_06"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_08",
+      "track": "Пайка радара",
+      "title": "Радар шаг 08: C2 100n: 1 конец к VREF, 2-й к GND. Сравни с таблицей. Рядом с VREF удобно оставить несколько к",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "`C2 100n`: 1 конец к `VREF`, 2-й к `GND`. Сравни с таблицей. Рядом с VREF удобно оставить несколько коротких выводов для подключения R3/R4/R6/R7.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_07"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_09",
+      "track": "Пайка радара",
+      "title": "Радар шаг 09: R3 33k: конец 1 к U1 pin3 (+IN A), конец 2 к VREF. Точка у pin3 называется N_IN_A.",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "`R3 33k`: конец 1 к `U1 pin3 (+IN A)`, конец 2 к `VREF`. Точка у pin3 называется `N_IN_A`.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_08"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_10",
+      "track": "Пайка радара",
+      "title": "Радар шаг 10: C3 100n: конец 2 к N_IN_A/U1 pin3, конец 1 оставь на отдельном контакте RADAR_IF — радар пока н",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "`C3 100n`: конец 2 к `N_IN_A/U1 pin3`, конец 1 оставь на отдельном контакте `RADAR_IF` — **радар пока не соединять**. `C3` стоит **ПОСЛЕДОВАТЕЛЬНО**, не к земле.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_09"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_11",
+      "track": "Пайка радара",
+      "title": "Радар шаг 11: R4 10k: конец 1 к U1 pin2 (−IN A), конец 2 к VREF. Узел возле pin2 называется N_FB_A.",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "`R4 10k`: конец 1 к `U1 pin2 (−IN A)`, конец 2 к `VREF`. Узел возле pin2 называется `N_FB_A`.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_10"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_12",
+      "track": "Пайка радара",
+      "title": "Радар шаг 12: R5 100k: конец 1 к U1 pin2, конец 2 к U1 pin1 (OUT A). Это обратная связь, не к GND и не на pin",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "`R5 100k`: конец 1 к `U1 pin2`, конец 2 к `U1 pin1 (OUT A)`. Это обратная связь, **не к GND** и **не на pin3**. Держать провод/резистор максимально близко к U1. Получится первый неинвертирующий каскад с коэффициентом `1+100k/10k = 11` в рабочей полосе.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_11"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_13",
+      "track": "Пайка радара",
+      "title": "Радар шаг 13: C4 100n: один конец к U1 pin1 (OUT A), второй — к новой точке N_IN_B. К GND C4 не идёт.",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "`C4 100n`: один конец к `U1 pin1 (OUT A)`, второй — к новой точке `N_IN_B`. **К GND C4 не идёт**.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_12"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_14",
+      "track": "Пайка радара",
+      "title": "Радар шаг 14: R6 33k: 1 конец к N_IN_B, 2-й к VREF. Из этой же точки короткий провод к U1 pin5 (+IN B). Это в",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "`R6 33k`: 1 конец к `N_IN_B`, 2-й к `VREF`. Из этой же точки короткий провод к `U1 pin5 (+IN B)`. Это вход второго каскада.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_13"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_15",
+      "track": "Пайка радара",
+      "title": "Радар шаг 15: R7 10k: 1 конец к U1 pin6 (−IN B), 2-й к VREF.",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "`R7 10k`: 1 конец к `U1 pin6 (−IN B)`, 2-й к `VREF`.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_14"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_16",
+      "track": "Пайка радара",
+      "title": "Радар шаг 16: R8 100k: 1 конец к U1 pin6, 2-й к U1 pin7 (OUT B). Держать около U1. Получается второй каскад ×",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "`R8 100k`: 1 конец к `U1 pin6`, 2-й к `U1 pin7 (OUT B)`. Держать около U1. Получается второй каскад ×11.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_15"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_17",
+      "track": "Пайка радара",
+      "title": "Радар шаг 17: R9 3.3k: конец 1 к U1 pin7 (OUT B), конец 2 к новой точке N_ADC.",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "`R9 3.3k`: конец 1 к `U1 pin7 (OUT B)`, конец 2 к новой точке `N_ADC`.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_16"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_18",
+      "track": "Пайка радара",
+      "title": "Радар шаг 18: C5 22n: один конец к N_ADC, другой к GND. Получается выходной низкочастотный фильтр примерно 1/",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "`C5 22n`: один конец к `N_ADC`, другой к `GND`. Получается выходной низкочастотный фильтр примерно `1/(2π·3300·22n) ≈ 2.19 kHz`. Если поставишь 220n вместо 22n, будет примерно 219 Hz — это совсем другой тракт.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_17"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_19",
+      "track": "Пайка радара",
+      "title": "Радар шаг 19: От N_ADC подготовь короткий провод к Pico GP26 / ADC0 (ФИЗИЧЕСКИЙ pin 31), но оставь временно Н",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "От `N_ADC` подготовь короткий провод к `Pico GP26 / ADC0 (ФИЗИЧЕСКИЙ pin 31)`, но **оставь временно НЕ ПРИСОЕДИНЁННЫМ** для контроля выхода. НЕ использовать `GP26` как GPIO-выход.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_18"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_20",
+      "track": "Пайка радара",
+      "title": "Радар шаг 20: USB выключен. Проверь на плате: нет +3V3↔GND КЗ, контакты U1.1–8 не соединены с соседними по ош",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "USB выключен. Проверь на плате: нет `+3V3↔GND` КЗ, контакты U1.1–8 не соединены с соседними по ошибке; C1/C7 правильной полярности; два каскада имеют R5 и R8 от `OUT` к соответствующим `IN−`; RG174 **ещё не подсоединён к модулю**. Прозванивать сам радар между неизвестными выводами **не нужно**.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_19"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_21",
+      "track": "Пайка радара",
+      "title": "Радар шаг 21: Подай USB на Pico, пока CDM324 и провод GP26 отсоединены. Измерь DC мультиметром чёрным щупом н",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "Подай USB на Pico, пока CDM324 и провод GP26 отсоединены. Измерь DC мультиметром чёрным щупом на `GND`:",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_20"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_22",
+      "track": "Пайка радара",
+      "title": "Радар шаг 22: Осциллографом при наличии проверить U1 pin1 и pin7: нет самовозбуждения в МГц, сильного шума и ",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "Осциллографом при наличии проверить U1 pin1 и pin7: нет самовозбуждения в МГц, сильного шума и пиков за пределами 0–3.3 В. OPA2365 — быстрый **50 МГц** усилитель, длинные жилы на перфоплате могут вызвать нестабильность. **Одним мультиметром этого не увидеть.** При наличии генератора синусоиды слабого уровня сделать контроль 100–500 Hz через C3, подтвердить полосовой отклик и отсутствие clipping.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_21"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_23",
+      "track": "Пайка радара",
+      "title": "Радар шаг 23: Только после подтверждения напряжений и отсутствия опасного выходного сигнала присоедини N_ADC ",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "Только после подтверждения напряжений и отсутствия опасного выходного сигнала присоедини `N_ADC → физический Pico pin31`. Проверь тестовый скрипт Pico (пока без радара), что ADC показывает среднее около 1.65 В. Осциллограф нужен для надёжного исключения опасных кратковременных выбросов.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_22"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_24",
+      "track": "Пайка радара",
+      "title": "Радар шаг 24: На полученном CDM324 явно определить и записать VCC/GND/IF, сторону просмотра разъёмов, допусти",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "blocked",
+      "steps": [
+        "На полученном CDM324 явно определить и записать `VCC/GND/IF`, сторону просмотра разъёмов, допустимое напряжение, потребление. Если маркировки/документации нет — **остановиться и сфотографировать обе стороны, запросить у продавца**. Не подавать наугад напряжение на крайний контакт.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_23"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_25",
+      "track": "Пайка радара",
+      "title": "Радар шаг 25: Выбери один вариант питания:",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "Выбери **один** вариант питания:",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_24"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_26",
+      "track": "Пайка радара",
+      "title": "Радар шаг 26: Отрезать 10–30 см RG174, зачистить оплётку и центральную жилу, проверить только сам кабель на о",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "Отрезать **10–30 см RG174**, зачистить оплётку и центральную жилу, проверить только **сам кабель** на отсутствие КЗ центральной жилы с оплёткой. Одной стороной: центральная жила → подтверждённый **IF** CDM324, оплётка → подтверждённый **GND** CDM324. На другой стороне: центр → свободный контакт **C3** (`RADAR_IF`), экран → **GND** платы. Не использовать RG174 как «кабель 24 ГГц к антенне»: он передаёт низкочастотный IF.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_25"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_27",
+      "track": "Пайка радара",
+      "title": "Радар шаг 27: Механически закрепить радар на неметаллической стойке, не закрывать его патч-антенну, сделать р",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "Механически закрепить радар на неметаллической стойке, не закрывать его патч-антенну, сделать разгрузку кабеля. Зафиксировать USB и аналоговые провода. Перед подачей питания повторить проверку соответствия `VCC/GND/IF` и отсутствие перепутанной полярности.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_26"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_28",
+      "track": "Пайка радара",
+      "title": "Радар шаг 28: Включить питание радара, наблюдать DC на U1 pin1, U1 pin7, N_ADC; они должны оставаться около V",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "Включить питание радара, наблюдать DC на `U1 pin1`, `U1 pin7`, `N_ADC`; они должны оставаться около VREF, но на движении появится переменная составляющая. **Если выход зажат к 0/3.3 В или плавает при касании кабеля — выключить**, искать проблему.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_27"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_29",
+      "track": "Пайка радара",
+      "title": "Радар шаг 29: Поставить CDM324 неподвижно, вдали от больших металлических отражателей; на расстоянии ~0.5–2 м",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "Поставить CDM324 неподвижно, вдали от больших металлических отражателей; на расстоянии ~0.5–2 м перемещать **металлическую пластину по направлению к радару/от него** с повторяемой скоростью. Не держать человека и большой металл вплотную к радару. Сначала `BACKGROUND` при отсутствии движения, затем `PLATE01`, `PLATE02`, `PLATE03`.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_28"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_30",
+      "track": "Пайка радара",
+      "title": "Радар шаг 30: С Pico через USB записать сырые отсчёты, согласно [04_PICO_RECORDING_AND_ANALYSIS.md](04_PICO_R",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "С Pico через USB записать сырые отсчёты, согласно [04_PICO_RECORDING_AND_ANALYSIS.md](04_PICO_RECORDING_AND_ANALYSIS.md): установка MicroPython, `capture_one('BACKGROUND_01')`, сохранение CSV, `overruns=0`, FFT на ПК. Подача/прошивка исходников из файла `pico_cdm324_capture.py` — отдельные программные действия. **Не выдавать nominal Fs при джиттере за прецизионную синхронизацию.**",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_29"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_31",
+      "track": "Пайка радара",
+      "title": "Радар шаг 31: Оценить: отсутствие насыщения ADC, отличие спектра от фона, наличие повторяемого Doppler, часто",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "Оценить: отсутствие насыщения ADC, отличие спектра от фона, наличие повторяемого Doppler, частота примерно `f_D≈161·|v_radial| Гц` при модуле 24.125 ГГц. При слабом сигнале искать питание, геометрию и noise floor; не просто увеличивать gain в 10 раз.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_30"
+      ],
+      "validation_required": true
+    },
+    {
+      "id": "radar_32",
+      "track": "Пайка радара",
+      "title": "Радар шаг 32: При отсутствии clipping и исправной передаче зафиксировать рабочий gain и BOM ревизии. Только т",
+      "document": "electronics/05_BUILD_CDM324_STEP_BY_STEP.md",
+      "status": "planned",
+      "steps": [
+        "При отсутствии clipping и исправной передаче зафиксировать рабочий gain и BOM ревизии. Только тогда переходить к плану DJI/FPV. **CDM324 не измеряет дальность или абсолютную ЭПР**: сравнение AC IF лишь демонстрация, отдельное доказательство +10 дБ ЭПР требует RF измерения.",
+        "Проверить соединение/узел перед следующим шагом.",
+        "Доказательство: фото платы или контрольное измерение."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [
+        "radar_31"
+      ],
+      "validation_required": true
     },
     {
       "id": "cdm_capture",
@@ -378,6 +979,788 @@
       "evidence": null,
       "assignee": null,
       "due_date": null
+    },
+    {
+      "id": "calc_01",
+      "track": "Расчёты и моделирование",
+      "title": "Зафиксировать 3 геометрии и единицы",
+      "document": "docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md",
+      "status": "planned",
+      "steps": [
+        "D,R,f,λ,D/λ,R_ff, допустимый вес, назначение ветки",
+        "Результат: `calculation_inputs_2026-11.csv`, фото/ссылка на согласованный CAD, различия частот",
+        "Записать реальные входные данные, ссылку на код, вычисления и ограничения."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "calc_02",
+      "track": "Расчёты и моделирование",
+      "title": "Таблица идеального ε(r),n(r)",
+      "document": "docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md",
+      "status": "planned",
+      "steps": [
+        "Формулы в пяти радиальных точках каждого R",
+        "Результат: CSV/график `epsilon_profile`; формулы и размерность",
+        "Записать реальные входные данные, ссылку на код, вычисления и ограничения."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "calc_03",
+      "track": "Расчёты и моделирование",
+      "title": "Входные свойства PLA и DE-10",
+      "document": "docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md",
+      "status": "planned",
+      "steps": [
+        "Свести реальные ε, tanδ, усадку, плотность, частоту их определения; unknown отдельно",
+        "Результат: Таблица параметров **measurement vs manufacturer vs assumption**, без выдуманных измерений",
+        "Записать реальные входные данные, ссылку на код, вычисления и ограничения."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "calc_04",
+      "track": "Расчёты и моделирование",
+      "title": "Обработка T1–T4 купонов",
+      "document": "docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md",
+      "status": "planned",
+      "steps": [
+        "T1 ε_solid, T2 rho_solid, T3 rho_actual, T4 комплексные S параметров",
+        "Результат: `rho,epsilon_eff` CSV, отдельно uncertainty, совместим с `tools/continuous_luneburg_gyroid.py`",
+        "Записать реальные входные данные, ссылку на код, вычисления и ограничения."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "calc_05",
+      "track": "Расчёты и моделирование",
+      "title": "Вывести требуемый ρ(r)",
+      "document": "docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md",
+      "status": "planned",
+      "steps": [
+        "Инвертировать измеренный ε_eff(ρ), clamp rho_min/max, сравнить ε_target vs ε_realized",
+        "Результат: Profile.csv, max deviation, технологически достижимые зоны",
+        "Записать реальные входные данные, ссылку на код, вычисления и ограничения."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "calc_06",
+      "track": "Расчёты и моделирование",
+      "title": "Сгенерировать радиальный гироид DE-10",
+      "document": "docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md",
+      "status": "planned",
+      "steps": [
+        "`tools/continuous_luneburg_gyroid.py --radius 60 --cell 7.5` после T4; `--calibration-csv` с реальными данными",
+        "Результат: STL двух половин, файл профиля, контроль минимальных стенок/мойки",
+        "Записать реальные входные данные, ссылку на код, вычисления и ограничения."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "calc_07",
+      "track": "Расчёты и моделирование",
+      "title": "Рассчитать расход DE-10",
+      "document": "docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md",
+      "status": "planned",
+      "steps": [
+        "`tools/material_budget.py` с rho_solid после T2 и clamp после T3",
+        "Результат: Масса, supports, usable resin, отдельный GO/NO-GO по 1 кг",
+        "Записать реальные входные данные, ссылку на код, вычисления и ограничения."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "calc_08",
+      "track": "Расчёты и моделирование",
+      "title": "Рассчитать PLA Ø200 расход и прочность соединений",
+      "document": "docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md",
+      "status": "planned",
+      "steps": [
+        "По CAD и слайсеру для конкретного PLA, сопла и реального заполнения",
+        "Результат: .3mf, время/масса по каждой половине, прочность/геометрия шва, не считать 4188.79 см³ массой пластика",
+        "Записать реальные входные данные, ссылку на код, вычисления и ограничения."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "calc_09",
+      "track": "Расчёты и моделирование",
+      "title": "M0: проверка численной области Meep",
+      "document": "docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md",
+      "status": "planned",
+      "steps": [
+        "Пустая область, источник, PML, фон, нормировка",
+        "Результат: Конфигурация, log, доказательство минимальных паразитных отражений",
+        "Записать реальные входные данные, ссылку на код, вычисления и ограничения."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "calc_10",
+      "track": "Расчёты и моделирование",
+      "title": "M1: численный эталон и near-to-far",
+      "document": "docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md",
+      "status": "planned",
+      "steps": [
+        "Простой известный scatterer и контроль normalization",
+        "Результат: Проверенный монитор near-to-far и единицы ЭПР/направление наблюдения",
+        "Записать реальные входные данные, ссылку на код, вычисления и ограничения."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "calc_11",
+      "track": "Расчёты и моделирование",
+      "title": "PLA200: идеальная карта фокуса",
+      "document": "docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md",
+      "status": "planned",
+      "steps": [
+        "`python simulation/run_luneburg_focus_map.py --diameter-mm 200 --frequency-ghz 5` при установленном Meep",
+        "Результат: Конфигурация, поле/фокус/спот, отдельная от DE-10 модель",
+        "Записать реальные входные данные, ссылку на код, вычисления и ограничения."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "calc_12",
+      "track": "Расчёты и моделирование",
+      "title": "PLA200: реальная ε_eff и S21/RCS",
+      "document": "docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md",
+      "status": "planned",
+      "steps": [
+        "Сравнить ideal с измеренной FDM ε_eff, геометрией/швом/потерями",
+        "Результат: Две модели: ideal и realizable, отдельные графики и ограничения",
+        "Записать реальные входные данные, ссылку на код, вычисления и ограничения."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "calc_13",
+      "track": "Расчёты и моделирование",
+      "title": "DE10: однородная сфера и идеальная Лунберг",
+      "document": "docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md",
+      "status": "planned",
+      "steps": [
+        "Контроль M2/M3 при Ø120/5, раздельные baseline, focus/field",
+        "Результат: Поля, профиль, код, результаты для сравнения",
+        "Записать реальные входные данные, ссылку на код, вычисления и ограничения."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "calc_14",
+      "track": "Расчёты и моделирование",
+      "title": "M4: чувствительность к tanδ",
+      "document": "docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md",
+      "status": "planned",
+      "steps": [
+        "Sweep 0/0.0025/0.005/0.01/0.02, а затем measured loss",
+        "Результат: Таблица/график потерь в фокусе/ЭПР",
+        "Записать реальные входные данные, ссылку на код, вычисления и ограничения."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "calc_15",
+      "track": "Расчёты и моделирование",
+      "title": "M5/M6: зоны vs непрерывный градиент",
+      "document": "docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md",
+      "status": "planned",
+      "steps": [
+        "6/8/11 зон и measured homogenized GRIN после T4",
+        "Результат: Фокус, RCS proxy vs ideal, ошибка ε(r)",
+        "Записать реальные входные данные, ссылку на код, вычисления и ограничения."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "calc_16",
+      "track": "Расчёты и моделирование",
+      "title": "M7/M8: проверить применимость homogenization",
+      "document": "docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md",
+      "status": "planned",
+      "steps": [
+        "Элемент/купоны gyroid, период a/λ, anisotropy и граничные эффекты",
+        "Результат: Предел корректности модели ε_eff; какие допущения допустимы",
+        "Записать реальные входные данные, ссылку на код, вычисления и ограничения."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "calc_17",
+      "track": "Расчёты и моделирование",
+      "title": "Diameter gate для DE-10",
+      "document": "docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md",
+      "status": "planned",
+      "steps": [
+        "`python simulation/run_diameter_gate.py --diameters 120 150 180 240 --ppl 16 20 --frequency-ghz 5` (перед тяжёлым запуском проверить ресурс)",
+        "Результат: `DIAMETER_GATE_IDEAL_CONVERGENCE.csv`, минимум 2 разрешения и выбор минимального проходящего диаметра",
+        "Записать реальные входные данные, ссылку на код, вычисления и ограничения."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "calc_18",
+      "track": "Расчёты и моделирование",
+      "title": "Sweep отражателя / reflector-only baseline",
+      "document": "docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md",
+      "status": "planned",
+      "steps": [
+        "`python simulation/run_reflector_sweep.py --diameter-mm 120 --frequency-ghz 5`; отдельные модели PLA и Ø80 при необходимости",
+        "Результат: Угол/толщина, Δ к тому же отражателю без линзы, не к «пустому воздуху»",
+        "Записать реальные входные данные, ссылку на код, вычисления и ограничения."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "calc_19",
+      "track": "Расчёты и моделирование",
+      "title": "Проверка сеточной сходимости",
+      "document": "docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md",
+      "status": "planned",
+      "steps": [
+        "Несколько pixel-per-lambda, PML и размеров расчётной области; проверка Δ",
+        "Результат: Численная ошибка меньше целевого допустимого порога, зафиксировать ресурс CPU/RAM",
+        "Записать реальные входные данные, ссылку на код, вычисления и ограничения."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "calc_20",
+      "track": "Расчёты и моделирование",
+      "title": "FINAL80: M10 @24 ГГц",
+      "document": "docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md",
+      "status": "planned",
+      "steps": [
+        "`python simulation/run_ideal_luneburg_rcs.py --diameter-mm 80 --frequency-ghz 24`, затем модель материала/оболочки/потерь и реального отражателя",
+        "Результат: CAD+Meep конфигурация, частотная/угловая зависимость, масса ≤300 г (по реальной конструкции)",
+        "Записать реальные входные данные, ссылку на код, вычисления и ограничения."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "calc_21",
+      "track": "Расчёты и моделирование",
+      "title": "Разделить строгий масштаб и заказную Ø80",
+      "document": "docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md",
+      "status": "planned",
+      "steps": [
+        "Сравнить Ø25 и Ø41.667 на 24 ГГц как math refs отдельно от Ø80",
+        "Результат: Таблица D/λ и дисперсии, честная граница выводов из 5 ГГц",
+        "Записать реальные входные данные, ссылку на код, вычисления и ограничения."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "calc_22",
+      "track": "Расчёты и моделирование",
+      "title": "Проанализировать комплексный 5-ГГц VNA",
+      "document": "docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md",
+      "status": "planned",
+      "steps": [
+        "Calibrated .s2p, фон/holder/reference/baseline/test, одинаковая сетка; complex background subtraction",
+        "Результат: Парные Δ(f), потери/фазовые эффекты, raw файлы, не выдавать S21-сумму за абсолютную RCS",
+        "Записать реальные входные данные, ссылку на код, вычисления и ограничения."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "calc_23",
+      "track": "Расчёты и моделирование",
+      "title": "Проанализировать CDM324 и цифровой IF",
+      "document": "docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md",
+      "status": "planned",
+      "steps": [
+        "Зафиксировать Fs/gain/клиппинг, FFT/STFT и background; известная радиальная скорость",
+        "Результат: FFT и ΔIF в дБ с ограничениями, **не измеренная ЭПР**",
+        "Записать реальные входные данные, ссылку на код, вычисления и ограничения."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "calc_24",
+      "track": "Расчёты и моделирование",
+      "title": "Неопределённость, повторяемость и сопоставление с моделью",
+      "document": "docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md",
+      "status": "planned",
+      "steps": [
+        "≥3 репозиции на 5 ГГц; scatter/noise, bootstrap/разброс, влияние расстояния и поляризации",
+        "Результат: Таблица prediction/fact/uncertainty, допущения и критерий GO/NO-GO",
+        "Записать реальные входные данные, ссылку на код, вычисления и ограничения."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "write_01",
+      "track": "Оформление и защита",
+      "title": "Получить требования вуза/преподавателя к отчёту и презентации",
+      "document": "docs/26_REPORT_DEFENSE_DELIVERABLES.md",
+      "status": "blocked",
+      "steps": [
+        "Смотреть шаг WRITE-01 в протоколе.",
+        "Результат: Ссылка на оригинальную методичку, список точных параметров; без домыслов",
+        "Требуется файл и проверка, не только галочка."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "write_02",
+      "track": "Оформление и защита",
+      "title": "Согласовать план глав, роли трёх участников, срок",
+      "document": "docs/26_REPORT_DEFENSE_DELIVERABLES.md",
+      "status": "planned",
+      "steps": [
+        "Смотреть шаг WRITE-02 в протоколе.",
+        "Результат: `report/OUTLINE.md`, ответственный на каждую главу, зависимость от опыта",
+        "Требуется файл и проверка, не только галочка."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "write_03",
+      "track": "Оформление и защита",
+      "title": "Оформить титульный лист, аннотацию, задание и содержание",
+      "document": "docs/26_REPORT_DEFENSE_DELIVERABLES.md",
+      "status": "planned",
+      "steps": [
+        "Смотреть шаг WRITE-03 в протоколе.",
+        "Результат: Согласно фактическому шаблону вуза; не выдумывать ФИО и реквизиты",
+        "Требуется файл и проверка, не только галочка."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "write_04",
+      "track": "Оформление и защита",
+      "title": "Написать введение: проблема, цель, задачи, объект, критерии",
+      "document": "docs/26_REPORT_DEFENSE_DELIVERABLES.md",
+      "status": "planned",
+      "steps": [
+        "Смотреть шаг WRITE-04 в протоколе.",
+        "Результат: Доказуемые тезисы и точные требования; логическая связь с методикой",
+        "Требуется файл и проверка, не только галочка."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "write_05",
+      "track": "Оформление и защита",
+      "title": "Собрать литературу и таблицу анализа",
+      "document": "docs/26_REPORT_DEFENSE_DELIVERABLES.md",
+      "status": "planned",
+      "steps": [
+        "Смотреть шаг WRITE-05 в протоколе.",
+        "Результат: DOI/URL, авторы/год, материал/частота/показатель, применимость и ограничения",
+        "Требуется файл и проверка, не только галочка."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "write_06",
+      "track": "Оформление и защита",
+      "title": "Подготовить теоретическую главу",
+      "document": "docs/26_REPORT_DEFENSE_DELIVERABLES.md",
+      "status": "planned",
+      "steps": [
+        "Смотреть шаг WRITE-06 в протоколе.",
+        "Результат: По `docs/16_THEORY_FOR_REPORT.md`, все обозначения, схемы волны/фокуса",
+        "Требуется файл и проверка, не только галочка."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "write_07",
+      "track": "Оформление и защита",
+      "title": "Описать три конструкции и обоснование размеров",
+      "document": "docs/26_REPORT_DEFENSE_DELIVERABLES.md",
+      "status": "planned",
+      "steps": [
+        "Смотреть шаг WRITE-07 в протоколе.",
+        "Результат: Таблица PLA200/DE10_120/FINAL80, масштабирование и материал отдельно",
+        "Требуется файл и проверка, не только галочка."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "write_08",
+      "track": "Оформление и защита",
+      "title": "Описать материалы и методы изготовления",
+      "document": "docs/26_REPORT_DEFENSE_DELIVERABLES.md",
+      "status": "planned",
+      "steps": [
+        "Смотреть шаг WRITE-08 в протоколе.",
+        "Результат: CAD, параметры печати/слайсера, купоны T1–T5, масса/шов, качественные фото",
+        "Требуется файл и проверка, не только галочка."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "write_09",
+      "track": "Оформление и защита",
+      "title": "Написать расчётную главу",
+      "document": "docs/26_REPORT_DEFENSE_DELIVERABLES.md",
+      "status": "planned",
+      "steps": [
+        "Смотреть шаг WRITE-09 в протоколе.",
+        "Результат: Перенести только воспроизводимые CALC-01..24, формулы/таблицы/графики",
+        "Требуется файл и проверка, не только галочка."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "write_10",
+      "track": "Оформление и защита",
+      "title": "Подготовить изображения CAD/Meep",
+      "document": "docs/26_REPORT_DEFENSE_DELIVERABLES.md",
+      "status": "planned",
+      "steps": [
+        "Смотреть шаг WRITE-10 в протоколе.",
+        "Результат: Поля фокуса/ε(r), геометрия, scale/axes/units, номера рисунков и ссылки",
+        "Требуется файл и проверка, не только галочка."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "write_11",
+      "track": "Оформление и защита",
+      "title": "Описать 5-ГГц стенд и калибровку NanoVNA",
+      "document": "docs/26_REPORT_DEFENSE_DELIVERABLES.md",
+      "status": "planned",
+      "steps": [
+        "Смотреть шаг WRITE-11 в протоколе.",
+        "Результат: Фото/чертёж TX-RX-target, calibration SOP, реальные S11/S21",
+        "Требуется файл и проверка, не только галочка."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "write_12",
+      "track": "Оформление и защита",
+      "title": "Описать CDM324 и схему пайки",
+      "document": "docs/26_REPORT_DEFENSE_DELIVERABLES.md",
+      "status": "planned",
+      "steps": [
+        "Смотреть шаг WRITE-12 в протоколе.",
+        "Результат: Ссылки на реальный pinout card, IF-AFE-R1/фото, контроль 3.3/1.65 В как **ожидаемые**, пока не измерены",
+        "Требуется файл и проверка, не только галочка."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "write_13",
+      "track": "Оформление и защита",
+      "title": "Разнести результаты всех 3 линз по главам",
+      "document": "docs/26_REPORT_DEFENSE_DELIVERABLES.md",
+      "status": "planned",
+      "steps": [
+        "Смотреть шаг WRITE-13 в протоколе.",
+        "Результат: Для каждой: план → модель → изделие → эксперимент → статус и ограничения",
+        "Требуется файл и проверка, не только галочка."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "write_14",
+      "track": "Оформление и защита",
+      "title": "Описать обработку raw данных, статистику и погрешность",
+      "document": "docs/26_REPORT_DEFENSE_DELIVERABLES.md",
+      "status": "planned",
+      "steps": [
+        "Смотреть шаг WRITE-14 в протоколе.",
+        "Результат: Ссылки на raw .s2p/CSV; Δ только при валидном baseline; uncertainty",
+        "Требуется файл и проверка, не только галочка."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "write_15",
+      "track": "Оформление и защита",
+      "title": "Вставить реальную смету, объём работ и ограничения",
+      "document": "docs/26_REPORT_DEFENSE_DELIVERABLES.md",
+      "status": "planned",
+      "steps": [
+        "Смотреть шаг WRITE-15 в протоколе.",
+        "Результат: 24 267 ₽ / 14 000 ₽ отдельно / TBD; не выдумывать стоимость и факт покупки",
+        "Требуется файл и проверка, не только галочка."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "write_16",
+      "track": "Оформление и защита",
+      "title": "Написать выводы и заключение",
+      "document": "docs/26_REPORT_DEFENSE_DELIVERABLES.md",
+      "status": "planned",
+      "steps": [
+        "Смотреть шаг WRITE-16 в протоколе.",
+        "Результат: По фактическому состоянию: что доказано/не доказано и что делать дальше",
+        "Требуется файл и проверка, не только галочка."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "write_17",
+      "track": "Оформление и защита",
+      "title": "Проверить библиографию и соответствие методичке/ГОСТ",
+      "document": "docs/26_REPORT_DEFENSE_DELIVERABLES.md",
+      "status": "planned",
+      "steps": [
+        "Смотреть шаг WRITE-17 в протоколе.",
+        "Результат: Каждый тезис/рисунок/формула имеет ссылку; номера разделов едины",
+        "Требуется файл и проверка, не только галочка."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "write_18",
+      "track": "Оформление и защита",
+      "title": "Подготовить приложения: BOM, схемы, фото, журналы",
+      "document": "docs/26_REPORT_DEFENSE_DELIVERABLES.md",
+      "status": "planned",
+      "steps": [
+        "Смотреть шаг WRITE-18 в протоколе.",
+        "Результат: Актуальный вариант, подпись осей/единиц, файлы с датами/версией",
+        "Требуется файл и проверка, не только галочка."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "write_19",
+      "track": "Оформление и защита",
+      "title": "Проверить весь документ техническим редактором",
+      "document": "docs/26_REPORT_DEFENSE_DELIVERABLES.md",
+      "status": "planned",
+      "steps": [
+        "Смотреть шаг WRITE-19 в протоколе.",
+        "Результат: Терминология RCS vs IF, 5 vs 24 ГГц, размеры и массы, не противоречить D-032",
+        "Требуется файл и проверка, не только галочка."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "write_20",
+      "track": "Оформление и защита",
+      "title": "Собрать презентацию с Times New Roman и картой слайдов",
+      "document": "docs/26_REPORT_DEFENSE_DELIVERABLES.md",
+      "status": "planned",
+      "steps": [
+        "Смотреть шаг WRITE-20 в протоколе.",
+        "Результат: Постановка → теория → три конструкции → методы → расчёты → факты → выводы",
+        "Требуется файл и проверка, не только галочка."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "write_21",
+      "track": "Оформление и защита",
+      "title": "Подготовить речь и ответы на вопросы",
+      "document": "docs/26_REPORT_DEFENSE_DELIVERABLES.md",
+      "status": "planned",
+      "steps": [
+        "Смотреть шаг WRITE-21 в протоколе.",
+        "Результат: Репетиция, хронометраж по требованию, короткий ответ «почему 5 ГГц» и «как подтверждён +10 дБ»",
+        "Требуется файл и проверка, не только галочка."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
+    },
+    {
+      "id": "write_22",
+      "track": "Оформление и защита",
+      "title": "Финальная проверка ссылок/изображений/сдаваемых файлов",
+      "document": "docs/26_REPORT_DEFENSE_DELIVERABLES.md",
+      "status": "planned",
+      "steps": [
+        "Смотреть шаг WRITE-22 в протоколе.",
+        "Результат: Документ+слайды+речь+исходники/приложения, контроль версий, резервная копия",
+        "Требуется файл и проверка, не только галочка."
+      ],
+      "evidence": null,
+      "assignee": null,
+      "due_date": null,
+      "depends_on": [],
+      "validation_required": true
     }
   ]
 }
