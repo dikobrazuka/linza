@@ -89,7 +89,7 @@ test('custom action survives reload and missing JSON reports an error',async()=>
 test('JSON loader validates source data and rejects malformed project files',async()=>{
   const data=load('actions');let requested='';
   const {app}=environment({},null,async url=>{requested=url;return {ok:true,json:async()=>data}});
-  const result=await app.load('actions');assert.equal(requested,'./data/actions.json');assert.equal(result.actions.length,24);
+  const result=await app.load('actions');assert.equal(requested,'./data/actions.json');assert.equal(result.actions.length,102);
   data.actions[0].steps=null;await assert.rejects(app.load('actions'),/Некорректный список задач/);
   await assert.rejects(app.load('../x'),/Неизвестный источник/);
 });
