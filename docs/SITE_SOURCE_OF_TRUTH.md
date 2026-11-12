@@ -62,3 +62,8 @@
 6. Корректно отрабатывает отсутствие JSON/сетевая ошибка без пустой страницы.
 7. Не появляется «+10 dB measured» или «24GHz RCS proven» без соответствующих реальных данных.
 8. GitHub Pages работает в браузере на desktop/mobile; JS/HTML validation и Python CI зелёные.
+
+
+## Обновление 12.11 — расчёты и оформление включены в трекер
+
+`site/data/actions.json` теперь имеет **102 действия** (24 базовых + 32 пайка + 24 расчёт + 22 оформление). Схемы и пооперационная пайка: `electronics/05_BUILD_CDM324_STEP_BY_STEP.md`, физические контакты реального CDM324 — `electronics/RADAR_PINOUT_CARD_TEMPLATE.md`, QC — `electronics/06_WIRING_AND_POWER_QC.csv`. Расчётные действия и требуемые результаты: `docs/25_CALCULATIONS_AND_MODELING_CHECKLIST.md`. Главы, рисунки, литература, смета, презентация и речь: `docs/26_REPORT_DEFENSE_DELIVERABLES.md`. Шаблон содержания: `report/OUTLINE.md`; реестр доказательств: `report/RESULTS_REGISTER.md`. Воспроизводимый расчёт требует реального файла конфигурации/результата, а не галочки или графика, нарисованного без прогонов.
