@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Наглядная распиновка и последовательная пайка CDM324, OPA2365, Raspberry Pi Pico — проект LINZA">
+<meta name="color-scheme" content="dark">
+<title>LINZA — Радар CDM324: распиновка и пайка</title>
+<link rel="stylesheet" href="./radar.css">
+<script src="./radar.js" defer></script></head><body>
+<header class="top"><div class="shell top-inner"><a href="./index.html" class="brand">◒ LINZA <span>/ РАДАР</span></a><nav aria-label="Навигация"><a href="./index.html">Главная</a><a href="./board.html">Доска</a><a href="./explain.html">Физика</a><a href="https://github.com/dikobrazuka/linza/blob/main/electronics/05_BUILD_CDM324_STEP_BY_STEP.md" target="_blank" rel="noopener">Полный монтаж ↗</a></nav></div></header>
+<main class="shell">
+<section class="hero" aria-labelledby="title"><div><p class="eyebrow">24,125 ГГц / доплеровский приём / IF-AFE-R1</p><h1 id="title">Собери радар.<br><span>По контактам и действиям.</span></h1><p class="lead">Здесь видно, где каждая ножка, к какому узлу припаять провод, что проверить мультиметром и когда переходить дальше. Схема усилителя — <strong>проектная, ещё не испытана на железе</strong>.</p><div class="hero-links"><a class="button" href="#pinout">Посмотреть распиновку ↓</a><a href="#steps">Сразу к пайке ↓</a></div></div><div class="chain" aria-label="Тракт сигнала"><div><b>CDM324</b><small>радиосигнал → IF</small></div><span>→</span><div><b>OPA2365</b><small>×11 · ×11</small></div><span>→</span><div><b>Pico</b><small>GP26 / АЦП</small></div><span>→</span><div><b>ПК</b><small>CSV · FFT</small></div></div></section>
+<section class="critical" role="note"><div class="critical-icon">!</div><div><b>Не подавай питание на CDM324, пока не подтверждены выводы его конкретной платы.</b><p>В опубликованных схемах встречается противоположный порядок VCC и GND. На иллюстрации ниже контакты радара обозначены <strong>A / B / C</strong>, но не названы «левый плюс» и «правый минус». Заполни <a href="https://github.com/dikobrazuka/linza/blob/main/electronics/RADAR_PINOUT_CARD_TEMPLATE.md" target="_blank" rel="noopener">паспорт своего экземпляра ↗</a> по маркировке и документации.</p></div></section>
+<section id="pinout" class="section"><div class="section-head"><div><p class="eyebrow">01 / компоненты</p><h2>Распиновка — вид сверху</h2><p>Показаны физические номера выводов. Выбери контакт — его назначение появится ниже.</p></div></div>
+<div class="pin-grid">
+<article class="panel"><div class="panel-top"><div><h3>OPA2365AIDR</h3><p>SOIC-8, точка у ножки №1</p></div><span class="tag">усилитель</span></div>
+<svg id="opa-svg" class="pin-svg" viewBox="0 0 460 315" role="img" aria-label="OPA2365 вид сверху: слева сверху вниз ножки 1-4, справа сверху вниз 8-5">
+<rect x="144" y="35" width="170" height="240" rx="19" fill="#182331" stroke="#8299ac" stroke-width="2"/>
+<path d="M204 35a27 27 0 0 0 54 0" fill="#0b1017" stroke="#8299ac"/><circle cx="166" cy="61" r="6" fill="#f2c77e"/>
+<text x="229" y="158" font-size="23" text-anchor="middle" fill="#e7eef4" font-weight="700">OPA2365</text><text x="229" y="180" font-size="11" text-anchor="middle" fill="#b5c5d2">точка = pin 1</text>
+<g id="opa-pins"></g></svg><p class="caption">Вид именно сверху. SOIC8 — шаг выводов 1,27 мм. На переходнике сопоставь отметку pin 1.</p>
+</article>
+<article class="panel"><div class="panel-top"><div><h3>Raspberry Pi Pico</h3><p>USB расположен сверху платы</p></div><span class="tag">АЦП</span></div>
+<svg id="pico-svg" class="pin-svg" viewBox="0 0 460 315" role="img" aria-label="Pico вид сверху: справа выделены физические контакты 36 3V3 OUT, 33 AGND и 31 GP26 ADC0">
+<rect x="146" y="37" width="164" height="245" rx="15" fill="#165546" stroke="#75d4b9" stroke-width="2"/>
+<rect x="190" y="25" width="76" height="28" rx="5" fill="#b6c4cf" stroke="#ecf0f3"/><rect x="200" y="30" width="56" height="11" rx="3" fill="#435462"/>
+<text x="228" y="128" fill="#d4fff2" font-size="25" font-weight="700" text-anchor="middle">PICO</text><text x="228" y="148" fill="#b7e2d4" font-size="12" text-anchor="middle">RP2040</text>
+<g id="pico-pins"></g></svg><p class="caption">Справа считаем физические контакты сверху: 40, 39, 38 … 31. Не путай номера GPIO и ножек.</p>
+</article>
+<article class="panel radar-panel"><div class="panel-top"><div><h3>CDM324</h3><p>Трёхконтактное исполнение — пример</p></div><span class="tag caution">неизвестная ревизия</span></div>
+<svg viewBox="0 0 460 315" class="pin-svg" role="img" aria-label="Условный вид модуля CDM324: три неидентифицированные площадки A B C без назначения питания">
+<rect x="90" y="30" width="280" height="245" rx="16" fill="#315044" stroke="#8ec3aa" stroke-width="2"/>
+<rect x="130" y="55" width="200" height="145" rx="12" fill="#487969" stroke="#acd4c4" stroke-width="2"/>
+<g stroke="#8cc8b0" fill="none" stroke-width="5"><path d="M150 100h160M150 126h160M150 152h160"/><path d="M180 77v105M280 77v105"/></g>
+<g fill="#111923" stroke="#eab978" stroke-width="2"><rect x="145" y="220" width="43" height="30" rx="6"/><rect x="209" y="220" width="43" height="30" rx="6"/><rect x="273" y="220" width="43" height="30" rx="6"/></g><g fill="#f9dfb3" font-size="18" font-weight="800" text-anchor="middle"><text x="166" y="242">A</text><text x="230" y="242">B</text><text x="294" y="242">C</text></g><text x="230" y="291" font-size="12" fill="#e7c796" text-anchor="middle">A / B / C — НЕ VCC / GND / IF</text></svg>
+<p class="caption warning">Схематичный вид, НЕ фотография или распиновка реального CDM324. Не копируй порядок контактов отсюда.</p>
+</article></div>
+<div id="selected-pin" class="selection" aria-live="polite"><strong>Нажми на ножку OPA2365 или Pico.</strong> Здесь появится описание соединения.</div>
+</section>
+<section id="wires" class="section"><div class="section-head"><div><p class="eyebrow">02 / электрические узлы</p><h2>Что куда припаять</h2><p>Выбирай цепь, чтобы подсветить её назначение. Эти цвета — для удобства чтения, а не обязательная маркировка покупного провода.</p></div></div>
+<div class="wiring-layout">
+<div class="panel network-panel">
+<div class="legend" id="net-controls" aria-label="Выбор электрического узла"></div>
+<svg class="block-svg" viewBox="0 0 780 430" role="img" aria-label="Блок схема радара, двух усилительных каскадов и АЦП; точные контакты указаны ниже"><defs><marker id="arrow-net" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto"><path d="M0 0 10 5 0 10Z" fill="#82a9b4"/></marker></defs>
+<rect x="30" y="82" width="137" height="126" rx="16" fill="#213e37" stroke="#e4ad70"/><text x="98" y="116" text-anchor="middle" font-size="21" font-weight="700" fill="#f2eee4">CDM324</text><text x="98" y="138" text-anchor="middle" font-size="12" fill="#ebcaa4">контакты уточнить!</text><text x="98" y="175" text-anchor="middle" font-size="12" fill="#d8e9db">IF / GND / VCC</text>
+<rect x="253" y="60" width="320" height="166" rx="16" fill="#182331" stroke="#819bae"/><text x="413" y="91" text-anchor="middle" font-size="22" font-weight="700" fill="#edf3f7">OPA2365</text><rect x="274" y="112" width="119" height="72" rx="10" fill="#214245" stroke="#70c7bb"/><rect x="435" y="112" width="119" height="72" rx="10" fill="#214245" stroke="#70c7bb"/><text x="332" y="140" text-anchor="middle" font-size="17" fill="#d9fff8">канал A</text><text x="332" y="161" text-anchor="middle" font-size="15" fill="#d9fff8">×11</text><text x="494" y="140" text-anchor="middle" font-size="17" fill="#d9fff8">канал B</text><text x="494" y="161" text-anchor="middle" font-size="15" fill="#d9fff8">×11</text>
+<rect x="646" y="90" width="111" height="113" rx="14" fill="#16483e" stroke="#71d1b4"/><text x="701" y="124" text-anchor="middle" font-size="19" fill="#e9fff3" font-weight="700">PICO</text><text x="701" y="145" text-anchor="middle" font-size="12" fill="#e9fff3">GP26 / ADC</text><text x="701" y="169" text-anchor="middle" font-size="11" fill="#c3e8d9">pin 31</text>
+<g stroke="#82a9b4" stroke-width="3" fill="none" marker-end="url(#arrow-net)"><path d="M167 145H250"/><path d="M393 147H430"/><path d="M573 147H644"/></g>
+<text x="211" y="133" text-anchor="middle" fill="#b9cdd4" font-size="13">C3</text><text x="413" y="133" text-anchor="middle" fill="#e6f4ee" font-size="12">C4</text><text x="609" y="133" text-anchor="middle" fill="#b9cdd4" font-size="12">R9/C5</text>
+<rect x="253" y="276" width="320" height="98" rx="14" fill="#1b2632" stroke="#bc9a63"/><text x="413" y="303" text-anchor="middle" font-size="18" fill="#ffdfab">VREF 1,65 В</text><text x="413" y="329" text-anchor="middle" font-size="14" fill="#ddedee">R1 10k · R2 10k · C1/C2</text><text x="413" y="351" text-anchor="middle" font-size="12" fill="#b9c9d5">смещение входов обоих каналов</text>
+<path d="M413 276V231" stroke="#e4bb65" stroke-width="3" stroke-dasharray="6 5"/><path d="M701 203V405H526V377" stroke="#f29d67" stroke-width="3" fill="none"/><text x="633" y="396" text-anchor="middle" fill="#f7b88f" font-size="12">3,3 В, pin 36</text>
+</svg>
+<p class="caption">Это функциональная блок-схема, не замена монтажной таблице. Для точной пайки используй выбранную цепь и шаги ниже.</p>
+</div>
+<aside class="panel net-details"><p class="eyebrow">Выбранная цепь</p><h3 id="net-name">+3,3 В</h3><p id="net-description">Загрузка...</p><h4>Соединяемые точки</h4><ul id="net-members"></ul><a href="https://github.com/dikobrazuka/linza/blob/main/electronics/02_CDM324_NETLIST.csv" target="_blank" rel="noopener">Вся таблица цепей ↗</a></aside>
+</div></section>
+<section class="section"><div class="section-head"><div><p class="eyebrow">03 / проверка перед включением</p><h2>Контрольные точки</h2><p>Все указанные напряжения — <strong>ожидаемые, не измеренные</strong>. Заполняй реальный журнал отдельно.</p></div></div><div class="panel test-panel"><div class="test-grid"><div><small>Между +3V3 и GND</small><strong>нет КЗ</strong><span>питание выключено</span></div><div><small>Pico pin 36 → GND</small><strong>≈3,3 В</strong><span>только после проверки пайки</span></div><div><small>VREF → GND</small><strong>≈1,65 В</strong><span>делитель R1/R2</span></div><div><small>OUT A / OUT B</small><strong>≈1,65 В</strong><span>без входного сигнала</span></div><div><small>N_ADC → GND</small><strong>0–3,3 В</strong><span>пики проверять осциллографом</span></div><div><small>CDM324 VCC/GND/IF</small><strong>неизвестно</strong><span>до проверки реального модуля</span></div></div><a href="https://github.com/dikobrazuka/linza/blob/main/electronics/06_WIRING_AND_POWER_QC.csv" target="_blank" rel="noopener">Журнал измерений и проверки ↗</a></div></section>
+<section class="section" id="steps"><div class="section-head"><div><p class="eyebrow">04 / процесс</p><h2>32 действия от пайки до первого сигнала</h2><p>Проходи по порядку. Можно отмечать сделанное и возвращаться к сборке позже — отметки остаются <strong>только в этом браузере</strong>.</p></div><div class="progress" aria-live="polite"><strong id="progress-text">0 / 32</strong><div class="progress-track"><span id="progress-bar"></span></div><button type="button" id="reset-progress">Сбросить мои отметки</button></div></div>
+<div id="steps-root"><p>Загрузка действий…</p></div><div class="resource-row"><a href="https://github.com/dikobrazuka/linza/blob/main/electronics/05_BUILD_CDM324_STEP_BY_STEP.md" target="_blank" rel="noopener">Полный текст по пайке ↗</a><a href="https://github.com/dikobrazuka/linza/blob/main/electronics/03_CDM324_PICO_BOM.csv" target="_blank" rel="noopener">BOM деталей ↗</a><a href="https://github.com/limpkin/cdm324_backpack" target="_blank" rel="noopener">Исходный проект cdm324_backpack ↗</a></div>
+</section></main>
+<footer><div class="shell">LINZA · Наглядный монтаж IF-AFE-R1 · Данные из <a href="./data/radar-assembly.json">radar-assembly.json</a> · Не является подтверждением собранного прибора.</div></footer>
+</body></html>
