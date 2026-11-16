@@ -50,7 +50,7 @@
   }
   const opaLeft=[[1,'OUT A'],[2,'IN− A'],[3,'IN+ A'],[4,'GND']];
   const opaRight=[[8,'3V3'],[7,'OUT B'],[6,'IN− B'],[5,'IN+ B']];
-  const colors={3V3:'#edac7c',GND:'#95aabb',ADC:'#93b0ff',OUTA:'#88e3c6',OUTB:'#88e3c6'};
+  const colors={'3V3':'#edac7c',GND:'#95aabb',ADC:'#93b0ff',OUTA:'#88e3c6',OUTB:'#88e3c6'};
   const opag=$('opa-pins');
   opaLeft.forEach(([p,name],i)=>addInteractivePin(opag,'opa',p,144,82+i*50,'left',name,colors[pinHelp.opa[p].net]||'#a7c8d2'));
   opaRight.forEach(([p,name],i)=>addInteractivePin(opag,'opa',p,314,82+i*50,'right',name,colors[pinHelp.opa[p].net]||'#a7c8d2'));
