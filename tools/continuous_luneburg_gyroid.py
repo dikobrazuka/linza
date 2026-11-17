@@ -47,6 +47,11 @@ class Config:
     out_stl: Path = Path("continuous_luneburg_gyroid.stl")
     out_profile: Optional[Path] = None
     profile_only: bool = False
+    shell_mm: float = 0.0
+    shell_cap_angle_deg: float = 180.0
+    base_mm: float = 0.0
+    verify_stl: bool = False
+    mirror_out: Optional[Path] = None
 
 
 def luneburg_epsilon(r_mm: np.ndarray, radius_mm: float) -> np.ndarray:
@@ -193,9 +198,23 @@ def estimate_full_sphere_material(r_mm: np.ndarray, rho_used: np.ndarray, solid_
 
 def build_scalar_field(cfg: Config, h_grid: np.ndarray, rho_grid: np.ndarray):
     R, v = cfg.radius_mm, cfg.voxel_mm
-    extent = R + 2.0 * v
-    axis = np.arange(-extent, extent + 0.5 * v, v, dtype=np.float32)
-    x, y, z = axis[:, None, None], axis[None, :, None], axis[None, None, :]
+    if R <= 0 or v <= 0 or cfg.cell_mm <= 0:
+        raise ValueError('radius, voxel and cell must be positive')
+    if not (0 <= cfg.shell_mm < R and 0 <= cfg.base_mm < R):
+        raise ValueError('shell and base thickness must be between zero and radius')
+    if not (0 < cfg.shell_cap_angle_deg <= 180):
+        raise ValueError('shell cap half-angle must be in (0, 180] degrees')
+    # Half-voxel offset avoids putting the z=0 cut exactly on a sampling plane.
+    # Exact zero samples can collapse triangles when STL float32 vertices are welded.
+    n = int(math.ceil(R / v)) + 2
+    axis = (np.arange(-n, n, dtype=np.float32) + 0.5) * v
+    if cfg.hemisphere == 'upper':
+        zaxis = axis[axis >= -1.5 * v]
+    elif cfg.hemisphere == 'lower':
+        zaxis = axis[axis <= 1.5 * v]
+    else:
+        zaxis = axis
+    x, y, z = axis[:, None, None], axis[None, :, None], zaxis[None, None, :]
     r = np.sqrt(x*x + y*y + z*z, dtype=np.float32)
     eps = np.where(r <= R, luneburg_epsilon(r, R), 1.0)
     rho = np.clip(
@@ -205,14 +224,25 @@ def build_scalar_field(cfg: Config, h_grid: np.ndarray, rho_grid: np.ndarray):
     )
     h = h_from_rho(rho, h_grid, rho_grid).astype(np.float32)
     G = gyroid_value(x, y, z, cfg.cell_mm).astype(np.float32)
-    field = np.minimum(h - np.abs(G), (R-r).astype(np.float32))
+    # Scale the gyroid field approximately to millimetres before combining it
+    # with the sphere/cut fields; their relative scale affects interpolation.
+    gyroid = (h - np.abs(G)) * (cfg.cell_mm / (2.0 * math.pi * math.sqrt(3.0)))
+    if cfg.shell_mm:
+        shell = r - (R - cfg.shell_mm)
+        if cfg.shell_cap_angle_deg < 180:
+            # Cap around +Z; the angle is measured from its central axis.
+            shell = np.minimum(shell, z - r * math.cos(math.radians(cfg.shell_cap_angle_deg)))
+        gyroid = np.maximum(gyroid, shell)
+    if cfg.base_mm and cfg.hemisphere != 'full':
+        gyroid = np.maximum(gyroid, cfg.base_mm - np.abs(z))
+    field = np.minimum(gyroid, (R-r).astype(np.float32))
     if cfg.hemisphere == "upper":
         field = np.minimum(field, z.astype(np.float32))
     elif cfg.hemisphere == "lower":
         field = np.minimum(field, (-z).astype(np.float32))
     elif cfg.hemisphere != "full":
         raise ValueError("hemisphere must be upper, lower, or full")
-    origin = np.array([axis[0], axis[0], axis[0]], dtype=np.float64)
+    origin = np.array([axis[0], axis[0], zaxis[0]], dtype=np.float64)
     return field, origin
 
 
@@ -231,6 +261,8 @@ def field_to_mesh(field, origin, voxel_mm):
         process=False,
     )
     mesh.remove_unreferenced_vertices()
+    if mesh.volume < 0:
+        mesh.invert()
     return mesh
 
 
@@ -250,6 +282,11 @@ def parse_args() -> Config:
     p.add_argument("--out", type=Path, default=Path("continuous_luneburg_gyroid.stl"))
     p.add_argument("--profile-out", type=Path, default=None)
     p.add_argument("--profile-only", action="store_true")
+    p.add_argument('--shell', type=float, default=0.0, help='solid outer shell thickness in mm; changes RF profile')
+    p.add_argument('--shell-cap-angle', type=float, default=180.0, help='shell cap half-angle in degrees about +Z; default 180 covers the whole sphere')
+    p.add_argument('--base', type=float, default=0.0, help='solid equatorial base thickness in mm; changes RF profile')
+    p.add_argument('--verify-stl', action='store_true', help='reload exported STL and verify welded mesh (memory intensive)')
+    p.add_argument('--mirror-out', type=Path, default=None, help='export complementary mirrored hemisphere for printing')
     a = p.parse_args()
     return Config(
         radius_mm=a.radius,
@@ -266,6 +303,11 @@ def parse_args() -> Config:
         out_stl=a.out,
         out_profile=a.profile_out,
         profile_only=a.profile_only,
+        shell_mm=a.shell,
+        shell_cap_angle_deg=a.shell_cap_angle,
+        base_mm=a.base,
+        verify_stl=a.verify_stl,
+        mirror_out=a.mirror_out,
     )
 
 
@@ -286,10 +328,31 @@ def main():
 
     field, origin = build_scalar_field(cfg, h_grid, rho_grid)
     mesh = field_to_mesh(field, origin, cfg.voxel_mm)
+    del field
     mesh.export(cfg.out_stl)
     print(cfg.out_stl)
-    print("watertight=", mesh.is_watertight)
+    print("in_memory_watertight=", mesh.is_watertight)
+    print("signed_volume_mm3=", mesh.volume)
+    if cfg.mirror_out is not None:
+        if cfg.hemisphere == 'full':
+            raise ValueError('--mirror-out requires a hemisphere')
+        mesh.apply_transform(np.diag([-1.0, 1.0, 1.0, 1.0]))
+        mesh.export(cfg.mirror_out)
+        print('mirrored_stl=', cfg.mirror_out)
+    if cfg.verify_stl:
+        del mesh
+        for path in (cfg.out_stl, cfg.mirror_out):
+            if path is None:
+                continue
+            loaded = trimesh.load(path, force='mesh')
+            print(f'{path}: watertight={loaded.is_watertight}, winding={loaded.is_winding_consistent}, volume_mm3={loaded.volume:.3f}')
+            if not loaded.is_watertight or not loaded.is_winding_consistent or loaded.volume <= 0:
+                raise RuntimeError(f'Exported STL failed validation: {path}')
+            del loaded
+    if cfg.shell_mm or cfg.base_mm:
+        print('WARNING: profile and integrated mass exclude the solid shell and base')
 
 
 if __name__ == "__main__":
     main()
+
