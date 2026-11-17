@@ -11,9 +11,9 @@
 
 Программа использует текущие генераторы проекта, а не облачный сервис. В этом
 рабочем пространстве стартовый Python лежит в bundled runtime Codex, а библиотеки
-в `exports/plan_b_200mm/python_deps`. На другом компьютере доступны Python с
-`numpy`, `scikit-image` и `trimesh` в стандартном окружении; запустите
-`python experiment/lab/server.py`. Без Python страница может показывать форму,
+в `exports/plan_b_200mm/python_deps`. На другом компьютере установите Python,
+затем выполните `python -m pip install numpy scikit-image trimesh` и запустите
+`python experiment/lab/server.py` из папки проекта. Без Python страница может показывать форму,
 но STL не создаст. Интернет для работы не нужен.
 
 Частоты, лабораторная оснастка и валидность измеренных epsilon должны быть
